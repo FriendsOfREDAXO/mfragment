@@ -106,6 +106,7 @@ class MediaOutputHelper {
      */
     public static function getMediaUrlPath(rex_media $rexMedia, string $mediaType = null): ?string
     {
+        // TODO set correct url path
         return $rexMedia->getUrl();
     }
 }

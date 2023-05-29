@@ -28,9 +28,6 @@ $help = FragmentVarHelper::mergeHelp([
     'mediaConfig'   => 'will be setup the configuration for media element fragment (array)',
 ], $tagHelp, false);
 
-// set default config
-$config = FragmentVarHelper::mergeDefaultConfigVariables($this->getVar($tagName . 'Config', ['template' => $tagTemplate]), $this->getVar('config', []));
-
 // read variables
 $var = [
     'media'         => $this->getVar('media'),
@@ -39,6 +36,9 @@ $var = [
     'config'        => $this->getVar('config', []),
     'mediaConfig'   => $this->getVar('mediaConfig'),
 ];
+
+// set default config
+$var['config'] = FragmentVarHelper::mergeDefaultConfigVariables($this->getVar($tagName . 'Config', ['template' => $tagTemplate]), $var['config']);
 
 // display help
 FragmentOutputHelper::viewHelp($this, $help);
@@ -59,7 +59,7 @@ if (empty($mediaOutput)) {
                 ]);
                 $mediaOutput .= $fragment->parse("default/source.php");
             } else {
-                if ((isset($fragment->debug) && $fragment->debug === true) || (isset($config['debug']) && $config['debug'] === true)) {
+                if ((isset($fragment->debug) && $fragment->debug === true) || (isset($var['config']['debug']) && $var['config']['debug'] === true)) {
                     rex_logger::factory()->debug("\"" . var_dump($mediaElement) . "\" is not instanceof MediaElement");
                 }
             }
@@ -71,7 +71,7 @@ if (empty($mediaOutput)) {
 $attributes = FragmentOutputHelper::parseAttributesToString($var['config']['attributes']);
 
 // create output
-$output = sprintf($config['template'], $attributes, $mediaOutput . $noSupportOutput);
+$output = sprintf($var['config']['template'], $attributes, $mediaOutput . $noSupportOutput);
 
 // display debug outputs
 FragmentOutputHelper::viewDebug($this, $var, [
