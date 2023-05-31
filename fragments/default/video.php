@@ -17,8 +17,8 @@ $tagHelp = $this->getVar($tagName . 'Help', []);
 $help = FragmentVarHelper::mergeHelp([
     'info'          => "this $tagName fragment will be generate a default html $tagName element",
     'media'         => "rex_media which will output as an $tagName source element (rex_media|string|MFragment\DTOMedia\Element|array)",
-    $tagName . 'Output'   => "rex_media which will output as an $tagName source element (rex_media|string|MFragment\DTOMedia\Element|array)",
-    'noSupportOutput'     => 'no support HTML output (string)',
+    $tagName . 'Output'=> "rex_media which will output as an $tagName source element (rex_media|string|MFragment\DTOMedia\Element|array)",
+    'appendOutput'     => 'append HTML output (string)',
     'config'        => [
         'attributes'   => "attributes of the $tagName element (array<key,value>)",
         'template'     => "individual template for the video element \"$tagTemplate\" (string)",
@@ -32,7 +32,7 @@ $help = FragmentVarHelper::mergeHelp([
 $var = [
     'media'         => $this->getVar('media'),
     $tagName . 'Output'   => $this->getVar($tagName . 'Output', ''),
-    'noSupportOutput'     => $this->getVar('noSupportOutput', ''),
+    'appendOutput'  => $this->getVar('appendOutput', ''),
     'config'        => $this->getVar('config', []),
     'mediaConfig'   => $this->getVar('mediaConfig'),
 ];
@@ -44,17 +44,20 @@ $var['config'] = FragmentVarHelper::mergeDefaultConfigVariables($this->getVar($t
 FragmentOutputHelper::viewHelp($this, $help);
 
 $mediaOutput = $var[$tagName . 'Output'];
-$noSupportOutput = $var['noSupportOutput'];
+$appendOutput = $var['appendOutput'];
 $attributes = '';
 
 if (empty($mediaOutput)) {
     // create media element
     if (!is_null($var['media']) && is_array($var['media'] = FragmentVarHelper::getMediaElementArray($var['media'], [])) && count($var['media']) > 0) {
+        $count = 0;
         foreach ($var['media'] as $mediaElement) {
+            $count++;
             if ($mediaElement instanceof MediaElement) {
+                $type = ($tagName === 'picture' && $count == (count($var['media'])+1)) ? 'img' : 'source';
                 $fragment = new rex_fragment([
-                    'tag' => 'source',
-                    'source' => 'src="' . MediaOutputHelper::getMediaUrlPath($mediaElement->rexMedia) . '"',
+                    'tag' => $type,
+                    $type => 'src="' . MediaOutputHelper::getMediaUrlPath($mediaElement->rexMedia) . '"',
                     'config' => $mediaElement->mediaConfig,
                 ]);
                 $mediaOutput .= $fragment->parse("default/source.php");
@@ -71,14 +74,14 @@ if (empty($mediaOutput)) {
 $attributes = FragmentOutputHelper::parseAttributesToString($var['config']['attributes']);
 
 // create output
-$output = sprintf($var['config']['template'], $attributes, $mediaOutput . $noSupportOutput);
+$output = sprintf($var['config']['template'], $attributes, $mediaOutput . $appendOutput);
 
 // display debug outputs
 FragmentOutputHelper::viewDebug($this, $var, [
-    'attributes'        => $attributes,
-    'mediaOutput'       => $mediaOutput,
-    'noSupportOutput'   => $noSupportOutput,
-    'output'            => $output,
+    'attributes'    => $attributes,
+    'mediaOutput'   => $mediaOutput,
+    'appendOutput'  => $appendOutput,
+    'output'        => $output,
 ]);
 
 // print output
