@@ -4,7 +4,7 @@
  * @psalm-scope-this rex_fragment
  */
 
-echo $this->getSubfragment("default/media.php", [
+echo $this->getSubfragment("default/video.php", [
     'tag' => 'audio',
     'template' => '<audio %s>%s</audio>',
 ]);
