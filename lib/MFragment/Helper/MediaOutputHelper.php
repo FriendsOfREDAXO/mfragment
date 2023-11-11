@@ -1,27 +1,24 @@
 <?php
-namespace MFragment;
+/**
+ * @author Joachim Doerr
+ * @package redaxo5
+ * @license MIT
+ */
 
-use MFragment\DTO\MediaElement;
+namespace MFragment\Helper;
+
 use rex;
 use rex_managed_media;
 use rex_media;
 use rex_media_manager;
+use rex_media_srcset;
 use rex_path;
 use rex_url;
 
 class MediaOutputHelper {
+    const MEDIA_REWRITE_DIR = 'images';
 
-    const MEDIA_DIR = 'media';
-
-    /**
-     * @param $mediaFile
-     * @param $mediaType
-     * @param bool $getDataSrc
-     * @param bool $getValidHtml
-     * @return string
-     * @author Joachim Doerr
-     */
-    public static function getManagedMediaFile($mediaFile, $mediaType, bool$getDataSrc = false, bool $getValidHtml = true): string
+    public static function getManagedMediaFile($mediaFile, $mediaType, bool $getDataSrc = false, bool $getSrc = true): string
     {
         $file = $mediaFile;
         if ($mediaFile instanceof rex_media) {
@@ -33,17 +30,17 @@ class MediaOutputHelper {
         // TODO improve
         $mediaType = (empty($mediaType)) ? 'original' : $mediaType;
         $urlMediaTypeQueryParameter = 'rex_media_type=' . $mediaType .'&';
-        $urlMediaTypePathString = (!empty($mediaType)) ? self::MEDIA_DIR : '';
+        $urlMediaTypePathString = (!empty($mediaType)) ? self::MEDIA_REWRITE_DIR . '/' . $mediaType . '/' : '';
         $urlMediaType = (\rex_addon::get('yrewrite')->isAvailable()) ? $urlMediaTypePathString : 'index.php?' . $urlMediaTypeQueryParameter . 'rex_media_file=';
 
         $tempUrl = rex_url::frontend() . $urlMediaType . $file;
-        $url = ($getValidHtml) ? htmlspecialchars($tempUrl) : $tempUrl;
+        $url = ($getSrc) ? htmlspecialchars($tempUrl) : $tempUrl;
 
         if (rex::isBackend()) {
             $tempUrl = rex_url::backendController() . '?' . $urlMediaTypeQueryParameter . 'rex_media_file=' . $file;
-            $url = ($getValidHtml) ? htmlspecialchars($tempUrl) : $tempUrl;
+            $url = ($getSrc) ? htmlspecialchars($tempUrl) : $tempUrl;
         } else if ($getDataSrc) {
-            $srcSet = self::getMediaImgSrcSet($file, $mediaType, $getValidHtml);
+            $srcSet = self::getMediaImgSrcSet($file, $mediaType, $getSrc);
             if ($srcSet != '') {
                 return 'data-srcset="'.$srcSet.'"';
             } else {
@@ -51,21 +48,14 @@ class MediaOutputHelper {
             }
         }
 
-        if ($getValidHtml) {
+        if ($getSrc) {
             return 'src="'.$url.'"';
         }
 
         return $url;
     }
 
-    /**
-     * @param string $mediaFile
-     * @param string $mediaType
-     * @param bool $getValidHtml
-     * @return string
-     * @author Joachim Doerr
-     */
-    public static function getMediaImgSrcSet(string $mediaFile, string $mediaType, bool $getValidHtml = true): string
+    public static function getSrcSet(string $mediaFile, string $mediaType): array
     {
         $srcSet = '';
         if($media = new rex_managed_media(rex_path::media($mediaFile))) {
@@ -80,12 +70,16 @@ class MediaOutputHelper {
                 }
             }
         }
+        return array_filter(explode(',', $srcSet));
+    }
 
-        if ($srcSet != '' && class_exists('rex_media_srcset')) {
-            $items = explode(',', $srcSet);
+    public static function getMediaImgSrcSet(string $mediaFile, string $mediaType, bool $getValidHtml = true): string
+    {
+        $srcSet = self::getSrcSet($mediaFile, $mediaType);
+        if (count($srcSet) > 0 && class_exists('rex_media_srcset')) {
             $single_srcset = array();
             #$imgSrc = rex_media_srcset::generateMediaImageUrl($mediaType, $mediaFile);
-            foreach ($items as $key => $item) {
+            foreach ($srcSet as $key => $item) {
                 if ($set = rex_media_srcset::getSingleSet($item)) {
                     #if ($key == 0) $imgSrc = rex_media_srcset::generateMediaImageUrl($mediaType . '__' . ((string)$set['image_width']), $mediaFile);
                     $tempUrl = rex_media_srcset::generateMediaImageUrl($mediaType . '__' . ((string)$set['image_width']), $mediaFile) . ' ' . ((string)$set['viewport_width']) . 'w';
@@ -98,12 +92,6 @@ class MediaOutputHelper {
         return '';
     }
 
-    /**
-     * @param rex_media $rexMedia
-     * @param string|null $mediaType
-     * @return string|null
-     * @author Joachim Doerr
-     */
     public static function getMediaUrlPath(rex_media $rexMedia, string $mediaType = null): ?string
     {
         // TODO set correct url path

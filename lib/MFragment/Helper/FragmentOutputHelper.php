@@ -1,21 +1,16 @@
 <?php
 /**
- * User: joachimdoerr
- * Date: 19.05.23
- * Time: 18:04
+ * @author Joachim Doerr
+ * @package redaxo5
+ * @license MIT
  */
 
-namespace MFragment;
+namespace MFragment\Helper;
 
 use rex_fragment;
 
 class FragmentOutputHelper
 {
-    /**
-     * @param rex_fragment $fragment
-     * @param array $help
-     * @author Joachim Doerr
-     */
     public static function viewHelp(rex_fragment $fragment, array $help = []): void
     {
         // get fragment config var
@@ -27,12 +22,6 @@ class FragmentOutputHelper
         }
     }
 
-    /**
-     * @param rex_fragment $fragment
-     * @param array $var
-     * @param array $outputs
-     * @author Joachim Doerr
-     */
     public static function viewDebug(rex_fragment $fragment, array $var = [], array $outputs = []): void
     {
         // get fragment config var
@@ -45,20 +34,19 @@ class FragmentOutputHelper
         }
     }
 
-    /**
-     * @param array $attributes
-     * @return string
-     * @author Joachim Doerr
-     */
     public static function parseAttributesToString(array $attributes = []): string
     {
         $output = [];
-        $attributes = array_filter($attributes);
         if (count($attributes) > 0) {
             foreach ($attributes as $key => $value) {
+                if (empty($value) && $value !== "0") {
+                    continue;
+                }
                 if (is_array($value)) $value = implode(' ', $value);
                 if (in_array($key, ['autoplay', 'controls', 'muted', 'playsinline']) && $value === true) {
                     $output[] = $key;
+                } else if (is_int($key)) {
+                    $output[] = $value;
                 } else {
                     $output[] = $key . '="' . $value . '"';
                 }

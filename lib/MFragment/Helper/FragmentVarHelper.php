@@ -1,37 +1,22 @@
 <?php
 /**
- * User: joachimdoerr
- * Date: 14.05.23
- * Time: 12:47
+ * @author Joachim Doerr
+ * @package redaxo5
+ * @license MIT
  */
 
-namespace MFragment;
+namespace MFragment\Helper;
 
 use MFragment\DTO\MediaElement;
-use rex_fragment;
 use rex_media;
-use rex_url;
 
 class FragmentVarHelper
 {
-    /**
-     * @param array $defaultConfigVar
-     * @param array $var
-     * @return array
-     * @author Joachim Doerr
-     */
     public static function mergeDefaultConfigVariables(array $defaultConfigVar, array $var): array
     {
         return array_merge($defaultConfigVar, $var);
     }
 
-    /**
-     * @param array $defaultHelp
-     * @param array $help
-     * @param bool $overwriteConfigInfo
-     * @return array
-     * @author Joachim Doerr
-     */
     public static function mergeHelp(array $defaultHelp, array $help, bool $overwriteConfigInfo = true): array
     {
         if (isset($defaultHelp['config']) && isset($help['config']) && $overwriteConfigInfo) {
@@ -41,11 +26,6 @@ class FragmentVarHelper
         return array_merge($defaultHelp, $help);
     }
 
-    /**
-     * @param $media
-     * @return rex_media|null
-     * @author Joachim Doerr
-     */
     public static function getRexMedia($media): ?rex_media
     {
         $rexMedia = null;
@@ -55,12 +35,6 @@ class FragmentVarHelper
         return $rexMedia;
     }
 
-    /**
-     * @param $media
-     * @param $config
-     * @return MediaElement|null
-     * @author Joachim Doerr
-     */
     public static function getMediaElement($media, $config): ?MediaElement
     {
         if (is_string($media)) {
@@ -79,6 +53,8 @@ class FragmentVarHelper
                 $media->mediaType = 'video';
             } else if (str_contains($media->rexMedia->getType(), 'audio')) {
                 $media->mediaType = 'audio';
+            } else {
+                $media->mediaType = $media->rexMedia->getType();
             }
             // add mediaConfig
             if (count($media->mediaConfig) <= 0 && is_array($config)) {
@@ -89,12 +65,6 @@ class FragmentVarHelper
         return null;
     }
 
-    /**
-     * @param $media
-     * @param $config
-     * @return array|null
-     * @author Joachim Doerr
-     */
     public static function getMediaElementArray($media, $config): ?array
     {
         $mediaElements = [];
@@ -106,5 +76,22 @@ class FragmentVarHelper
             }
         }
         return $mediaElements;
+    }
+
+    public static function getMediaType($media): string
+    {
+        $media = self::getMediaElement($media, []);
+        return $media->mediaType;
+    }
+
+    public static function isMediaVideo($media): bool {
+        return (self::getMediaType($media) == 'video');
+    }
+
+    public static function isMediaImg($media): bool {
+        return (self::getMediaType($media) == 'img');
+    }
+    public static function isMediaAudio($media): bool {
+        return (self::getMediaType($media) == 'audio');
     }
 }

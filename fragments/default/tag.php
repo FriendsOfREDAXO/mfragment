@@ -2,11 +2,10 @@
 /**
  * @var rex_fragment $this
  * @psalm-scope-this rex_fragment
- * https://www.w3.org/TR/html5/embedded-content-0.html#the-img-element
  */
 
-use MFragment\FragmentOutputHelper;
-use MFragment\FragmentVarHelper;
+use MFragment\Helper\FragmentOutputHelper;
+use MFragment\Helper\FragmentVarHelper;
 
 $tagName = $this->getVar('tag');
 $tagTemplate = $this->getVar('template');
@@ -21,6 +20,8 @@ if (!is_null($config = $this->getVar($tagName . 'Config')) && is_array($config) 
 $help = FragmentVarHelper::mergeHelp([
     'help' => "this $tagName fragment will be generate a default html $tagName element",
     $tagName => "$tagName to display (string)",
+    'prefix' => 'custom output before element',
+    'suffix' => 'custom output after element',
     'config' => [
         'attributes' => "attributes of the $tagName element [key=>value] (array)",
         'template' => "individual template for the $tagName element \"$tagTemplate\" you can use 2 placeholders the first for attributes and the second for $tagName content (string)",
@@ -48,7 +49,7 @@ FragmentOutputHelper::viewHelp($this, $help);
 $attributes = FragmentOutputHelper::parseAttributesToString($var['config']['attributes']);
 
 // parse fragment output
-$output = sprintf($var['config']['template'], $attributes, $var[$tagName]);
+$output = ($config['prefix'] ?? '') . sprintf($var['config']['template'], $attributes, $var[$tagName]) . ($config['suffix'] ?? '');
 
 // display debug outputs
 FragmentOutputHelper::viewDebug($this, $var, [

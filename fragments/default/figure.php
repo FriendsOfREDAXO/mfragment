@@ -7,8 +7,8 @@
  */
 
 use MFragment\DTO\MediaElement;
-use MFragment\FragmentOutputHelper;
-use MFragment\FragmentVarHelper;
+use MFragment\Helper\FragmentOutputHelper;
+use MFragment\Helper\FragmentVarHelper;
 
 $help = [
     'info'          => 'this figure fragment will be generate a default html figure element',

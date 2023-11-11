@@ -3,16 +3,17 @@
  * @var rex_fragment $this
  * @psalm-scope-this rex_fragment
  * https://www.w3.org/TR/html5/embedded-content-0.html#the-img-element
+ * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img
  */
 
 use MFragment\DTO\MediaElement;
-use MFragment\FragmentVarHelper;
-use MFragment\MediaOutputHelper;
+use MFragment\Helper\FragmentVarHelper;
+use MFragment\Helper\MediaOutputHelper;
 
 $help = [
+    'mediaManagerType' => 'rex_media_type as url or query parameter for images (string)',
     'config' => [
         'alt' => 'alt attribute text (string)',
-        'mediaManagerType' => 'rex_media_type as url or query parameter for images (string)',
         // 'decodeBase64' => 'decode img to a base64 string (boolean)',
         // 'writeSvg' => 'read and print svg content instead of putting a img (boolean)',
         'titleIsAltAttr' => 'use the media title as img alt attribute (boolean)',
@@ -25,6 +26,8 @@ $config = FragmentVarHelper::mergeDefaultConfigVariables([
     'titleIsAltAttr' => true,
     'showAltAttribute' => true,
     'attributes' => [],
+    'prefix' => $this->getVar('prefix', ''),
+    'suffix' => $this->getVar('suffix', ''),
 ], $this->getVar('config', []));
 
 /** @var null|rex_media $rexMedia */
@@ -52,7 +55,7 @@ if (!is_null($rexMedia)) {
     if (!$config['showAltAttribute']) {
         unset($config['attributes']['alt']);
     }
-    $src = MediaOutputHelper::getManagedMediaFile($rexMedia->getFileName(), $config['mediaType'], (bool) $config['showAsDataSrc']);
+    $src = MediaOutputHelper::getManagedMediaFile($rexMedia->getFileName(), ((isset($config['mediaManagerType']))?$config['mediaManagerType']:null), (bool) $config['showAsDataSrc']);
 }
 
 echo $this->getSubfragment("default/source.php", [

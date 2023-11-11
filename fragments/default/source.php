@@ -3,9 +3,10 @@
  * @var rex_fragment $this
  * @psalm-scope-this rex_fragment
  * https://www.w3.org/TR/html5/embedded-content-0.html#the-img-element
+ * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source
  */
 
-use MFragment\FragmentVarHelper;
+use MFragment\Helper\FragmentVarHelper;
 
 $tagName = $this->getVar('tag', 'source');
 $tagTemplate = $this->getVar('template', '<source %s %s>');
