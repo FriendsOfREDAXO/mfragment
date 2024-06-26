@@ -5,8 +5,9 @@
  * @license MIT
  */
 
-use MForm\Inputs\MFormInputsAbstract;
-use MForm\Inputs\MFormInputsInterface;
+use FriendsOfRedaxo\MForm;
+use FriendsOfRedaxo\MForm\Inputs\MFormInputsAbstract;
+use FriendsOfRedaxo\MForm\Inputs\MFormInputsInterface;
 
 class parallax_setup extends MFormInputsAbstract implements MFormInputsInterface
 {

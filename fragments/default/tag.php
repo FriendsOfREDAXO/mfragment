@@ -4,8 +4,8 @@
  * @psalm-scope-this rex_fragment
  */
 
-use MFragment\Helper\FragmentOutputHelper;
-use MFragment\Helper\FragmentVarHelper;
+use FriendsOfRedaxo\MFragment\Helper\FragmentOutputHelper;
+use FriendsOfRedaxo\MFragment\Helper\FragmentVarHelper;
 
 $tagName = $this->getVar('tag');
 $tagTemplate = $this->getVar('template');

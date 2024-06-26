@@ -5,9 +5,9 @@
  * @license MIT
  */
 
-namespace MFragment\Helper;
+namespace FriendsOfRedaxo\MFragment\Helper;
 
-use MFragment\DTO\MediaElement;
+use FriendsOfRedaxo\MFragment\DTO\MediaElement;
 use rex_media;
 
 class FragmentVarHelper

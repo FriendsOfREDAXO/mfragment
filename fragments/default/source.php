@@ -6,7 +6,7 @@
  * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source
  */
 
-use MFragment\Helper\FragmentVarHelper;
+use FriendsOfRedaxo\MFragment\Helper\FragmentVarHelper;
 
 $tagName = $this->getVar('tag', 'source');
 $tagTemplate = $this->getVar('template', '<source %s %s>');

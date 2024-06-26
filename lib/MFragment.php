@@ -5,6 +5,10 @@
  * @license MIT
  */
 
+namespace FriendsOfRedaxo;
+
+use rex_fragment;
+
 class MFragment
 {
     /**
@@ -31,18 +35,5 @@ class MFragment
             'template' => "<$tagName %s>%s</$tagName>",
             $tagName . 'Config' => $vars
         ]);
-    }
-
-    /**
-     * @description to parse default tags quickly
-     */
-    public static function parseDefault(string $tagName, string $content, array $vars): string
-    {
-        return MFragment::parse("default/$tagName", array_merge([$tagName => $content], $vars));
-    }
-
-    public static function parseUiKit(string $tagName, array $vars): string
-    {
-        return MFragment::parse("uikit/$tagName", $vars);
     }
 }

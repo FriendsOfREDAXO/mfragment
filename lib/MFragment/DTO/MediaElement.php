@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-namespace MFragment\DTO;
+namespace FriendsOfRedaxo\MFragment\DTO;
 
 class MediaElement
 {

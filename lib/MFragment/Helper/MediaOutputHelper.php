@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-namespace MFragment\Helper;
+namespace FriendsOfRedaxo\MFragment\Helper;
 
 use rex;
 use rex_managed_media;

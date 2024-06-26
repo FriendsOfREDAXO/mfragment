@@ -5,9 +5,10 @@
  * @license MIT
  */
 
-use MForm\DTO\MFormInputsConfig;
-use MForm\Inputs\MFormInputsAbstract;
-use MForm\Inputs\MFormInputsInterface;
+use FriendsOfRedaxo\MForm;
+use FriendsOfRedaxo\MForm\DTO\MFormInputsConfig;
+use FriendsOfRedaxo\MForm\Inputs\MFormInputsAbstract;
+use FriendsOfRedaxo\MForm\Inputs\MFormInputsInterface;
 
 class section_setup extends MFormInputsAbstract implements MFormInputsInterface
 {

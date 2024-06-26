@@ -5,10 +5,10 @@
  * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video
  */
 
-use MFragment\DTO\MediaElement;
-use MFragment\Helper\FragmentOutputHelper;
-use MFragment\Helper\FragmentVarHelper;
-use MFragment\Helper\MediaOutputHelper;
+use FriendsOfRedaxo\MFragment\DTO\MediaElement;
+use FriendsOfRedaxo\MFragment\Helper\FragmentOutputHelper;
+use FriendsOfRedaxo\MFragment\Helper\FragmentVarHelper;
+use FriendsOfRedaxo\MFragment\Helper\MediaOutputHelper;
 
 $tagName = $this->getVar('tag', 'video');
 $tagTemplate = $this->getVar('template', '<video %s>%s</video>');

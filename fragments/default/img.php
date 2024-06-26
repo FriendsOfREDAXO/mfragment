@@ -6,9 +6,9 @@
  * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img
  */
 
-use MFragment\DTO\MediaElement;
-use MFragment\Helper\FragmentVarHelper;
-use MFragment\Helper\MediaOutputHelper;
+use FriendsOfRedaxo\MFragment\DTO\MediaElement;
+use FriendsOfRedaxo\MFragment\Helper\FragmentVarHelper;
+use FriendsOfRedaxo\MFragment\Helper\MediaOutputHelper;
 
 $help = [
     'mediaManagerType' => 'rex_media_type as url or query parameter for images (string)',
