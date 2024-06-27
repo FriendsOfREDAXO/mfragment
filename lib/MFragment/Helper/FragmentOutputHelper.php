@@ -13,7 +13,7 @@ use rex_string;
 
 class FragmentOutputHelper
 {
-    public static function eachFragmentParts($fragmentParts, string $default = ''): string
+    public static function parseEachFragmentParts($fragmentParts, string $default = ''): string
     {
         $output = '';
         $fragmentParts = (is_array($fragmentParts)) ? array_filter($fragmentParts) : $fragmentParts;

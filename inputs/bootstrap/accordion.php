@@ -15,7 +15,7 @@ class accordion extends MFormInputsAbstract implements MFormInputsInterface
         'id' => 'accordion',
         'cke5_profile' => 'main_default'
     ];
-    public function generateInputs(): \FriendsOfRedaxo\MForm
+    public function generateInputsForm(): \FriendsOfRedaxo\MForm
     {
         return MForm::factory()
             ->setShowWrapper(false)
@@ -25,7 +25,7 @@ class accordion extends MFormInputsAbstract implements MFormInputsInterface
                     ->addTextAreaField("text", ['full' => true, 'placeholder' => 'Fließtext Accordioninhalt', 'data-lang' => \Cke5\Utils\Cke5Lang::getUserLang(), 'data-profile' => $this->config['cke5_profile'], 'class' => 'cke5-editor'])
                     ->addToggleCheckboxField('show', [1 => 'Accordion-Element initial geöffnet'], ['full' => true])
                     , ['style' => 'margin-top:-20px!important;'])
-                , false, true, ['btn_text' => 'Accordion (Elemente) hinzufügen', 'btn_class' => 'btn-default', 'confirm_delete_msg' => 'Accordion Element löschen?']
+                , false, true, ['btn_text' => 'Accordion hinzufügen', 'btn_class' => 'btn-default', 'confirm_delete_msg' => 'Accordion Element löschen?']
             );
     }
 }

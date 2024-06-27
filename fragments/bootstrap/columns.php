@@ -25,7 +25,7 @@ foreach ($columns as $column) {
         $colOutput .= '<div' . $class . $attributes . '>';
         if (is_array($column['content'])) {
             foreach ($column['content'] as $columnContent) {
-                $colOutput .= FragmentOutputHelper::eachFragmentParts($columnContent);
+                $colOutput .= FragmentOutputHelper::parseEachFragmentParts($columnContent);
             }
         } else if (is_string($column['content'])) {
             $colOutput .= $column['content'];

@@ -12,7 +12,7 @@ $givenContainerClass = $this->getVar('containerClass');
 $givenSectionAttributes = $this->getVar('sectionAttributes');
 $givenContainerAttributes = $this->getVar('containerAttributes');
 
-$output = FragmentOutputHelper::eachFragmentParts($this->getVar('content'));
+$output = FragmentOutputHelper::parseEachFragmentParts($this->getVar('content'));
 $darkLayout = $this->getVar('darkLayout', false);
 
 $showSection = $this->getVar('showSection', true);

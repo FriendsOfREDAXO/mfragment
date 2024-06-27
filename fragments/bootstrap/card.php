@@ -20,9 +20,9 @@ $givenHeader = $this->getVar('header');
 $givenBody = $this->getVar('content');
 $givenFooter = $this->getVar('footer');
 
-$headlineOutput = FragmentOutputHelper::eachFragmentParts($givenHeader);
-$bodyOutput = FragmentOutputHelper::eachFragmentParts($givenBody);
-$footerOutput = FragmentOutputHelper::eachFragmentParts($givenFooter);
+$headlineOutput = FragmentOutputHelper::parseEachFragmentParts($givenHeader);
+$bodyOutput = FragmentOutputHelper::parseEachFragmentParts($givenBody);
+$footerOutput = FragmentOutputHelper::parseEachFragmentParts($givenFooter);
 
 $showCardHeader = (!empty($headlineOutput));
 $showCardBody = (!empty($bodyOutput));
