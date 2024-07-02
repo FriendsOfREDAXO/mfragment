@@ -3,7 +3,7 @@
     <?php if (is_array($nav) && sizeof($nav) > 0):
         foreach ($nav as $item) :
             $catObj = rex_category::get($item['catId']);
-            if ($catObj instanceof rex_category && str_contains($catObj->getValue('cat_menu_type'),'|'.$this->getVar('catMenuTypeId', 2).'|')) : ?>
+            if ($catObj instanceof rex_category && str_contains($catObj->getValue('cat_menu_type'),'|'.$this->getVar('catMenuTypeId', 1).'|')) : ?>
                 <li class="<?=$this->getVar('liClass', 'nav-item')?> <?=($item['hasChildren'])?'dropdown dropdown-hover':''?> <?=($item['active']||$item['current'])?'active':''?>" <?=$this->getVar('liAttributes', '')?>>
                     <?php
                     if ($item['hasChildren']):

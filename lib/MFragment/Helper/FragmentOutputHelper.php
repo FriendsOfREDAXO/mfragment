@@ -28,13 +28,16 @@ class FragmentOutputHelper
                         if (is_array($fragmentPart)) {
                             // tag
                             $tag = (!empty($fragmentPart['tag'])) ? $fragmentPart['tag'] : (($key === 'subHeadline') ? 'h6' : 'h5');
-                            if ($key === 'lead') $tag = 'p';
                             // class
                             $class = (!empty($fragmentPart['class']) && is_array($fragmentPart['class'])) ? ' class="' . implode(' ', $fragmentPart['class']) . '"' : '';
                             // attributes
                             $attributes = (!empty($fragmentPart['attributes']) && is_array($fragmentPart['attributes'])) ? ' ' . rex_string::buildAttributes($fragmentPart['attributes']) : '';
                             // output
-                            $output .= '<' . $tag . $class . $attributes . '>' . $fragmentPart['text'] . '</' . $tag . '>';
+                            if ($fragmentPart['type'] === 'html') {
+                                $output .= str_replace($fragmentPart['search'], $fragmentPart['replace'], $fragmentPart['text']);
+                            } else {
+                                $output .= '<' . $tag . $class . $attributes . '>' . $fragmentPart['text'] . '</' . $tag . '>';
+                            }
                         } else if (is_string($fragmentPart) && !empty($fragmentPart)) {
                             $output .= $fragmentPart;
                         }

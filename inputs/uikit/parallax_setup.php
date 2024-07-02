@@ -84,7 +84,7 @@ class parallax_setup extends MFormInputsAbstract implements MFormInputsInterface
         ]
     ];
 
-    public function generateInputs(): MForm
+    public function generateInputsForm(): MForm
     {
         if (!isset($this->config['show']['parallax']) || !$this->config['show']['parallax']) {
             return $this->mform;

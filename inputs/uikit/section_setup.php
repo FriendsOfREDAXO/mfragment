@@ -6,7 +6,6 @@
  */
 
 use FriendsOfRedaxo\MForm;
-use FriendsOfRedaxo\MForm\DTO\MFormInputsConfig;
 use FriendsOfRedaxo\MForm\Inputs\MFormInputsAbstract;
 use FriendsOfRedaxo\MForm\Inputs\MFormInputsInterface;
 
@@ -75,7 +74,7 @@ class section_setup extends MFormInputsAbstract implements MFormInputsInterface
         ]
     ];
 
-    public function generateInputs(): \MForm
+    public function generateInputsForm(): \MForm
     {
         $MForm = new MForm();
         $sectionMForm = new MForm();
@@ -108,11 +107,11 @@ class section_setup extends MFormInputsAbstract implements MFormInputsInterface
             // add background img
             $backgroundImageMForm = MForm::factory()->addMediaField("{$this->config['id']}.section.bg_image", ['label' => 'Bild']);
             // get parallax input for bg img
-            $backgroundImageMForm->addForm(MForm::factory()->addInputs('uikit/parallax_setup', new MFormInputsConfig($this->config['section_id']. '_bg', [
+            $backgroundImageMForm->addForm(MForm::factory()->addInputs($this->config['section_id'], 'uikit/parallax_setup', ['_bg', [
                 'parallax_x' => false,
                 'parallax_y' => false,
                 'parallax_bgx' => false,
-            ])));
+            ]]));
             // add bg img parallax form
             $sectionMForm->addForm(MForm::factory()
                 ->addCollapseElement('', $backgroundImageMForm, false, true, ['data-group-collapse-id' => 'collapse_bg_image'])
@@ -134,11 +133,11 @@ class section_setup extends MFormInputsAbstract implements MFormInputsInterface
 
         if ($this->config['show']['section_parallax']) {
             // add parallax section form
-            $MForm->addFieldsetArea($this->config['fieldset']['parallax'], MForm::factory()->addInputs('uikit/parallax_setup', new MFormInputsConfig($this->config['id'], [
+            $MForm->addFieldsetArea($this->config['fieldset']['parallax'], MForm::factory()->addInputs($this->config['id'],'uikit/parallax_setup', [[
                 'parallax_x' => false,
                 'parallax_bgx' => false,
                 'parallax_bgy' => false,
-            ])));
+            ]]));
         }
 
         return $MForm;
