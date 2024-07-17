@@ -85,7 +85,7 @@ if (isset($givenAccordion) && is_array($givenAccordion) && count($givenAccordion
                 <'.$headingType.' class="'.implode(' ', $accordionHeaderClass).'" id="heading-REX_SLICE_ID-' . $key . '">
                     <'.$linkType.' class="'.implode(' ', $accordionHeaderTitleClass).' fs-3 ' . $collapsed . '" type="button" data-bs-toggle="collapse" '.$attr.'
                             data-bs-target="#collapse-REX_SLICE_ID-' . $key . '" aria-expanded="false" aria-controls="collapse-REX_SLICE_ID-' . $key . '">
-                        ' . $accordionItem['header'] . '
+                        ' . $accordionItem['accordionTitle'] . '
                     </'.$linkType.'>
                 </'.$headingType.'>
                 <div id="collapse-REX_SLICE_ID-' . $key . '" class="'.implode(' ', $accordionCollapseClass).'  ' . $collapse . '" aria-labelledby="heading-REX_SLICE_ID-' . $key . '" data-bs-parent="#accordion-REX_SLICE_ID-'.$uniqueKey.'">

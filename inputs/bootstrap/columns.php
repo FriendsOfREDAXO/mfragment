@@ -70,6 +70,7 @@ class columns extends MFormInputsAbstract implements MFormInputsInterface
             'muted' => 'Muted',
             'transparent' => 'Transparent'
         ],
+        'configKeys' => ['bgColor', 'col', 'margin', 'padding', 'border', 'verticalAlign', 'horizontalAlign']
     ];
 
     public function generateInputsForm(): MForm
@@ -77,7 +78,7 @@ class columns extends MFormInputsAbstract implements MFormInputsInterface
         return MForm::factory()->setShowWrapper(false)
             ->addRepeaterElement($this->config['id'], MForm::factory()
                 ->addTabElement($this->config['contentTabTitle'], self::getContentFrom(), true)
-                ->addTabElement($this->config['configTabTitle'], self::getConfigForm(null, ['bgColor', 'col', 'margin', 'padding', 'border', 'verticalAlign', 'horizontalAlign']), false)
+                ->addTabElement($this->config['configTabTitle'], self::getConfigForm())
             , $this->config['open'], true, ['btn_text' => $this->config['btnLabel'], 'btn_class' => 'btn-default', 'confirm_delete_msg' => $this->config['confirmDeleteMessage']]);
     }
 }

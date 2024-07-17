@@ -15,10 +15,10 @@ class card extends MFormInputsAbstract implements MFormInputsInterface
         'id' => 'card',
         'cke5LeadProfile' => 'main_light',
         'cke5TextProfile' => 'main_default',
-        'headerAttributes' => ['label' => 'Headline Titel', 'type' => 'text'],
+        'headlineAttributes' => ['label' => 'Headline Titel', 'type' => 'text'],
         'leadAttributes' => ['label' => 'Leadtext'],
         'textAttributes' => ['label' => 'Fließtext'],
-        'header' => true,
+        'headline' => true,
         'lead' => true,
         'text' => true
     ];
@@ -30,10 +30,12 @@ class card extends MFormInputsAbstract implements MFormInputsInterface
         $mform = MForm::factory()
             ->setShowWrapper(false);
 
-        if ($this->config['header'] === true && (!empty($this->config['headerAttributes']) && (!isset($this->config['headerAttributes']['hide']) || !$this->config['headerAttributes']['hide']))) {
-            $addField = (isset($this->config['headerAttributes']['type']) && $this->config['headerAttributes']['type'] === 'text') ? 'addTextField' : 'addTextAreaField';
-            // text oder textarea
-            $mform->$addField($id . 'header', $this->config['headerAttributes']);
+        if ($this->config['headline'] === true && (!empty($this->config['headlineAttributes']) && (!isset($this->config['headlineAttributes']['hide']) || !$this->config['headlineAttributes']['hide']))) {
+            $addField = (isset($this->config['headlineAttributes']['type']) && $this->config['headlineAttributes']['type'] === 'text') ? 'addTextField' : 'addTextAreaField';
+            // text oder textarea look at line 34
+            // addTextAreaField
+            // addTextField
+            $mform->$addField($id . 'headline', $this->config['headlineAttributes']);
         }
 
         foreach (['cke5LeadProfile' => 'lead', 'cke5TextProfile' => 'text'] as $profile => $attributesKey) {
@@ -46,7 +48,9 @@ class card extends MFormInputsAbstract implements MFormInputsInterface
                     $this->config[$attributesKey . 'Attributes']['class'] =  ((!empty($this->config['class'])) ? $this->config['class'] : '') . ' cke5-editor';
                 }
                 if ($this->config[$attributesKey] === true) {
-                    // text oder textarea
+                    // text oder textarea look at line 44
+                    // addTextAreaField
+                    // addTextField
                     $mform->$addField($id . $attributesKey, $this->config[$attributesKey . 'Attributes']);
                 }
             }
