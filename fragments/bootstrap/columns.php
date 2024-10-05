@@ -2,48 +2,52 @@
 /**
  * @var rex_fragment $this
  * @psalm-scope-this rex_fragment
- * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio
  */
 
-use FriendsOfRedaxo\MFragment\Helper\FragmentOutputHelper;
+use FriendsOfRedaxo\MFragment\Core\MFragmentProcessor;
 
-$givenRowClass = $this->getVar('rowClass');
-$givenRowAttributes = $this->getVar('rowAttributes');
-$columns = $this->getVar('columns');
-$colOutput = '';
+$config = $this->getVar('config', []);
+$columns = $this->getVar('columns', []);
 
-$defaultColClass = [
-    'class' => '',
-    'margin' => '',
-    'padding' => '',
+$defaultConfig = [
+    'tag' => 'div',
+    'attributes' => ['class' => ['default' => 'row']],
 ];
 
+$config = array_replace_recursive($defaultConfig, $config);
+
+$columnElements = [];
+
 foreach ($columns as $column) {
-    $class = (!empty($column['colClass']) && is_array($column['colClass'])) ? ' class="'.implode(' ', $column['colClass']).'"' : '';
-    $attributes = (!empty($fragmentPart['attributes']) && is_array($fragmentPart['attributes'])) ? ' ' . rex_string::buildAttributes($fragmentPart['attributes']) : '';
-    if (!empty($column['content'])) {
-        $colOutput .= '<div' . $class . $attributes . '>';
-        if (is_array($column['content'])) {
-            foreach ($column['content'] as $columnContent) {
-                $colOutput .= FragmentOutputHelper::parseEachFragmentParts($columnContent);
-            }
-        } else if (is_string($column['content'])) {
-            $colOutput .= $column['content'];
-        }
-        $colOutput .= '</div>';
+    $columnConfig = $column['config'] ?? [];
+    $columnContent = $column['content'] ?? '';
+
+    $defaultColumnConfig = [
+        'tag' => 'div',
+        'attributes' => ['class' => ['default' => 'col']],
+    ];
+
+    $columnConfig = array_replace_recursive($defaultColumnConfig, $columnConfig);
+
+    // Ensure 'class' is always an array
+    if (!isset($columnConfig['attributes']['class'])) {
+        $columnConfig['attributes']['class'] = ['col'];
+    } elseif (is_string($columnConfig['attributes']['class'])) {
+        $columnConfig['attributes']['class'] = explode(' ', $columnConfig['attributes']['class']);
     }
+
+    $columnElements[] = [
+        'tag' => $columnConfig['tag'],
+        'attributes' => $columnConfig['attributes'],
+        'content' => $columnContent
+    ];
 }
 
-$rowClass = array_merge([
-    'class' => 'row',
-    'margin' => '',
-    'padding' => '',
-], (is_array($givenRowClass) ? $givenRowClass : []));
-$class = (!empty($rowClass)) ? ' class="' . implode(' ', $rowClass) . '"' : '';
-$attributes = (!empty($givenRowAttributes) && is_array($givenRowAttributes)) ? ' ' . rex_string::buildAttributes($givenRowAttributes) : '';
+$output = [
+    'tag' => $config['tag'],
+    'attributes' => $config['attributes'],
+    'content' => $columnElements
+];
 
-echo '
-<div' . $class . $attributes . '>
-    ' . $colOutput . '
-</div>
-';
+$processor = new MFragmentProcessor();
+echo $processor->process($output);

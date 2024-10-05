@@ -7,10 +7,41 @@
 
 namespace FriendsOfRedaxo;
 
+use FriendsOfRedaxo\MFragment\Core\MFragmentProcessor;
+use FriendsOfRedaxo\MFragment\MFragmentElements;
+use rex_factory_trait;
 use rex_fragment;
 
-class MFragment
+class MFragment extends MFragmentElements
 {
+    use rex_factory_trait;
+
+    private bool $debug;
+
+    function __construct(?string $theme = null, bool $debug = false)
+    {
+        if (!is_null($theme)) $this->setTheme($theme);
+        $this->setDebug($debug);
+    }
+
+    public static function factory(?string $theme = null, bool $debug = false): MFragment
+    {
+        $class = static::getFactoryClass();
+        return new $class($theme, $debug);
+    }
+
+    public function setDebug(bool $debug): MFragment
+    {
+        $this->debug = $debug;
+        return $this;
+    }
+
+    public function show(): string
+    {
+        $processor = new MFragmentProcessor();
+        return $processor->process($this);
+    }
+
     /**
      * @description  filename can be with or without .php extension
      */
@@ -25,15 +56,11 @@ class MFragment
     }
 
     /**
-     * @description to parse html tags quickly
+     * @description Parse content using ContentProcessor
      */
-    public static function parseHtml(string $tagName, string $content, array $vars): string
+    public static function process($content): string
     {
-        return MFragment::parse("default/tag", [
-            'tag' => $tagName,
-            $tagName => $content,
-            'template' => "<$tagName %s>%s</$tagName>",
-            $tagName . 'Config' => $vars
-        ]);
+        $processor = new MFragmentProcessor();
+        return $processor->process($content);
     }
 }

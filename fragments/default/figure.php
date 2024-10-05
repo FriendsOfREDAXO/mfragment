@@ -2,108 +2,116 @@
 /**
  * @var rex_fragment $this
  * @psalm-scope-this rex_fragment
- * https://www.w3.org/TR/html5/sections.html#the-figure-element
- * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure
  */
 
-use FriendsOfRedaxo\MFragment\DTO\MediaElement;
-use FriendsOfRedaxo\MFragment\Helper\FragmentOutputHelper;
-use FriendsOfRedaxo\MFragment\Helper\FragmentVarHelper;
+use FriendsOfRedaxo\MFragment\Core\MFragmentProcessor;
+use FriendsOfRedaxo\MFragment\Helper\MFragmentHelper;
+use FriendsOfRedaxo\MFragment\Helper\MFragmentMediaHelper;
 
-$help = [
-    'info'          => 'this figure fragment will be generate a default html figure element',
-    'media'         => 'rex_media which will output as an media figure element (rex_media|string|MFragment\DTOMedia\Element|array)',
-    'quote'         => 'some text to display as a blockquote figure element (string)',
-    'figureOutput'  => 'this output string will be used primary for output (string)',
-    'figcaption'    => 'figcaption text to display as description (string)',
-    'config'        => [
-        'attributes'            => 'attributes of the figure element (array<key,value>)',
-        'template'              => 'individual template for the figure element "<figure %s>%s%s</figure>" (string)',
-        'figCaptionFirst'       => 'in case of true the figcaption will display before (boolean)',
-        'mediaTitleIsCaption'   => 'use the media title as default caption content (boolean)',
-        'help'                  => 'to show help information (boolean)',
-        'debug'                 => 'to view the debug information (boolean)',
-    ],
-    'mediaConfig'       => 'will be setup the configuration for media element fragment (array)',
-    'quoteConfig'       => 'will be setup the configuration for quote element fragment (array)',
-    'figcaptionConfig'  => 'will be setup the configuration for the figcaption element fragment (array)',
-];
+$media = $this->getVar('media');
+$alt = $this->getVar('alt', '');
+$caption = $this->getVar('caption', []);
+$config = $this->getVar('config', []);
+if (!$media instanceof rex_media) {
+    return '';
+}
 
-// read variables
-$var = [
-    'media'             => $this->getVar('media'),
-    'quote'             => $this->getVar('quote'),
-    'element'           => $this->getVar('element'),
-    'figureOutput'      => $this->getVar('figureOutput', ''),
-    'figcaption'        => $this->getVar('figcaption'),
-    'config'            => $this->getVar('config', []),
-    'mediaConfig'       => $this->getVar('mediaConfig'),
-    'quoteConfig'       => $this->getVar('quoteConfig'),
-    'figcaptionConfig'  => $this->getVar('figcaptionConfig'),
-];
+$figureConfig = $config['figure'] ?? ['attributes' => ['class' => ['default' => 'figure']]];
+$mediaConfig = $config['media'] ?? [];
+$captionConfig = $config['caption'] ?? [];
 
-// set default config
-$var['config'] = FragmentVarHelper::mergeDefaultConfigVariables([
-    'template'              => '<figure %s>%s%s</figure>',
-    'mediaTitleIsCaption'   => false,
-    'attributes'            => []
-], $var['config']);
+// Generate unique IDs for accessibility attributes
+$figureId = 'figure-' . uniqid();
+$imageId = 'image-' . uniqid();
+$captionId = 'caption-' . uniqid();
 
-// display help
-FragmentOutputHelper::viewHelp($this, $help);
+// Add ARIA attributes to the figure element
+$figureConfig['attributes'] = array_merge($figureConfig['attributes'] ?? [], [
+    'role' => 'group',
+    'aria-labelledby' => $captionId
+]);
 
-$figureOutput = $var['figureOutput'];
-$attributes = '';
-$figcaption = '';
-
-if (empty($figureOutput)) {
-// create media figure element
-    if (!is_null($var['media']) && is_array($var['media'] = FragmentVarHelper::getMediaElementArray($var['media'], $var['mediaConfig'])) && count($var['media']) > 0) {
-        /** @var MediaElement $mediaElement */
-        foreach ($var['media'] as $mediaElement) {
-            if ($mediaElement instanceof MediaElement) {
-                $fragment = new rex_fragment([
-                    'tag' => $mediaElement->mediaType,
-                    'media' => $mediaElement,
-                    'config' => $mediaElement->mediaConfig,
-                ]);
-                $figureOutput .= $fragment->parse("default/$mediaElement->mediaType.php");
-            } else {
-                if ((isset($fragment->debug) && $fragment->debug === true) || (isset($config['debug']) && $config['debug'] === true)) {
-                    rex_logger::factory()->debug("\"" . var_dump($mediaElement) . "\" is not instanceof MediaElement");
-                }
-            }
-        }
-        // get title from latest media element for figcaption content
-        if ($mediaElement instanceof MediaElement && (!empty($mediaElement->title) && empty($var['figcaption'])) && $var['config']['mediaTitleIsCaption']) {
-            $var['figcaption'] = $mediaElement->title;
-        }
-    // create quote figure element
-    } else if (!empty($var['quote'])) {
-        $figureOutput = $this->getSubfragment("default/quote.php");
+if (!function_exists('createSVGPlaceholder')) {
+    function createSVGPlaceholder($width, $height, $color = '#f0f0f0'): string
+    {
+        $svg = <<<SVG
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {$width} {$height}">
+        <rect width="100%" height="100%" fill="{$color}"/>
+    </svg>
+    SVG;
+        return 'data:image/svg+xml,' . rawurlencode($svg);
     }
 }
 
-// parse attributes to string
-$attributes = FragmentOutputHelper::parseAttributesToString($var['config']['attributes']);
+$managedMedia = MFragmentMediaHelper::getManagedMediaImage($media, $mediaConfig['mediaManagerType'] ?? 'default');
+$managedMediaAttributes = $managedMedia['attributes'] ?? [];
+unset($managedMedia['attributes']);
 
-// create figcaption element
-if (!empty($var['figcaption'])) $figcaption = $this->getSubfragment("default/figcaption.php");
-
-// create output
-if (isset($var['config']['figCaptionFirst']) && $var['config']['figCaptionFirst'] === true) {
-    $output = sprintf($var['config']['template'], $attributes, $figcaption, $figureOutput);
-} else {
-    $output = sprintf($var['config']['template'], $attributes, $figureOutput, $figcaption);
-}
-
-// display debug outputs
-FragmentOutputHelper::viewDebug($this, $var, [
-    'attributes'    => $attributes,
-    'figureOutput'  => $figureOutput,
-    'figcaption'    => $figcaption,
-    'output'        => $output,
+$imgAttributes = array_merge($mediaConfig['attributes'] ?? [], $managedMediaAttributes, $managedMedia, [
+    'alt' => $alt,
+    'id' => $imageId
 ]);
 
-// print output
-echo $output;
+// Add lazy loading if configured
+if (!empty($mediaConfig['lazyLoading']) && $mediaConfig['lazyLoading'] === true && !rex::isBackend()) {
+    $imgAttributes['class']['lazy'] = 'lazy';
+    $imgAttributes['src'] = createSVGPlaceholder(($managedMediaAttributes['width'] ?? 800), ($managedMediaAttributes['height'] ?? 800), $color = '#f0f0f0');
+
+}
+
+$figureContent = [
+    MFragmentHelper::createTag('img', null, ['attributes' => $imgAttributes])
+];
+
+// TODO: optionally retrieve title, description, author, copyright from media pool
+if (!empty($caption)) {
+    $captionContent = [];
+    if (!empty($caption['title'])) {
+        $captionContent[] = MFragmentHelper::createTag('strong', $caption['title'], ['attributes' => ['id' => $captionId, 'class' => 'title']]);
+    }
+    if (!empty($caption['description'])) {
+        $captionContent[] = MFragmentHelper::createTag('span', $caption['description'], ['attributes' => ['class' => ['default' => 'description']]]);
+    }
+    if (!empty($caption['author'])) {
+        $captionContent[] = MFragmentHelper::createTag('cite', $caption['author'], ['attributes' => ['class' =>  ['default' => 'author']]]);
+    }
+    if (!empty($caption['copyright'])) {
+        $captionContent[] = MFragmentHelper::createTag('small', "© {$caption['copyright']}", ['attributes' => ['class' => ['default' => 'copyright']]]);
+    }
+
+    if (!empty($captionContent)) {
+        $captionAttributes = array_merge($captionConfig['attributes'] ?? [], [
+            'id' => $captionId,
+            'aria-describedby' => $imageId
+        ]);
+        $figureContent[] = MFragmentHelper::createTag('figcaption', $captionContent, ['attributes' => $captionAttributes]);
+    }
+}
+
+$figure = MFragmentHelper::createTag('figure', $figureContent, ['attributes' => $figureConfig['attributes']]);
+
+// TODO!
+if (!empty($config['lightbox'])) {
+    $lightboxClass = $config['lightboxClass'] ?? 'lightbox';
+    $figure = MFragmentHelper::createTag('a', $figure, [
+        'attributes' => [
+            'href' => $media->getUrl(),
+            'class' => ['lightbox' => $lightboxClass],
+            'data-lightbox' => 'gallery',
+            'data-title' => $caption['title'] ?? $alt,
+            'aria-label' => 'Öffne Bild in Großansicht',
+            'role' => 'button'
+        ]
+    ]);
+} elseif (!empty($config['link'])) {
+    $url = rex_getUrl($config['link']);
+    $figure = MFragmentHelper::createTag('a', $figure, [
+        'attributes' => [
+            'href' => $url,
+            'aria-label' => 'Mehr Informationen zu ' . ($caption['title'] ?? $alt)
+        ]
+    ]);
+}
+
+$processor = new MFragmentProcessor();
+echo $processor->process($figure);

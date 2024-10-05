@@ -2,32 +2,47 @@
 /**
  * @var rex_fragment $this
  * @psalm-scope-this rex_fragment
- * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio
  */
 
-use FriendsOfRedaxo\MFragment\Helper\FragmentOutputHelper;
+use FriendsOfRedaxo\MFragment\Core\MFragmentProcessor;
+use FriendsOfRedaxo\MFragment\Helper\MFragmentHelper;
 
-$givenSectionClass = $this->getVar('sectionClass');
-$givenContainerClass = $this->getVar('containerClass');
-$givenSectionAttributes = $this->getVar('sectionAttributes');
-$givenContainerAttributes = $this->getVar('containerAttributes');
+$config = $this->getVar('config', []);
+$content = $this->getVar('content', '');
 
-$output = FragmentOutputHelper::parseEachFragmentParts($this->getVar('content'));
-$darkLayout = $this->getVar('darkLayout', false);
+$showSection = $config['showSection'] ?? true;
+$showContainer = $config['showContainer'] ?? true;
+$darkLayout = $config['darkLayout'] ?? false;
 
-$showSection = $this->getVar('showSection', true);
-$showContainer = $this->getVar('showContainer', true);
+$sectionConfig = $config['section'] ?? [];
+$containerConfig = $config['container'] ?? [];
 
-$containerClass = array_merge([
-    'container' => 'container-fluid',
-], (is_array($givenContainerClass)) ? $givenContainerClass : []);
-$sectionClass = array_merge([
-], (is_array($givenSectionClass)) ? $givenSectionClass : []);
-$sectionAttributes = (!empty($givenSectionAttributes) && is_array($givenSectionAttributes)) ? ' ' . rex_string::buildAttributes($givenSectionAttributes) : '';
-$containerAttributes = (!empty($givenContainerAttributes) && is_array($givenContainerAttributes)) ? ' ' . rex_string::buildAttributes($givenContainerAttributes) : '';
-?>
-<?php if ($showSection): ?><section class="<?= implode(' ', $sectionClass) . (($darkLayout) ? ' inverted' : '') ?>"<?=$sectionAttributes?>><?php endif; ?>
-    <?php if ($showContainer): ?><div class="<?= implode(' ', $containerClass) ?>"<?=$containerAttributes?>><?php endif; ?>
-        <?= $output ?>
-    <?php if ($showContainer): ?></div><?php endif; ?>
-<?php if ($showSection): ?></section><?php endif; ?>
+$sectionClass = $sectionConfig['attributes']['class'] ?? ['section-wrapper'];
+$containerClass = $containerConfig['attributes']['class'] ?? ['container'];
+
+$sectionAttributes = $sectionConfig['attributes'] ?? [];
+$sectionAttributes['class'] = $sectionClass;
+
+$containerAttributes = $containerConfig['attributes'] ?? [];
+$containerAttributes['class'] = $containerClass;
+
+$sectionContent = [];
+
+if ($showContainer) {
+    $containerContent = MFragmentHelper::createTag('div', $content, [
+        'attributes' => $containerAttributes
+    ]);
+} else {
+    $containerContent = $content;
+}
+
+if ($showSection) {
+    $sectionContent = MFragmentHelper::createTag('section', $containerContent, [
+        'attributes' => $sectionAttributes
+    ]);
+} else {
+    $sectionContent = $containerContent;
+}
+
+$processor = new MFragmentProcessor();
+echo $processor->process($sectionContent);

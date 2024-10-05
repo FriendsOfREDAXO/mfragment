@@ -2,68 +2,57 @@
 /**
  * @var rex_fragment $this
  * @psalm-scope-this rex_fragment
- * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio
  */
 
-use FriendsOfRedaxo\MFragment\Helper\FragmentOutputHelper;
+use FriendsOfRedaxo\MFragment\Core\MFragmentProcessor;
+use FriendsOfRedaxo\MFragment\Helper\MFragmentHelper;
 
-$showCardHeader = false;
-$showCardBody = false;
-$showCardFooter = false;
+$config = $this->getVar('config', []);
+$content = $this->getVar('content', []);
 
-$givenCardClass = $this->getVar('cardClass');
-$givenCardHeaderClass = $this->getVar('headerClass');
-$givenCardBodyClass = $this->getVar('bodyClass');
-$givenCardFooterClass = $this->getVar('footerClass');
+$cardConfig = $config['card'] ?? [];
+$cardAttributes = $cardConfig['attributes'] ?? [];
 
-$givenHeader = $this->getVar('header');
-$givenBody = $this->getVar('content');
-$givenFooter = $this->getVar('footer');
+// Default Bootstrap card classes
+$cardAttributes = array_merge([
+    'class' => ['card'],
+], $cardAttributes);
 
-$headlineOutput = FragmentOutputHelper::parseEachFragmentParts($givenHeader);
-$bodyOutput = FragmentOutputHelper::parseEachFragmentParts($givenBody);
-$footerOutput = FragmentOutputHelper::parseEachFragmentParts($givenFooter);
+$cardContent = [];
 
-$showCardHeader = (!empty($headlineOutput));
-$showCardBody = (!empty($bodyOutput));
-$showCardFooter = (!empty($footerOutput));
+$defaultConfig = [
+    'header' => [
+        'tag' => 'div',
+        'attributes' => ['class' => ['default' => 'card-header', 'border' => 'border-solid']]
+    ],
+    'body' => [
+        'tag' => 'div',
+        'attributes' => ['class' => ['default' => 'card-body']]
+    ],
+    'footer' => [
+        'tag' => 'div',
+        'attributes' => ['class' => ['default' => 'card-footer']]
+    ]
+];
 
-$cardClass = array_merge([
-    'class' => 'card',
-    'margin' => '',
-    'padding' => '',
-], (is_array($givenCardClass) ? $givenCardClass : []));
-$cardHeaderClass = array_merge([
-    'class' => 'card-header',
-    'margin' => '',
-    'padding' => '',
-], (is_array($givenCardHeaderClass) ? $givenCardHeaderClass : []));
-$cardBodyClass = array_merge([
-    'class' => 'card-body',
-    'margin' => '',
-    'padding' => '',
-], (is_array($givenCardBodyClass) ? $givenCardBodyClass : []));
-$cardFooterClass = array_merge([
-    'class' => 'card-footer',
-    'margin' => '',
-    'padding' => '',
-], (is_array($givenCardFooterClass) ? $givenCardFooterClass: []));
+if (is_array($content)) {
+    foreach ($content as $key => $partData) {
+        if (is_array($partData)) {
+            $defaultPart = $defaultConfig[$key] ?? [];
+            $partTag = $partData['tag'] ?? $defaultPart['tag'] ?? 'div';
 
-?>
-<div class="<?= implode(' ', $cardClass) ?>">
-    <?php if ($showCardHeader): ?>
-    <div class="<?= implode(' ', $cardHeaderClass) ?>">
-        <?= $headlineOutput ?>
-    </div>
-    <?php endif; ?>
-    <?php if ($showCardBody): ?>
-    <div class="<?= implode(' ', $cardBodyClass) ?>">
-        <?= $bodyOutput ?>
-    </div>
-    <?php endif; ?>
-    <?php if ($showCardFooter): ?>
-    <div class="<?= implode(' ', $cardFooterClass) ?>">
-        <?= $footerOutput ?>
-    </div>
-    <?php endif; ?>
-</div>
+            $attributes = MFragmentHelper::mergeConfigs($defaultPart['attributes'] ?? [], $partData['attributes'] ?? []);
+
+            if (!empty($partData['content'])) {
+                $cardContent[] = MFragmentHelper::createTag($partTag, $partData['content'], ['attributes' => $attributes]);
+            }
+        }
+    }
+} else if (is_string($content)) {
+    $cardContent = $content;
+}
+
+$cardStructure = MFragmentHelper::createTag('div', $cardContent, ['attributes' => $cardAttributes]);
+
+$processor = new MFragmentProcessor();
+echo $processor->process($cardStructure);

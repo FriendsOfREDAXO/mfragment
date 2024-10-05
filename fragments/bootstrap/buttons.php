@@ -2,36 +2,67 @@
 /**
  * @var rex_fragment $this
  * @psalm-scope-this rex_fragment
- * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio
  */
 
-$givenLinks = $this->getVar('links');
+use FriendsOfRedaxo\MFragment\Helper\MFragmentHelper;
+use FriendsOfRedaxo\MFragment\Core\MFragmentProcessor;
 
-if (isset($givenLinks) && is_array($givenLinks) && count($givenLinks) > 0) {
-    foreach ($givenLinks as $key => $button) {
+$content = $this->getVar('content', []);
+$config = $this->getVar('config', []);
 
-        if (!isset($button['attributes'])) {
-            $button['attributes'] = [];
-        }
-        if (!isset($button['attributes']['class'])) {
-            $button['attributes']['class'] = [];
+$defaultConfig = [
+    'wrapper' => [
+        'tag' => 'div',
+        'attributes' => ['class' => ['default' => 'button-group']]
+    ],
+    'button' => [
+        'tag' => 'a',
+        'attributes' => ['class' => ['default' => 'btn', 'primary' => 'btn-primary']]
+    ]
+];
+
+$config = MFragmentHelper::mergeConfigs($defaultConfig, $config);
+
+$buttons = [];
+
+if (is_array($content) && count($content) > 0) {
+    foreach ($content as $button) {
+        if (!isset($button['text']) || !isset($button['link'])) {
+            continue;
         }
 
-        if (!isset($button['label'])) {
-            $button['label'] = '';
-        }
-        if (isset($button['hidden_label'])) {
-            $button['label'] = '<span class="d-none">' . $button['hidden_label'] . '</span>';
+        $url = $button['link']['id'];
+        if (strpos($url, 'redaxo://') === 0) {
+            $articleId = substr($url, 9);
+            $article = rex_article::get($articleId);
+
+            if ($article) {
+                $url = $article->getUrl();
+                $button['text'] = ((!empty($button['text'])) ? $button['text'] : $article->getName());
+            } else {
+                continue;
+            }
         }
 
-        $icon = isset($button['icon']) ? $button['icon'] : '';
+        $buttonConfig = MFragmentHelper::mergeConfigs($config['button'], $button['config'] ?? []);
+        $buttonAttributes = array_merge($buttonConfig['attributes'], [
+            'href' => $url,
+            'title' => $button['title'] ?? $button['text']
+        ]);
 
-        $tag = 'button';
-        $href = '';
-        if (isset($button['url'])) {
-            $tag = 'a';
-            $href = ' href="' . $button['url'] . '"';
-        }
-        echo '<' . $tag . $href . rex_string::buildAttributes($button['attributes']) . '>' . $icon . $button['label'] . '</' . $tag . '>';
+        $buttons[] = MFragmentHelper::createTag(
+            $buttonConfig['tag'],
+            $button['text'],
+            ['attributes' => $buttonAttributes]
+        );
     }
 }
+
+$buttonGroup = MFragmentHelper::createTag(
+    $config['wrapper']['tag'],
+    $buttons,
+    ['attributes' => $config['wrapper']['attributes']]
+);
+
+$processor = new MFragmentProcessor();
+echo $processor->process($buttonGroup);

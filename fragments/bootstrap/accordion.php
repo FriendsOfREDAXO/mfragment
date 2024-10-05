@@ -2,100 +2,98 @@
 /**
  * @var rex_fragment $this
  * @psalm-scope-this rex_fragment
- * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio
  */
 
-use FriendsOfRedaxo\MFragment\Helper\FragmentOutputHelper;
+use FriendsOfRedaxo\MFragment\Helper\MFragmentHelper;
+use FriendsOfRedaxo\MFragment\Core\MFragmentProcessor;
 
-$showAccordionHeader = false;
-$showAccordionBody = false;
+$items = $this->getVar('content', []);
+$config = $this->getVar('config', []);
 
-$givenAccordionClass = $this->getVar('cardClass');
-$givenAccordionItemClass = $this->getVar('itemClass');
-$givenAccordionHeaderClass = $this->getVar('headerClass');
-$givenAccordionHeaderTitleClass = $this->getVar('titleClass');
-$givenAccordionCollapseClass = $this->getVar('collapseClass');
-$givenAccordionBodyClass = $this->getVar('bodyClass');
-$givenAccordion = $this->getVar('accordions');
-$headingType = $this->getVar('headingType', 'h2');
-$linkType = $this->getVar('linkType', 'button');
+$accordionAttributes = $this->getVar('attributes', []);
 
-$accordionClass = array_merge([
-    'class' => 'accordion',
-    'border' => 'border-top border-bottom',
-    'margin' => '',
-    'padding' => '',
-], (is_array($givenAccordionClass) ? $givenAccordionClass : []));
-$accordionItemClass = array_merge([
-    'class' => 'accordion-item',
-    'margin' => '',
-    'padding' => '',
-], (is_array($givenAccordionItemClass) ? $givenAccordionItemClass : []));
-$accordionHeaderClass = array_merge([
-    'class' => 'accordion-header',
-    'margin' => '',
-    'padding' => '',
-], (is_array($givenAccordionHeaderClass) ? $givenAccordionHeaderClass : []));
-$accordionHeaderTitleClass = array_merge([
-    'class' => 'accordion-button',
-    'fs' => 'fs-3',
-    'margin' => '',
-    'padding' => '',
-], (is_array($givenAccordionHeaderTitleClass) ? $givenAccordionHeaderTitleClass : []));
-$accordionCollapseClass = array_merge([
-    'class' => 'accordion-collapse',
-    'collapse' => 'collapse',
-    'margin' => '',
-    'padding' => '',
-], (is_array($givenAccordionCollapseClass) ? $givenAccordionCollapseClass : []));
-$accordionBodyClass = array_merge([
-    'class' => 'accordion-body',
-    'margin' => '',
-    'padding' => '',
-], (is_array($givenAccordionBodyClass) ? $givenAccordionBodyClass : []));
+$defaultConfig = [
+    'accordion' => [
+        'attributes' => MFragmentHelper::mergeConfigs(['class' => ['default' => 'accordion']], $accordionAttributes),
+    ],
+    'item' => [
+        'attributes' => ['class' => ['default' => 'accordion-item']],
+    ],
+    'header' => [
+        'tag' => 'h2',
+        'attributes' => ['class' => ['default' => 'accordion-header']],
+    ],
+    'button' => [
+        'attributes' => ['class' => ['default' => 'accordion-button', 'bold' => 'fw-bold']],
+    ],
+    'collapse' => [
+        'attributes' => ['class' => ['default' => 'accordion-collapse', 'collapse' => 'collapse']],
+    ],
+    'body' => [
+        'attributes' => ['class' => ['default' => 'accordion-body']],
+    ],
+];
 
-if (rex::isBackend()) {
-    $accordionClass['class'] = 'panel-group';
-    $accordionClass['border'] = '';
-    $accordionItemClass['class'] = 'panel panel-default';
-    $accordionHeaderClass['class'] = 'panel-heading';
-    $accordionHeaderTitleClass['class'] = 'panel-title';
-    $accordionCollapseClass['class'] = 'panel-collapse';
-    $accordionBodyClass['class'] = 'panel-body';
-    $linkType = 'a';
-    $headingType = 'div';
-}
+$config = MFragmentHelper::mergeConfigs($defaultConfig, $config);
 
-$uniqueKey = $this->getVar('uid', uniqid());
-$accordion = '';
-if (isset($givenAccordion) && is_array($givenAccordion) && count($givenAccordion) > 0) {
-    foreach ($givenAccordion as $key => $accordionItem) {
-        $collapsed = ($accordionItem['show'] !== "1") ? ' collapsed' : '';
-        $collapse = ($accordionItem['show'] !== "1") ? '' : ' show';
-        $key = $uniqueKey . '_' . $key;
-        $attr = '';
+$uniqueKey = uniqid('accordion_');
+$accordionItems = [];
 
-        if (rex::isBackend()) {
-            $collapse = ($accordionItem['show'] !== "1") ? '' : ' in';
-            $attr = ' data-toggle="collapse" href="#collapse-REX_SLICE_ID-' . $key . '" data-parent="#accordion-REX_SLICE_ID-'.$uniqueKey.'"';
-        }
+foreach ($items as $key => $item) {
+    $itemKey = $uniqueKey . '_' . $key;
+    $isExpanded = $item['show'] ?? false;
 
-        $accordion .= '
-            <div class="'.implode(' ', $accordionItemClass).'">
-                <'.$headingType.' class="'.implode(' ', $accordionHeaderClass).'" id="heading-REX_SLICE_ID-' . $key . '">
-                    <'.$linkType.' class="'.implode(' ', $accordionHeaderTitleClass).' fs-3 ' . $collapsed . '" type="button" data-bs-toggle="collapse" '.$attr.'
-                            data-bs-target="#collapse-REX_SLICE_ID-' . $key . '" aria-expanded="false" aria-controls="collapse-REX_SLICE_ID-' . $key . '">
-                        ' . $accordionItem['accordionTitle'] . '
-                    </'.$linkType.'>
-                </'.$headingType.'>
-                <div id="collapse-REX_SLICE_ID-' . $key . '" class="'.implode(' ', $accordionCollapseClass).'  ' . $collapse . '" aria-labelledby="heading-REX_SLICE_ID-' . $key . '" data-bs-parent="#accordion-REX_SLICE_ID-'.$uniqueKey.'">
-                    <div class="'.implode(' ', $accordionBodyClass).'">
-                        ' . FragmentOutputHelper::parseEachFragmentParts($accordionItem['content']) . '
-                    </div>
-                </div>
-            </div>';
+    $headerTag = $item['config']['header']['tag'] ?? $config['header']['tag'];
+
+    $headerConfig = MFragmentHelper::mergeConfigs($config['header'], $item['config']['header'] ?? []);
+    $headerAttributes = array_merge($headerConfig['attributes'], [
+        'id' => "heading-{$itemKey}"
+    ]);
+
+    $buttonConfig = MFragmentHelper::mergeConfigs($config['button'], $item['config']['button'] ?? []);
+    $buttonAttributes = array_merge($buttonConfig['attributes'], [
+        'type' => 'button',
+        'data-bs-toggle' => 'collapse',
+        'data-bs-target' => "#collapse-{$itemKey}",
+        'aria-expanded' => $isExpanded ? 'true' : 'false',
+        'aria-controls' => "collapse-{$itemKey}"
+    ]);
+    if (!$isExpanded) {
+        $buttonAttributes['class'][] = 'collapsed';
     }
 
-    echo  '<div class="'.implode(' ', $accordionClass).'" id="accordion-REX_SLICE_ID-'.$uniqueKey.'">' . $accordion . '</div>';
+    $collapseConfig = MFragmentHelper::mergeConfigs($config['collapse'], $item['config']['collapse'] ?? []);
+    $collapseAttributes = array_merge($collapseConfig['attributes'], [
+        'id' => "collapse-{$itemKey}",
+        'aria-labelledby' => "heading-{$itemKey}",
+        'data-bs-parent' => "#{$uniqueKey}"
+    ]);
+    if ($isExpanded) {
+        $collapseAttributes['class'][] = 'show';
+    }
+
+    $bodyConfig = MFragmentHelper::mergeConfigs($config['body'], $item['config']['body'] ?? []);
+
+    $accordionItems[] = MFragmentHelper::createTag('div', [
+        MFragmentHelper::createTag($headerTag,
+            MFragmentHelper::createTag('button', $item['header'], ['attributes' => $buttonAttributes]),
+            ['attributes' => $headerAttributes]
+        ),
+        MFragmentHelper::createTag('div',
+            MFragmentHelper::createTag('div', $item['content'], ['attributes' => $bodyConfig['attributes']]),
+            ['attributes' => $collapseAttributes]
+        )
+    ], ['attributes' => $config['item']['attributes']]);
 }
 
+if (count($accordionItems) > 0) {
+
+    $accordionStructure = MFragmentHelper::createTag('div', $accordionItems, [
+        'attributes' => array_merge($config['accordion']['attributes'], [
+            'id' => $uniqueKey,
+        ])
+    ]);
+
+    $processor = new MFragmentProcessor();
+    echo $processor->process($accordionStructure);
+}

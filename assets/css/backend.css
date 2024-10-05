@@ -1,0 +1,66 @@
+.mform .checkbox .mform-toggle {
+    margin-top: -7px;
+}
+
+.gridblock .column-settings,
+.gridblock .column-slices {
+    background: #fff;
+}
+
+.gridblock .nav-tabs,
+.gridblock .tab-content {
+    border: none;
+}
+
+.gridblock .nav-tabs > li.active > a:not(.btn),
+.gridblock .nav-tabs > li.active > a:not(.btn):hover,
+.gridblock .nav-tabs > li.active > a:not(.btn):focus {
+    background-color: #fff;
+    border: none !important;
+    border-color: #fff;
+}
+
+.gridblock .nav-tabs > li > a:not(.btn):hover,
+.gridblock .nav-tabs > li > a:not(.btn):focus {
+    background-color: #dfe3e9;
+    border-color: #dfe3e9;
+    color: #4b9ad9;
+}
+
+.gridblock .nav-tabs > li > a:not(.btn) {
+    background-color: #d0d6df;
+    display: block;
+    padding: 10px 15px 9px 15px;
+    color: #4b9ad9;
+    border: none;
+}
+
+.form-control.gridblock-moduleinfo {
+    border: none;
+    box-shadow: none !important;
+    width: auto;
+}
+
+.gridblock .column-slice-functions {
+    background: #f3f6fb;
+}
+
+.gridblock .column-slice-functions > div {
+    order: 1;
+    justify-self: start;
+}
+
+.gridblock .column-slice-functions .column-slice-sorter {
+    order: 2;
+    justify-self: end;
+    border: none;
+    border-left: 1px solid #ccc;
+}
+
+.gridblock .addmodule {
+    margin-top: 0;
+}
+
+.rex-slice-edit .panel-edit .panel-body fieldset:first-child > legend {
+    display: none;
+}
