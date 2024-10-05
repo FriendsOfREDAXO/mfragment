@@ -128,19 +128,8 @@ class MFragmentProcessor
             if ($value === true) {
                 $output[] = $key;
             } elseif (is_array($value)) {
-                if ($this->isAssociativeArray($value)) {
-                    $classes = [];
-                    foreach ($value as $subKey => $subValue) {
-                        if (is_array($subValue)) {
-                            $classes = array_merge($classes, $subValue);
-                        } else {
-                            $classes[] = $subValue;
-                        }
-                    }
-                    $output[] = $key . '="' . htmlspecialchars(implode(' ', $classes), ENT_QUOTES, 'UTF-8') . '"';
-                } else {
-                    $output[] = $key . '="' . htmlspecialchars(implode(' ', $value), ENT_QUOTES, 'UTF-8') . '"';
-                }
+                $processedValue = $this->processArrayValue($value);
+                $output[] = $key . '="' . htmlspecialchars($processedValue, ENT_QUOTES, 'UTF-8') . '"';
             } elseif (is_string($value) && strpos($value, '{') === 0 && strpos($value, '}') === strlen($value) - 1) {
                 // Handle strings that look like JSON
                 $output[] = $key . "='" . $value . "'";
@@ -149,6 +138,23 @@ class MFragmentProcessor
             }
         }
         return $output ? ' ' . implode(' ', $output) : '';
+    }
+
+    private function processArrayValue(array $value): string
+    {
+        if ($this->isAssociativeArray($value)) {
+            $classes = [];
+            foreach ($value as $subKey => $subValue) {
+                if (is_array($subValue)) {
+                    $classes[] = $this->processArrayValue($subValue);
+                } else {
+                    $classes[] = $subValue;
+                }
+            }
+            return implode(' ', array_filter($classes));
+        } else {
+            return implode(' ', array_filter($value));
+        }
     }
 
     private function isAssociativeArray(array $arr): bool

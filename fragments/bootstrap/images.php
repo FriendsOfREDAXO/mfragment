@@ -38,7 +38,7 @@ $defaultConfig = [
     'lightboxClass' => 'lightbox'
 ];
 
-$config = MFragmentHelper::mergeConfigs($defaultConfig, $config);
+$config = MFragmentHelper::mergeConfig($defaultConfig, $config);
 $imageElements = [];
 
 foreach ($images as $image) {

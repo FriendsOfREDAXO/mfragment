@@ -4,30 +4,29 @@
  * @psalm-scope-this rex_fragment
  */
 
+use FriendsOfRedaxo\MFragment\Helper\MFragmentHelper;
 use FriendsOfRedaxo\MFragment\Core\MFragmentProcessor;
 
-$config = $this->getVar('config', []);
 $columns = $this->getVar('columns', []);
+$config = $this->getVar('config', []);
 
 $defaultConfig = [
-    'tag' => 'div',
-    'attributes' => ['class' => ['default' => 'row']],
+    'wrapper' => [
+        'tag' => 'div',
+        'attributes' => ['class' => ['default' => 'row']]
+    ],
+    'column' => [
+        'tag' => 'div',
+        'attributes' => ['class' => ['default' => 'col']]
+    ]
 ];
 
-$config = array_replace_recursive($defaultConfig, $config);
+$config = MFragmentHelper::mergeConfig($defaultConfig, $config);
 
 $columnElements = [];
 
 foreach ($columns as $column) {
-    $columnConfig = $column['config'] ?? [];
-    $columnContent = $column['content'] ?? '';
-
-    $defaultColumnConfig = [
-        'tag' => 'div',
-        'attributes' => ['class' => ['default' => 'col']],
-    ];
-
-    $columnConfig = array_replace_recursive($defaultColumnConfig, $columnConfig);
+    $columnConfig = MFragmentHelper::mergeConfig($config['column'], $column['config'] ?? []);
 
     // Ensure 'class' is always an array
     if (!isset($columnConfig['attributes']['class'])) {
@@ -36,18 +35,23 @@ foreach ($columns as $column) {
         $columnConfig['attributes']['class'] = explode(' ', $columnConfig['attributes']['class']);
     }
 
-    $columnElements[] = [
-        'tag' => $columnConfig['tag'],
-        'attributes' => $columnConfig['attributes'],
-        'content' => $columnContent
-    ];
+    // Add size class if specified
+    if (isset($column['config']['size'])) {
+        $columnConfig['attributes']['class'][] = 'col-' . $column['config']['size'];
+    }
+
+    $columnElements[] = MFragmentHelper::createTag(
+        $columnConfig['tag'],
+        $column['content'],
+        ['attributes' => $columnConfig['attributes']]
+    );
 }
 
-$output = [
-    'tag' => $config['tag'],
-    'attributes' => $config['attributes'],
-    'content' => $columnElements
-];
+$output = MFragmentHelper::createTag(
+    $config['wrapper']['tag'],
+    $columnElements,
+    ['attributes' => $config['wrapper']['attributes']]
+);
 
 $processor = new MFragmentProcessor();
 echo $processor->process($output);

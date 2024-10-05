@@ -15,7 +15,6 @@ abstract class MFragmentElements
 {
     /** @var MFragmentItem[] */
     public array $items = [];
-    private string $theme = 'bootstrap';
 
     public function addTagElement(string $tag, array|string $content, array $attributes = []): self
     {
@@ -25,7 +24,7 @@ abstract class MFragmentElements
 
     public function addFragmentElement(string $element, array|string $content, array $config = []): self
     {
-        $this->items[] = new MFragmentItem(false, "{$this->theme}/$element", $content, $this->getConfig($config), $this->getAttributes($config));
+        $this->items[] = new MFragmentItem(false, $element, $content, $this->getConfig($config), $this->getAttributes($config));
         return $this;
     }
 
@@ -63,14 +62,78 @@ abstract class MFragmentElements
         if ($content instanceof MFragment) {
             $content = $content->items;
         }
-        $this->addFragmentElement("section", $content, $config);
+        $this->addFragmentElement("bootstrap/section", $content, $config);
+        return $this;
+    }
+
+    /**
+     * Add a single column
+     *
+     * @param mixed $content Content of the column
+     * @param array $config Configuration for the column
+     * @return $this
+     */
+    public function addColumn($content, array $config = []): self
+    {
+        $defaultConfig = [
+            'size' => 12,
+            'attributes' => [
+                'class' => ['col'],
+            ],
+        ];
+
+        $columnConfig = array_merge($defaultConfig, $config);
+
+        if (isset($columnConfig['size'])) {
+            $columnConfig['attributes']['class'][] = 'col-' . $columnConfig['size'];
+        }
+
+        $this->items[] = new MFragmentItem('div', false, $content, $columnConfig, $columnConfig['attributes']);
+
+        return $this;
+    }
+
+    /**
+     * Add multiple columns using the columns fragment
+     *
+     * @param MFragment $columns MFragment containing columns
+     * @param array $config Configuration for the column wrapper (row)
+     * @return $this
+     */
+    public function addColumns(MFragment $columns, array $config = []): self
+    {
+        $columnItems = array_map(function(MFragmentItem $item) {
+            return [
+                'content' => $item->content,
+                'config' => array_merge($item->config, ['attributes' => $item->attributes])
+            ];
+        }, $columns->items);
+
+        $this->addFragmentElement('bootstrap/columns', [
+            'columns' => $columnItems,
+            'config' => [
+                'wrapper' => $config,
+                'column' => [] // Default column config, can be overridden per column
+            ]
+        ]);
+
+        return $this;
+    }
+
+    public function addImages(array $images, array $config = []): self
+    {
+        $this->addFragmentElement('bootstrap/images', [
+            'images' => $images,
+            'config' => $config
+        ]);
+
         return $this;
     }
 
     public function addCard(MFragment|array|string $header = null, MFragment|array|string $body = null, MFragment|array|string $footer = null, array $config = [], $headerConfig = [], array $bodyConfig = [], array $footerConfig = []): self
     {
         $this->addFragmentElement(
-            "card",
+            "bootstrap/card",
             [
                 'header' => array_merge(['content' => $header], $headerConfig),
                 'body' => array_merge(['content' => $body], $bodyConfig),
@@ -98,16 +161,10 @@ abstract class MFragmentElements
             ];
         }
         $this->addFragmentElement(
-            "accordion",
+            "bootstrap/accordion",
             $processedItems,
             $config
         );
-        return $this;
-    }
-
-    public function setTheme(string $theme): self
-    {
-        $this->theme = $theme;
         return $this;
     }
 

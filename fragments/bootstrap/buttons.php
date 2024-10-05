@@ -21,7 +21,7 @@ $defaultConfig = [
     ]
 ];
 
-$config = MFragmentHelper::mergeConfigs($defaultConfig, $config);
+$config = MFragmentHelper::mergeConfig($defaultConfig, $config);
 
 $buttons = [];
 
@@ -44,7 +44,7 @@ if (is_array($content) && count($content) > 0) {
             }
         }
 
-        $buttonConfig = MFragmentHelper::mergeConfigs($config['button'], $button['config'] ?? []);
+        $buttonConfig = MFragmentHelper::mergeConfig($config['button'], $button['config'] ?? []);
         $buttonAttributes = array_merge($buttonConfig['attributes'], [
             'href' => $url,
             'title' => $button['title'] ?? $button['text']

@@ -14,7 +14,7 @@ $accordionAttributes = $this->getVar('attributes', []);
 
 $defaultConfig = [
     'accordion' => [
-        'attributes' => MFragmentHelper::mergeConfigs(['class' => ['default' => 'accordion']], $accordionAttributes),
+        'attributes' => MFragmentHelper::mergeConfig(['class' => ['default' => 'accordion']], $accordionAttributes),
     ],
     'item' => [
         'attributes' => ['class' => ['default' => 'accordion-item']],
@@ -34,7 +34,7 @@ $defaultConfig = [
     ],
 ];
 
-$config = MFragmentHelper::mergeConfigs($defaultConfig, $config);
+$config = MFragmentHelper::mergeConfig($defaultConfig, $config);
 
 $uniqueKey = uniqid('accordion_');
 $accordionItems = [];
@@ -45,12 +45,12 @@ foreach ($items as $key => $item) {
 
     $headerTag = $item['config']['header']['tag'] ?? $config['header']['tag'];
 
-    $headerConfig = MFragmentHelper::mergeConfigs($config['header'], $item['config']['header'] ?? []);
+    $headerConfig = MFragmentHelper::mergeConfig($config['header'], $item['config']['header'] ?? []);
     $headerAttributes = array_merge($headerConfig['attributes'], [
         'id' => "heading-{$itemKey}"
     ]);
 
-    $buttonConfig = MFragmentHelper::mergeConfigs($config['button'], $item['config']['button'] ?? []);
+    $buttonConfig = MFragmentHelper::mergeConfig($config['button'], $item['config']['button'] ?? []);
     $buttonAttributes = array_merge($buttonConfig['attributes'], [
         'type' => 'button',
         'data-bs-toggle' => 'collapse',
@@ -62,7 +62,7 @@ foreach ($items as $key => $item) {
         $buttonAttributes['class'][] = 'collapsed';
     }
 
-    $collapseConfig = MFragmentHelper::mergeConfigs($config['collapse'], $item['config']['collapse'] ?? []);
+    $collapseConfig = MFragmentHelper::mergeConfig($config['collapse'], $item['config']['collapse'] ?? []);
     $collapseAttributes = array_merge($collapseConfig['attributes'], [
         'id' => "collapse-{$itemKey}",
         'aria-labelledby' => "heading-{$itemKey}",
@@ -72,7 +72,7 @@ foreach ($items as $key => $item) {
         $collapseAttributes['class'][] = 'show';
     }
 
-    $bodyConfig = MFragmentHelper::mergeConfigs($config['body'], $item['config']['body'] ?? []);
+    $bodyConfig = MFragmentHelper::mergeConfig($config['body'], $item['config']['body'] ?? []);
 
     $accordionItems[] = MFragmentHelper::createTag('div', [
         MFragmentHelper::createTag($headerTag,

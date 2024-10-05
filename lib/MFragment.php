@@ -18,16 +18,10 @@ class MFragment extends MFragmentElements
 
     private bool $debug;
 
-    function __construct(?string $theme = null, bool $debug = false)
-    {
-        if (!is_null($theme)) $this->setTheme($theme);
-        $this->setDebug($debug);
-    }
-
-    public static function factory(?string $theme = null, bool $debug = false): MFragment
+    public static function factory(): MFragment
     {
         $class = static::getFactoryClass();
-        return new $class($theme, $debug);
+        return new $class();
     }
 
     public function setDebug(bool $debug): MFragment

@@ -41,7 +41,7 @@ if (is_array($content)) {
             $defaultPart = $defaultConfig[$key] ?? [];
             $partTag = $partData['tag'] ?? $defaultPart['tag'] ?? 'div';
 
-            $attributes = MFragmentHelper::mergeConfigs($defaultPart['attributes'] ?? [], $partData['attributes'] ?? []);
+            $attributes = MFragmentHelper::mergeConfig($defaultPart['attributes'] ?? [], $partData['attributes'] ?? []);
 
             if (!empty($partData['content'])) {
                 $cardContent[] = MFragmentHelper::createTag($partTag, $partData['content'], ['attributes' => $attributes]);

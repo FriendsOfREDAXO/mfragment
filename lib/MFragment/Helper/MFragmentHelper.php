@@ -22,7 +22,7 @@ class MFragmentHelper
         return array_merge(['fragment' => $fragmentName], $params);
     }
 
-    public static function mergeConfigs($default, $custom)
+    public static function mergeConfig($default, $custom)
     {
         $result = $default;
         foreach ($custom as $key => $value) {
@@ -30,7 +30,7 @@ class MFragmentHelper
                 if ($key === 'attributes' && isset($value['class']) && isset($default[$key]['class'])) {
                     $result[$key] = self::mergeClassAttributes($default[$key], $value);
                 } else {
-                    $result[$key] = self::mergeConfigs($default[$key], $value);
+                    $result[$key] = self::mergeConfig($default[$key], $value);
                 }
             } elseif ($key === 'tag' && is_string($value)) {
                 $result[$key] = $value;
@@ -47,7 +47,7 @@ class MFragmentHelper
     {
         $result = array_merge($default, $custom);
         if (isset($custom['class'])) {
-            $result['class'] = $custom['class'];
+            $result['class'] = array_merge($default['class'], $custom['class']);
         }
         return $result;
     }}
