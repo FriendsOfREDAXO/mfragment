@@ -48,7 +48,9 @@ $mfragment->addFragmentElement('bootstrap/figure', [
     'alt' => 'Beschreibung',
     'caption' => [
         'title' => 'Bildtitel',
-        'description' => 'Bildbeschreibung'
+        'description' => 'Bildbeschreibung',
+        'author' => 'Author',
+        'copyright' => 'Copyright',
     ]
 ]);
 echo $mfragment->show();
@@ -60,10 +62,11 @@ Konfigurationen werden in einem oder mehrerer `config`-Arrays übergeben:
 
 ```php
 $mfragment->addSection($content, [
-    'attributes' => ['class' => ['my-section']]
-], [
-    'attributes' => ['class' => ['container']]
-]);
+        'attributes' => ['class' => ['my-section']]
+    ], [
+        'attributes' => ['class' => ['container']]
+    ]
+);
 ```
 
 ## Verfügbare Methoden
