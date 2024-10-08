@@ -24,12 +24,12 @@ class accordion extends MFormInputsAbstract implements MFormInputsInterface
     {
         $contentMForm = MForm::factory()->setShowWrapper(false);
         $headlineAttributes = (!isset($this->config['headlineAttributes']) || !is_array($this->config['headlineAttributes'])) ? [] : $this->config['headlineAttributes'];
-        $contentMForm->addTextField("accordionTitle", array_merge(['full' => true, 'placeholder' => 'Accordion Titel'], $headlineAttributes));
+        $contentMForm->addTextField("header", array_merge(['full' => true, 'placeholder' => 'Accordion Titel'], $headlineAttributes));
         if (!empty($this->config['contentMForm']) && $this->config['contentMForm'] instanceof MForm) {
             $contentMForm->addForm($this->config['contentMForm']->setShowWrapper(false));
         } else {
             // add card
-            $contentMForm->addTextAreaField("text", ['full' => true, 'placeholder' => 'Fließtext Accordioninhalt', 'data-lang' => \Cke5\Utils\Cke5Lang::getUserLang(), 'data-profile' => $this->config['cke5Profile'], 'class' => 'cke5-editor']);
+            $contentMForm->addTextAreaField("content", ['full' => true, 'placeholder' => 'Fließtext Accordioninhalt', 'data-lang' => \Cke5\Utils\Cke5Lang::getUserLang(), 'data-profile' => $this->config['cke5Profile'], 'class' => 'cke5-editor']);
         }
 
         $contentMForm->addToggleCheckboxField('show', [1 => 'Accordion-Element initial geöffnet'], ['full' => true]);

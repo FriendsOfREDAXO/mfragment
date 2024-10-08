@@ -13,14 +13,17 @@ class buttons extends MFormInputsAbstract implements MFormInputsInterface
 {
     protected array $config = [
         'id' => 'buttons',
-        'customLinkAttributes' => ['full' => true, 'data-intern' => 'enable', 'data-extern' => 'enable', 'data-media' => 'enable', 'data-mailto' => 'enable', 'data-tel' => 'disable', 'data-extern-link-prefix' => 'https://www.']
+        'customLinkAttributes' => ['full' => true, 'data-intern' => 'enable', 'data-extern' => 'enable', 'data-media' => 'enable', 'data-mailto' => 'enable', 'data-tel' => 'disable', 'data-extern-link-prefix' => 'https://www.'],
+        'open' => false,
+        'openBtnText' => 'Buttons hinzufügen',
+        'confirmDelete' => true,
+        'confirmDeleteMsgText' => 'Button löschen?',
     ];
     public function generateInputsForm(): MForm
     {
         return MForm::factory()
             ->setShowWrapper(false)
             ->addRepeaterElement($this->config['id'], MForm::factory()
-                ->setShowWrapper(false)
                 ->addFieldsetArea('Button-Element', MForm::factory()
                     ->addColumnElement('5', MForm::factory()
                         ->addTextField("text", ['full' => true, 'placeholder' => 'Button-Text (optional)'])
@@ -32,7 +35,7 @@ class buttons extends MFormInputsAbstract implements MFormInputsInterface
                         , ['style' => 'padding-left:0']
                     )
                     , ['style' => 'margin-top:-20px!important;'])
-                , false, true, ['btn_text' => 'Buttons hinzufügen', 'btn_class' => 'btn-default', 'confirm_delete_msg' => 'Button löschen?']
+                , $this->config['open'], $this->config['confirmDelete'], ['btn_text' => $this->config['openBtnText'], 'btn_class' => 'btn-default', 'confirm_delete_msg' => $this->config['confirmDeleteMsgText']]
             );
     }
 }

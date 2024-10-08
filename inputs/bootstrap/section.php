@@ -38,9 +38,9 @@ class section extends MFormInputsAbstract implements MFormInputsInterface
         'borderLabel' => '',
         'borderDefaultValue' => '',
         'border' => false,
-        'bgColorLabel' => 'Hintergrundfarbe',
-        'bgColorDefaultValue' => 'default',
-        'bgColor' => [
+        'bgClassLabel' => 'Hintergrundfarbe',
+        'bgClassDefaultValue' => 'default',
+        'bgClass' => [
             'default' => 'Standard',
             'primary' => 'Primär',
             'secondary' => 'Sekundär',
@@ -57,6 +57,6 @@ class section extends MFormInputsAbstract implements MFormInputsInterface
     {
         $id = (!empty($this->config['id'])) ? $this->config['id'] . '.' : '';
 
-        return self::getConfigForm($id, $this->config['configKeys']);
+        return self::getConfigForm($id);
     }
 }
