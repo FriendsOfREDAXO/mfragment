@@ -136,4 +136,4 @@ $mfragment->addSection($content, [
 ## Lizenz
 
 MFragment ist unter der MIT-Lizenz lizenziert.
-```
+
