@@ -56,6 +56,59 @@ $mfragment->addFragmentElement('bootstrap/figure', [
 echo $mfragment->show();
 ```
 
+### Verkettete Inhaltsstruktur
+
+```php
+$mfragment = MFragment::factory();
+$mfragment->addSection(
+    MFragment::factory()
+        ->addTagElement('h2', 'Unsere Dienstleistungen')
+        ->addColumns(
+            MFragment::factory()
+                ->addColumn(
+                    MFragment::factory()
+                        ->addCard(
+                            MFragment::factory()->addTagElement('h3', 'Beratung'),
+                            MFragment::factory()
+                                ->addTagElement('p', 'Wir bieten umfassende Beratung für Ihr Unternehmen.')
+                                ->addFragmentElement('bootstrap/buttons', [
+                                    'content' => [
+                                        ['text' => 'Mehr erfahren', 'link' => ['id' => 3]]
+                                    ]
+                                ])
+                        )
+                , ['size' => 4])
+                ->addColumn(
+                    MFragment::factory()
+                        ->addCard(
+                            MFragment::factory()->addTagElement('h3', 'Entwicklung'),
+                            MFragment::factory()
+                                ->addTagElement('p', 'Unsere Experten entwickeln maßgeschneiderte Lösungen.')
+                                ->addFragmentElement('bootstrap/buttons', [
+                                    'content' => [
+                                        ['text' => 'Projekte ansehen', 'link' => ['id' => 4]]
+                                    ]
+                                ])
+                        )
+                , ['size' => 4])
+                ->addColumn(
+                    MFragment::factory()
+                        ->addCard(
+                            MFragment::factory()->addTagElement('h3', 'Support'),
+                            MFragment::factory()
+                                ->addTagElement('p', 'Wir bieten zuverlässigen Support rund um die Uhr.')
+                                ->addFragmentElement('bootstrap/buttons', [
+                                    'content' => [
+                                        ['text' => 'Kontakt', 'link' => ['id' => 5]]
+                                    ]
+                                ])
+                        )
+                , ['size' => 4])
+        )
+);
+echo $mfragment->show();
+```
+
 ## Konfiguration
 
 Konfigurationen werden in einem oder mehrerer `config`-Arrays übergeben:
