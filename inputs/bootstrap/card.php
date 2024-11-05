@@ -13,8 +13,8 @@ class card extends MFormInputsAbstract implements MFormInputsInterface
 {
     protected array $config = [
         'id' => 'card',
-        'cke5LeadProfile' => 'main_light',
-        'cke5TextProfile' => 'main_default',
+        'cke5LeadProfile' => 'light',
+        'cke5TextProfile' => 'default',
         'headlineAttributes' => ['label' => 'Headline Titel', 'type' => 'text'],
         'leadAttributes' => ['label' => 'Leadtext'],
         'textAttributes' => ['label' => 'Fließtext'],
