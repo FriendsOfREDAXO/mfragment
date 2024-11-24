@@ -56,13 +56,13 @@ if (is_array($content) && count($content) > 0) {
             ['attributes' => $buttonAttributes]
         );
     }
+
+    $buttonGroup = MFragmentHelper::createTag(
+        $config['wrapper']['tag'],
+        $buttons,
+        ['attributes' => $config['wrapper']['attributes']]
+    );
+
+    $processor = new MFragmentProcessor();
+    echo $processor->process($buttonGroup);
 }
-
-$buttonGroup = MFragmentHelper::createTag(
-    $config['wrapper']['tag'],
-    $buttons,
-    ['attributes' => $config['wrapper']['attributes']]
-);
-
-$processor = new MFragmentProcessor();
-echo $processor->process($buttonGroup);

@@ -8,41 +8,92 @@ use FriendsOfRedaxo\MFragment\Core\MFragmentProcessor;
 use FriendsOfRedaxo\MFragment\Helper\MFragmentHelper;
 
 $config = $this->getVar('config', []);
-$content = $this->getVar('content', '');
+$content = $this->getVar('content', []);
 
-$showSection = $config['showSection'] ?? true;
-$showContainer = $config['showContainer'] ?? true;
-$darkLayout = $config['darkLayout'] ?? false;
+$defaultConfig = [
+    'section' => [
+        'tag' => 'section',
+        'attributes' => [
+            'class' => [
+                //'default' => 'section'
+            ]
+        ],
+        'enabled' => true
+    ],
+    'container' => [
+        'tag' => 'div',
+        'attributes' => [
+            'class' => [
+                'default' => 'container'
+            ]
+        ],
+        'enabled' => true
+    ]
+];
 
-$sectionConfig = $config['section'] ?? [];
-$containerConfig = $config['container'] ?? [];
+// Custom merge for nested configurations
+$finalConfig = [];
 
-$sectionClass = $sectionConfig['attributes']['class'] ?? ['section-wrapper'];
-$containerClass = $containerConfig['attributes']['class'] ?? ['container'];
+// Process section configuration
+$finalConfig['section'] = [
+    'tag' => $config['section']['tag'] ?? $defaultConfig['section']['tag'],
+    'enabled' => $config['section']['enabled'] ?? $defaultConfig['section']['enabled'],
+    'attributes' => [
+        'class' => array_merge(
+            $defaultConfig['section']['attributes']['class'] ?? [],
+            $config['section']['attributes']['class'] ?? []
+        )
+    ]
+];
 
-$sectionAttributes = $sectionConfig['attributes'] ?? [];
-$sectionAttributes['class'] = $sectionClass;
+// Process container configuration
+$finalConfig['container'] = [
+    'tag' => $config['container']['tag'] ?? $defaultConfig['container']['tag'],
+    'enabled' => $config['container']['enabled'] ?? $defaultConfig['container']['enabled'],
+    'attributes' => [
+        'class' => array_merge(
+            $defaultConfig['container']['attributes']['class'] ?? [],
+            $config['container']['attributes']['class'] ?? []
+        )
+    ]
+];
 
-$containerAttributes = $containerConfig['attributes'] ?? [];
-$containerAttributes['class'] = $containerClass;
-
-$sectionContent = [];
-
-if ($showContainer) {
-    $containerContent = MFragmentHelper::createTag('div', $content, [
-        'attributes' => $containerAttributes
-    ]);
-} else {
-    $containerContent = $content;
+// Add any additional attributes
+if (isset($config['section']['attributes'])) {
+    foreach ($config['section']['attributes'] as $key => $value) {
+        if ($key !== 'class') {
+            $finalConfig['section']['attributes'][$key] = $value;
+        }
+    }
 }
 
-if ($showSection) {
-    $sectionContent = MFragmentHelper::createTag('section', $containerContent, [
-        'attributes' => $sectionAttributes
-    ]);
-} else {
-    $sectionContent = $containerContent;
+if (isset($config['container']['attributes'])) {
+    foreach ($config['container']['attributes'] as $key => $value) {
+        if ($key !== 'class') {
+            $finalConfig['container']['attributes'][$key] = $value;
+        }
+    }
+}
+
+$processedContent = $content;
+
+// Process container if enabled
+if ($finalConfig['container']['enabled']) {
+    $processedContent = MFragmentHelper::createTag(
+        $finalConfig['container']['tag'],
+        $processedContent,
+        ['attributes' => $finalConfig['container']['attributes']]
+    );
+}
+
+// Process section if enabled
+if ($finalConfig['section']['enabled']) {
+    $processedContent = MFragmentHelper::createTag(
+        $finalConfig['section']['tag'],
+        $processedContent,
+        ['attributes' => $finalConfig['section']['attributes']]
+    );
 }
 
 $processor = new MFragmentProcessor();
-echo $processor->process($sectionContent);
+echo $processor->process($processedContent);

@@ -8,12 +8,13 @@ use FriendsOfRedaxo\MFragment\Core\MFragmentProcessor;
 use FriendsOfRedaxo\MFragment\Helper\MFragmentHelper;
 
 $images = $this->getVar('images', []);
+if (empty($images))  $images = $this->getVar('content', []);
 $config = $this->getVar('config', []);
 
 $defaultConfig = [
     'wrapper' => [
         'tag' => 'div',
-        'attributes' => ['class' => ['default' => 'col', 'column' => 'col-sm-6 col-lg-4']]
+        'attributes' => ['class' => ['default' => 'col', 'col' => 'col-sm-6 col-lg-4']]
     ],
     'figure' => [
         'attributes' => ['class' => ['default' => 'figure']]
@@ -35,7 +36,8 @@ $defaultConfig = [
     ],
     'defaultShowTitleAndDescription' => true,
     'lightboxEnabled' => false,
-    'lightboxClass' => 'lightbox'
+    'lightboxClass' => 'lightbox',
+    'lightboxGalleryId' => 'gallery-' . uniqid() // Eindeutige Galerie-ID für diese Instanz
 ];
 
 $config = MFragmentHelper::mergeConfig($defaultConfig, $config);
@@ -50,7 +52,7 @@ foreach ($images as $image) {
 
     $figure = [
         'media' => $image['media'],
-        'alt' => $image['customTitle'] ?? $image['media']->getTitle(),
+        'alt' => $image['alt'] ?? $image['media']->getTitle(),
         'config' => [
             'figure' => $config['figure'],
             'media' => array_merge($config['media'], [
@@ -70,12 +72,22 @@ foreach ($images as $image) {
     }
 
     if (isset($image['linkOption'])) {
+        // Lightbox-Option (2)
         if ($image['linkOption'] === '2' && $config['lightboxEnabled']) {
             $figure['config']['lightbox'] = true;
             $figure['config']['lightboxClass'] = $config['lightboxClass'];
-        } elseif ($image['linkOption'] === '3' && !empty($image['link']) && isset($image['link']['id'])) {
+            $figure['config']['lightboxGallery'] = $config['lightboxGalleryId'];
+        }
+        // Custom Link-Option (3)
+        elseif ($image['linkOption'] === '3' && !empty($image['link']) && isset($image['link']['id'])) {
             $figure['config']['link'] = $image['link']['id'];
         }
+    }
+    // Globale Lightbox-Einstellung für Bilder aus Medienkategorie/Liste
+    elseif ($config['lightboxEnabled']) {
+        $figure['config']['lightbox'] = true;
+        $figure['config']['lightboxClass'] = $config['lightboxClass'];
+        $figure['config']['lightboxGallery'] = $config['lightboxGalleryId'];
     }
 
     $imageElements[] = MFragmentHelper::createTag(
