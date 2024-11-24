@@ -16,14 +16,15 @@ abstract class MFragmentElements
     /** @var MFragmentItem[] */
     public array $items = [];
 
-    public function addTagElement(string $tag, array|string $content, array $attributes = []): self
+    public function addTagElement(string $tag, MFragment|array|string $content, array $attributes = []): self
     {
         $this->items[] = new MFragmentItem($tag, false, $content, $this->getConfig($attributes), $this->getAttributes($attributes));
         return $this;
     }
 
-    public function addFragmentElement(string $element, array|string $content, array $config = []): self
+    public function addFragmentElement(string $element, MFragment|array|string|null $content, array $config = []): self
     {
+        if ($content === null) return $this;
         $this->items[] = new MFragmentItem(false, $element, $content, $this->getConfig($config), $this->getAttributes($config));
         return $this;
     }
@@ -44,21 +45,8 @@ abstract class MFragmentElements
         return $arr;
     }
 
-    public function addSection(MFragment|array|string $content, array|bool $sectionConfig = [], array|bool $containerConfig = []): self
+    public function addSection(MFragment|array|string $content, array $config = []): self
     {
-        $config = [];
-        if (is_array($sectionConfig)) {
-            $config['showSection'] = true;
-            $config['section'] = $sectionConfig;
-        } else {
-            $config['showSection'] = $sectionConfig;
-        }
-        if (is_array($containerConfig)) {
-            $config['showContainer'] = true;
-            $config['container'] = $containerConfig;
-        } else {
-            $config['showContainer'] = $containerConfig;
-        }
         if ($content instanceof MFragment) {
             $content = $content->items;
         }
@@ -66,13 +54,6 @@ abstract class MFragmentElements
         return $this;
     }
 
-    /**
-     * Add a single column
-     *
-     * @param mixed $content Content of the column
-     * @param array $config Configuration for the column
-     * @return $this
-     */
     public function addColumn($content, array $config = []): self
     {
         $defaultConfig = [
@@ -122,35 +103,27 @@ abstract class MFragmentElements
 
     public function addImages(array $images, array $config = []): self
     {
-        $this->addFragmentElement('bootstrap/images', [
-            'images' => $images,
-            'config' => $config
-        ]);
-
-        return $this;
+        return $this->addFragmentElement('bootstrap/images', $images, $config);
     }
 
-    public function addCard(MFragment|array|string $header = null, MFragment|array|string $body = null, MFragment|array|string $footer = null, array $config = [], $headerConfig = [], array $bodyConfig = [], array $footerConfig = []): self
+    public function addCard(MFragment|array|string $header = null, MFragment|array|string $body = null, MFragment|array|string $footer = null, array $config = []): self
     {
         $this->addFragmentElement(
             "bootstrap/card",
             [
-                'header' => array_merge(['content' => $header], $headerConfig),
-                'body' => array_merge(['content' => $body], $bodyConfig),
-                'footer' => array_merge(['content' => $footer], $footerConfig),
+                'header' => ['content' => $header],
+                'body' => ['content' => $body],
+                'footer' => ['content' => $footer],
             ],
-            [
-                'card' => $config,
-                'header' => $headerConfig,
-                'body' => $bodyConfig,
-                'footer' => $footerConfig,
-            ]
+            $config
         );
         return $this;
     }
 
-    public function addAccordion(array $items, array $config = []): self
+    public function addAccordion(?array $items, array $config = []): self
     {
+        if (!is_array($items)) return $this;
+
         $processedItems = [];
         foreach ($items as $item) {
             $processedItems[] = [
