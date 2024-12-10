@@ -35,7 +35,7 @@ class columns extends MFormInputsAbstract implements MFormInputsInterface
             11 => [],
             12 => [],
         ],
-        'marginLabel' => 'Zeilenabstand',
+        'marginLabel' => 'Außenabstand',
         'marginDefaultValue' => 1,
         'margin' => [
             0 => ['img' => "../theme/public/assets/backend/img/text_text_margin_0.svg", 'label' => "Margin 0"],

@@ -8,33 +8,22 @@
 use FriendsOfRedaxo\MForm;
 use FriendsOfRedaxo\MForm\Inputs\MFormInputsAbstract;
 use FriendsOfRedaxo\MForm\Inputs\MFormInputsInterface;
+use FriendsOfRedaxo\MFragment\Helper\MFragmentMFormInputsHelper;
 
 class section extends MFormInputsAbstract implements MFormInputsInterface
 {
+    // default configuration for section elements
     protected array $config = [
         'id' => 'section',
         'fittingLabel' => 'Einpassung',
         'fittingDefaultValue' => 'box',
-        'fitting' => [
-            'box' => ['img' => "../theme/public/assets/backend/img/text_text_container_stretch_1.svg", 'label' => "Box"],
-            'full' => ['img' => "../theme/public/assets/backend/img/text_text_container_stretch_2.svg", 'label' => "Fluid"],
-        ],
-        'marginLabel' => 'Zeilenabstand',
+        'fitting' => [],
+        'marginLabel' => 'Außenabstand',
         'marginDefaultValue' => 1,
-        'margin' => [
-            0 => ['img' => "../theme/public/assets/backend/img/text_text_margin_0.svg", 'label' => "Margin 0"],
-            1 => ['img' => "../theme/public/assets/backend/img/text_text_margin_1.svg", 'label' => "Margin 1"],
-            4 => ['img' => "../theme/public/assets/backend/img/text_text_margin_2.svg", 'label' => "Margin 2"],
-            7 => ['img' => "../theme/public/assets/backend/img/text_text_margin_3.svg", 'label' => "Margin 3"],
-        ],
+        'margin' => [],
         'paddingLabel' => 'Innenabstand',
         'paddingDefaultValue' => 1,
-        'padding' => [
-            0 => ['img' => "../theme/public/assets/backend/img/text_text_padding_0.svg", 'label' => "Padding 0"],
-            1 => ['img' => "../theme/public/assets/backend/img/text_text_padding_1.svg", 'label' => "Padding 1"],
-            4 => ['img' => "../theme/public/assets/backend/img/text_text_padding_2.svg", 'label' => "Padding 2"],
-            7 => ['img' => "../theme/public/assets/backend/img/text_text_padding_3.svg", 'label' => "Padding 3"],
-        ],
+        'padding' => [],
         'borderLabel' => '',
         'borderDefaultValue' => '',
         'border' => false,
@@ -45,13 +34,28 @@ class section extends MFormInputsAbstract implements MFormInputsInterface
             'primary' => 'Primär',
             'secondary' => 'Sekundär',
             'muted' => 'Muted',
-            'transparent' => 'Transparent'
+            'transparent' => 'Transparent',
         ],
-        'configKeys' => ['bgImg', 'bgColor', 'fitting', 'margin', 'padding', 'border'],
+        'configKeys' => ['bgImg', 'bgClass', 'fitting', 'margin', 'padding', 'border'],
         'bgImgLabel' => 'Hintergrund-Bild',
         'bgImgDefaultValue' => '',
-        'bgImg' => true,
+        'bgImg' => false,
     ];
+
+    public function __construct(MForm $mform, array $inputsConfig = [])
+    {
+        if (!isset($inputsConfig['fitting']) || ($inputsConfig['fitting'] !== false && !is_array($inputsConfig['fitting']))) {
+            $inputsConfig['fitting'] = MFragmentMFormInputsHelper::getContainerTypeOptions('ContainerTextFluidIcon', ['smallBox' => 'Small Box', 'box' => 'Box', 'fluid' => 'Fluid'], '', 'Container ');
+        }
+        if (!isset($inputsConfig['margin']) || ($inputsConfig['margin'] !== false && !is_array($inputsConfig['margin']))) {
+            $inputsConfig['margin'] = MFragmentMFormInputsHelper::getIconMarginOptions('DoubleContainerTextIcon', [0 => 'None', 1 => 'Small', 2 => 'Medium', 3 => 'Large'], ' Margin');
+        }
+        if (!isset($inputsConfig['padding']) || ($inputsConfig['padding'] !== false && !is_array($inputsConfig['padding']))) {
+            $inputsConfig['padding'] = MFragmentMFormInputsHelper::getIconPaddingOptions('DoubleContainerTextIcon', [0 => 'None', 1 => 'Small', 2 => 'Medium', 3 => 'Large'], ' Padding');
+        }
+
+        parent::__construct(new MForm(), $inputsConfig);
+    }
 
     public function generateInputsForm(): MForm
     {
