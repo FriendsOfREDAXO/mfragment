@@ -51,12 +51,10 @@ class Card extends AbstractComponent
 
     /**
      * Konstruktor
-     *
-     * @param string $fragmentName Name des zu verwendenden Fragments (nicht mehr verwendet)
      */
-    public function __construct(string $fragmentName = '')
+    public function __construct()
     {
-        parent::__construct($fragmentName); // Kein Fragment mehr!
+        parent::__construct();
         $this->addClass('card');
 
         // Sectionconfig initialisieren

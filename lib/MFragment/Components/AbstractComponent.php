@@ -8,21 +8,14 @@ use rex_factory_trait;
 use rex_string;
 
 /**
- * Optimierte Basisklasse für alle MFragment-Komponenten
+ * Moderne Basisklasse für alle MFragment-Komponenten
  *
- * Diese Version eliminiert die redundante getFragmentData() Methode
- * und ersetzt sie durch automatische Fragment-Daten-Generierung.
+ * Diese Version nutzt ausschließlich direktes HTML-Rendering 
+ * ohne REDAXO-Fragment-Abhängigkeiten für bessere Performance.
  */
 abstract class AbstractComponent implements ComponentInterface
 {
     use rex_factory_trait;
-
-    /**
-     * Der Name des zu verwendenden Fragments (optional)
-     *
-     * Wenn leer, wird renderHtml() für direktes Rendering verwendet
-     */
-    protected string $fragmentName = '';
 
     /**
      * HTML-Attribute der Komponente
@@ -36,12 +29,10 @@ abstract class AbstractComponent implements ComponentInterface
 
     /**
      * Konstruktor
-     *
-     * @param string $fragmentName Name des zu verwendenden Fragments
      */
-    public function __construct(string $fragmentName = '')
+    public function __construct()
     {
-        $this->fragmentName = $fragmentName;
+        // Keine Fragment-Parameter mehr
     }
 
     /**
@@ -217,28 +208,6 @@ abstract class AbstractComponent implements ComponentInterface
     }
 
     /**
-     * Setzt den Fragment-Namen
-     *
-     * @param string $fragmentName Fragment-Name
-     * @return $this Für Method Chaining
-     */
-    public function setFragmentName(string $fragmentName): self
-    {
-        $this->fragmentName = $fragmentName;
-        return $this;
-    }
-
-    /**
-     * Gibt den Fragment-Namen zurück
-     *
-     * @return string Fragment-Name
-     */
-    public function getFragmentName(): string
-    {
-        return $this->fragmentName;
-    }
-
-    /**
      * Erstellt ein HTML-Attribut-String aus den definierten Attributen
      * Verwendet rex_string::buildAttributes() aus REDAXO
      *
@@ -304,166 +273,23 @@ abstract class AbstractComponent implements ComponentInterface
     }
 
     /**
-     * Rendert die Komponente mit optimierter Fragment-Daten-Erzeugung
+     * Rendert die Komponente als HTML-String
      *
-     * Diese Version generiert automatisch die Fragment-Daten ohne explizite getFragmentData()
+     * Nutzt ausschließlich direktes HTML-Rendering ohne Fragment-Abhängigkeiten
      *
      * @return string HTML-Code der Komponente
      */
     public function show(): string
     {
-        if (!empty($this->fragmentName)) {
-            // Fragment-basiertes Rendering mit automatischer Daten-Generierung
-            $fragmentData = $this->buildFragmentData();
-            return RenderEngine::renderFragment($this->fragmentName, $fragmentData);
-        }
-
-        // Direktes Rendering mit RenderEngine
         return RenderEngine::render($this->renderHtml());
-    }
-
-    /**
-     * Automatische Fragment-Daten-Generierung (ersetzt getFragmentData())
-     *
-     * Diese Methode generiert automatisch die benötigten Fragment-Daten
-     * basierend auf den implementierten Methoden der Komponente.
-     *
-     * @return array Fragment-Daten
-     */
-    final protected function buildFragmentData(): array
-    {
-        $data = [];
-
-        // Content automatisch abrufen
-        if (method_exists($this, 'getContentForFragment')) {
-            $data['content'] = $this->getContentForFragment();
-        }
-
-        // Config automatisch abrufen
-        if (method_exists($this, 'getConfigForFragment')) {
-            $data['config'] = $this->getConfigForFragment();
-        }
-
-        // Standard-Config mit Component-Attributen
-        if (!isset($data['config']) || !is_array($data['config'])) {
-            $data['config'] = [];
-        }
-
-        // Klassen und Attribute in Config integrieren
-        if (!empty($this->classes) || !empty($this->attributes)) {
-            // Komponenten-spezifischer Bereich (z.B. 'card', 'accordion', etc.)
-            $componentKey = $this->getComponentKey();
-
-            if ($componentKey) {
-                if (!isset($data['config'][$componentKey])) {
-                    $data['config'][$componentKey] = [];
-                }
-                if (!isset($data['config'][$componentKey]['attributes'])) {
-                    $data['config'][$componentKey]['attributes'] = [];
-                }
-
-                // Klassen hinzufügen mit strenger Typ-Prüfung
-                if (!empty($this->classes)) {
-                    // Sicherstellen, dass es ein Array gibt
-                    $existingClasses = [];
-                    if (isset($data['config'][$componentKey]['attributes']['class'])) {
-                        if (is_array($data['config'][$componentKey]['attributes']['class'])) {
-                            $existingClasses = $data['config'][$componentKey]['attributes']['class'];
-                        } else if (is_string($data['config'][$componentKey]['attributes']['class'])) {
-                            $existingClasses = explode(' ', $data['config'][$componentKey]['attributes']['class']);
-                        }
-                    }
-
-                    $data['config'][$componentKey]['attributes']['class'] = array_merge($existingClasses, $this->classes);
-                }
-
-                // Attribute hinzufügen
-                if (!empty($this->attributes)) {
-                    $data['config'][$componentKey]['attributes'] = array_merge(
-                        $data['config'][$componentKey]['attributes'],
-                        $this->attributes
-                    );
-
-                    // class-Attribut spezial behandeln
-                    if (isset($this->attributes['class'])) {
-                        if (is_string($this->attributes['class'])) {
-                            $attributeClasses = explode(' ', $this->attributes['class']);
-
-                            // Bestehende Klassen holen
-                            $existingClasses = [];
-                            if (isset($data['config'][$componentKey]['attributes']['class']) && is_array($data['config'][$componentKey]['attributes']['class'])) {
-                                $existingClasses = $data['config'][$componentKey]['attributes']['class'];
-                            }
-
-                            $data['config'][$componentKey]['attributes']['class'] = array_merge($existingClasses, $attributeClasses);
-                        }
-                    }
-                }
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * Gibt den Komponenten-Schlüssel für die Config zurück
-     *
-     * Diese Methode kann von Subklassen überschrieben werden, um den
-     * korrekten Schlüssel für die Fragment-Config zu liefern.
-     *
-     * @return string|null Komponenten-Schlüssel (z.B. 'card', 'accordion')
-     */
-    protected function getComponentKey(): ?string
-    {
-        // Automatische Erkennung basierend auf Fragment-Namen
-        if (!empty($this->fragmentName)) {
-            $parts = explode('/', $this->fragmentName);
-            return end($parts);
-        }
-
-        return null;
     }
 
     /**
      * Direkte HTML-Rendering-Implementierung
      *
-     * Diese Methode muss von Komponenten implementiert werden sofern sie kein Fragment verwenden.
+     * Diese Methode muss von allen Komponenten implementiert werden.
      *
      * @return string HTML-Code der Komponente
      */
     abstract protected function renderHtml(): string;
-
-    /**
-     * Gibt den Content für das Fragment zurück (ersetzt getFragmentData)
-     *
-     * Diese Methode sollte von Fragment-basierten Komponenten implementiert werden.
-     * Sie wird automatisch von buildFragmentData() aufgerufen.
-     *
-     * @return mixed Content für das Fragment
-     */
-    protected function getContentForFragment()
-    {
-        return null;
-    }
-
-    /**
-     * Gibt die Konfiguration für das Fragment zurück (Ergänzung zu getContentForFragment)
-     *
-     * Diese Methode sollte von Fragment-basierten Komponenten implementiert werden.
-     * Sie wird automatisch von buildFragmentData() aufgerufen.
-     *
-     * @return array Konfiguration für das Fragment
-     */
-    protected function getConfigForFragment(): array
-    {
-        return [];
-    }
-
-    // DEPRECATED: Die alte getFragmentData() Methode als Standard-Implementierung
-    // für Rückwärtskompatibilität. Ist nicht mehr abstract!
-    public function getFragmentData(): array
-    {
-        // trigger_error('getFragmentData() is deprecated, use getContentForFragment() and getConfigForFragment() instead', E_USER_DEPRECATED);
-        return $this->buildFragmentData();
-    }
 }

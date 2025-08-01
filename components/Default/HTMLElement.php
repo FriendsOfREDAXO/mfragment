@@ -148,14 +148,4 @@ class HTMLElement extends AbstractComponent
         return "<{$this->tag}{$attributesStr}>{$content}</{$this->tag}>";
     }
 
-    /**
-     * Gibt die Datenstruktur für das Fragment zurück
-     * (Wird nicht verwendet, da kein Fragment genutzt wird)
-     *
-     * @return array Leeres Array, da kein Fragment verwendet wird
-     */
-    public function getFragmentData(): array
-    {
-        return [];
-    }
 }

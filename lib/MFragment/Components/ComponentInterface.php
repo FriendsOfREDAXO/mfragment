@@ -6,7 +6,7 @@ namespace FriendsOfRedaxo\MFragment\Components;
  * Interface für alle MFragment-Komponenten
  *
  * Definiert den Mindestumfang an Methoden, die alle Komponenten
- * implementieren müssen. Eliminiert redundante getFragmentData() Methode.
+ * implementieren müssen. Nutzt ausschließlich direktes HTML-Rendering.
  */
 interface ComponentInterface
 {
@@ -111,19 +111,4 @@ interface ComponentInterface
      * @return array Liste der HTML-Attribute
      */
     public function getAttributes(): array;
-
-    /**
-     * Setzt den Fragment-Namen
-     *
-     * @param string $fragmentName Fragment-Name
-     * @return $this Für Method Chaining
-     */
-    public function setFragmentName(string $fragmentName): self;
-
-    /**
-     * Gibt den Fragment-Namen zurück
-     *
-     * @return string Fragment-Name
-     */
-    public function getFragmentName(): string;
 }

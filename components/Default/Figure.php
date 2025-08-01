@@ -42,10 +42,10 @@ class Figure extends AbstractComponent
     /**
      * Konstruktor
      */
-    public function __construct($fragmentName = '')
+    public function __construct()
     {
-        parent::__construct($fragmentName);
-        // Fragment-System wird ignoriert - nur direkte HTML-Erzeugung
+        parent::__construct();
+        // Direkte HTML-Erzeugung ohne Fragment-System
     }
 
     /**
