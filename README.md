@@ -1,53 +1,66 @@
-# MFragment Addon - Version 1.2.0-beta
+# MFragment Addon - Version 2.0.0
 
-## Entwicklungsstand: Produktionsreif (Phase 2)
+## Entwicklungsstand: Modernisiert - Component-First Architecture
 
-Das MFragment Addon für REDAXO ist ein fortschrittliches Fragment-System zur Erstellung von wiederverwendbaren UI-Komponenten. Das Addon befindet sich aktuell in **Phase 2** der Entwicklung und ist **85% fertiggestellt**.
+Das MFragment Addon für REDAXO ist ein modernes Component-System zur Erstellung von wiederverwendbaren UI-Komponenten. Version 2.0 konzentriert sich vollständig auf Komponenten und hat die Fragment-Unterstützung entfernt.
 
 ## ✅ Aktuelle Features
 
 ### Core System
 - ✅ **RenderEngine** - Optimierte Rendering-Engine mit Performance-Monitoring
-- ✅ **Factory Pattern** - Saubere Objekt-Erstellung
-- ✅ **FORHtml Integration** - Optional mit intelligentem Fallback
+- ✅ **Component Architecture** - Moderne Komponenten-basierte Architektur
+- ✅ **Factory Pattern** - Saubere Objekt-Erstellung mit Fluent API
 - ✅ **Performance-Stats** - Eingebaute Performance-Überwachung
 - ✅ **Debug-Modus** - Detaillierte Debug-Informationen
-- ✅ **Method Chaining** - Flüssige API
+- ✅ **Method Chaining** - Flüssige API für alle Komponenten
 
 ### Komponenten-System
 - ✅ **ComponentInterface** - Standardisierte Komponenten-API
-- ✅ **AbstractComponent** - Basis-Komponente mit Standard-Funktionalität
-- ✅ **Bootstrap Components** - Badge-Komponente implementiert
+- ✅ **AbstractComponent** - Optimierte Basis-Komponente mit direktem HTML-Rendering
+- ✅ **Bootstrap Components** - Card, Accordion, Tabs, Modal, Carousel, Alert, Badge, Progress, Collapse
 - ✅ **Default Components** - Figure, HTMLElement, ListElement, Table
-- ✅ **Fragment-System** - Template-basierte Fragmente
+- ✅ **Pure HTML Rendering** - Keine Fragment-Abhängigkeiten mehr
 
-### HTML Generation
-- ✅ **BaseHtmlGenerator** - FORHtml-Wrapper mit Fallback
-- ✅ **parseHtml()** - HTML-Element-Erstellung
-- ✅ **SimpleHtmlElement** - Native HTML-Fallback
-- ✅ **REDAXO-kompatibel** - Proper addon availability checking
+### HTML Generation  
+- ✅ **BaseHtmlGenerator** - FORHtml-Wrapper mit intelligentem Fallback
+- ✅ **FORHtml Integration** - Optional mit intelligentem Fallback auf native HTML
+- ✅ **Direct Rendering** - Direkte HTML-Ausgabe ohne Template-Overhead
+- ✅ **REDAXO-kompatibel** - Vollständig integriert in REDAXO-Umgebung
 
 ### UI/Backend Integration
-- ✅ **MForm Inputs** - Bootstrap/UIKit Form-Felder
+- ✅ **MForm Inputs** - Bootstrap Form-Felder (UIKit entfernt)
 - ✅ **SVG Icon Sets** - Umfangreiches Icon-System für Backend
-- ✅ **Fragment Templates** - Bootstrap/UIKit/Default Fragmente
 - ✅ **Custom Inputs** - Spezielle Input-Felder für REDAXO Backend
+
+## 🎯 **Version 2.0 Änderungen**
+
+### ❌ **Entfernt in v2.0:**
+- Fragment-Dateien und Template-System
+- UIKit-Unterstützung (Fokus auf Bootstrap)
+- Fragment-Registry aus boot.php
+- Alte getFragmentData() API
+
+### ✅ **Neu in v2.0:**
+- Pure Component Architecture
+- 100% Direct HTML Rendering
+- Optimierte Performance ohne Template-Overhead
+- Vereinfachte API ohne Fragment-Komplexität
 
 ## 🔧 **Primäre Entwicklungsprinzipien**
 
-### 1. **Architektur-Entscheidungsmatrix**
+### 1. **Component-First Architecture**
 
-| Anforderung | Lösung | Grund |
-|------------|---------|-------|
-| HTML-Tag mit Attributen | `parseHtml()` mit HTMLElement | Direkt, schnell |
-| Bootstrap-Komponente | Fragment-basiert | Flexibilität & Wiederverwendung |
-| Komplexe Verschachtelung | Component-basiert | Wartbarkeit |
-| Einfache Liste/Tabelle | `renderHtml()` | Performance |
+| Use Case | Lösung | Vorteil |
+|----------|---------|---------|
+| Bootstrap Card | Card::factory() | Typsicher, Features, Fluent API |
+| HTML Element | HTMLElement::factory() | Flexibel, Attribute-Management |
+| Liste/Tabelle | ListElement/Table | Strukturiert, wiederverwendbar |
+| Custom Component | extend AbstractComponent | Vollständige Kontrolle |
 
-### 2. **API-Pattern Entscheidungsbaum**
+### 2. **API-Pattern**
 
 ```
-Neue Komponente entwickeln?
+Komponente erstellen?
 └─ Einfache HTML-Struktur?
    ├─ JA → renderHtml() verwenden
    │  └─ HTMLElement als Basis

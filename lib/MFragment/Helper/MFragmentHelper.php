@@ -17,11 +17,6 @@ class MFragmentHelper
         return $element;
     }
 
-    public static function createFragment(string $fragmentName, array $params = []): array
-    {
-        return array_merge(['fragment' => $fragmentName], $params);
-    }
-
     public static function mergeConfig($default, $custom)
     {
         $result = $default;
