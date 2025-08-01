@@ -54,7 +54,7 @@ class ListElement extends AbstractComponent
      */
     public function __construct(string $listType = 'ul')
     {
-        parent::__construct(''); // Kein Fragment, wir nutzen renderHtml()
+         // Kein Fragment, wir nutzen renderHtml()
         $this->setListType($listType);
     }
 

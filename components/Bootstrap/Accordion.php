@@ -22,6 +22,6 @@ class Accordion extends Collapse
      */
     public function __construct(bool $multiple = false)
     {
-        parent::__construct(false); // false = nur ein Item offen
+         // false = nur ein Item offen
     }
 }

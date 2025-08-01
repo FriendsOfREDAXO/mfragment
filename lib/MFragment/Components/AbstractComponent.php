@@ -28,14 +28,6 @@ abstract class AbstractComponent implements ComponentInterface
     protected array $classes = [];
 
     /**
-     * Konstruktor
-     */
-    public function __construct()
-    {
-        // Keine Fragment-Parameter mehr
-    }
-
-    /**
      * Factory-Methode für die Fluent-API
      *
      * @return static Eine neue Instanz der Komponente

@@ -51,7 +51,7 @@ class Alert extends AbstractComponent
      */
     public function __construct($content = null, string $type = 'primary')
     {
-        parent::__construct('');
+        
 
         // Standard-Klassen
         $this->addClass('alert');

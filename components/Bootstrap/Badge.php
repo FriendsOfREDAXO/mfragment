@@ -42,7 +42,7 @@ class Badge extends AbstractComponent
      */
     public function __construct(string $text = '', string $variant = 'secondary')
     {
-        parent::__construct(''); // Kein Fragment, wir nutzen renderHtml()
+         // Kein Fragment, wir nutzen renderHtml()
         
         $this->setText($text);
         $this->setVariant($variant);

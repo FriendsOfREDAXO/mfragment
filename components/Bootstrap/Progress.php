@@ -41,7 +41,7 @@ class Progress extends AbstractComponent
      */
     public function __construct($value = 0, string $variant = 'primary')
     {
-        parent::__construct(''); // Kein Fragment, wir nutzen renderHtml()
+         // Kein Fragment, wir nutzen renderHtml()
         
         // Standard Bootstrap Progress-Klasse
         $this->addClass('progress');

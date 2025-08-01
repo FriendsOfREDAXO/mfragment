@@ -54,7 +54,6 @@ class Card extends AbstractComponent
      */
     public function __construct()
     {
-        parent::__construct();
         $this->addClass('card');
 
         // Sectionconfig initialisieren

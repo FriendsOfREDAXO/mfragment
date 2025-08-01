@@ -44,7 +44,6 @@ class Figure extends AbstractComponent
      */
     public function __construct()
     {
-        parent::__construct();
         // Direkte HTML-Erzeugung ohne Fragment-System
     }
 

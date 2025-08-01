@@ -64,10 +64,10 @@ Komponente erstellen?
 └─ Einfache HTML-Struktur?
    ├─ JA → renderHtml() verwenden
    │  └─ HTMLElement als Basis
-   └─ NEIN → Fragment verwenden
-      ├─ Bootstrap? → renderBootstrap()
-      ├─ Default? → renderDefault()
-      └─ Custom → renderFragment()
+   └─ NEIN → Komplexe Komponente
+      ├─ Bootstrap? → Card, Modal, etc.
+      ├─ Default? → Figure, Table, etc.
+      └─ Custom → extend AbstractComponent
 ```
 
 ## 🛠️ **Entwicklungs-Workflow**
@@ -84,43 +84,16 @@ Komponente erstellen?
 
 ### **Schritt 2: Implementierung**
 
-#### **A) Neue Fragment-basierte Komponente**
+#### **A) Neue renderHtml-basierte Komponente**
 
 ```php
-// src/addons/mfragment/lib/MFragment/Components/Bootstrap/NewComponent.php
+// src/addons/mfragment/components/Bootstrap/NewComponent.php
 class NewComponent extends AbstractComponent
 {
     public function __construct()
     {
-        parent::__construct('bootstrap/new-component');
-    }
-    
-    protected function getContentForFragment()
-    {
-        return $this->sections;
-    }
-    
-    protected function getConfigForFragment(): array
-    {
-        return $this->config;
-    }
-    
-    protected function getComponentKey(): ?string
-    {
-        return 'newComponent';
-    }
-}
-```
-
-#### **B) Neue renderHtml-basierte Komponente**
-
-```php
-// src/addons/mfragment/lib/MFragment/Components/Default/SimpleElement.php
-class SimpleElement extends AbstractComponent
-{
-    public function __construct()
-    {
-        parent::__construct(); // Kein Fragment!
+        parent::__construct();
+        $this->addClass('new-component');
     }
     
     protected function renderHtml(): string
@@ -132,21 +105,38 @@ class SimpleElement extends AbstractComponent
 }
 ```
 
-#### **C) Fragment-Datei erstellen/optimieren**
+#### **B) Erweiterte Komponente mit komplexer Logik**
 
 ```php
-// src/addons/mfragment/fragments/bootstrap/new-component.php
-use FriendsOfRedaxo\MFragment\Core\RenderEngine;
-use FriendsOfRedaxo\MFragment\Helper\MFragmentHelper;
-
-$content = $this->getVar('content', []);
-$config = $this->getVar('config', []);
-
-// Verarbeitung...
-$structure = MFragmentHelper::createTag('div', $processedContent, ['attributes' => $attributes]);
-
-// RenderEngine verwenden
-echo RenderEngine::render($structure);
+// src/addons/mfragment/components/Default/AdvancedElement.php
+class AdvancedElement extends AbstractComponent
+{
+    protected array $sections = [];
+    
+    public function __construct()
+    {
+        parent::__construct();
+    }
+    
+    public function addSection(string $title, string $content): self
+    {
+        $this->sections[] = ['title' => $title, 'content' => $content];
+        return $this;
+    }
+    
+    protected function renderHtml(): string
+    {
+        $output = '<div' . $this->buildAttributesString() . '>';
+        foreach ($this->sections as $section) {
+            $output .= '<div class="section">';
+            $output .= '<h3>' . htmlspecialchars($section['title']) . '</h3>';
+            $output .= '<div class="content">' . $section['content'] . '</div>';
+            $output .= '</div>';
+        }
+        $output .= '</div>';
+        return $output;
+    }
+}
 ```
 
 ### **Schritt 3: Integration in MFragmentElements**
@@ -159,7 +149,8 @@ public function addNewComponent($params): self
     if ($params instanceof NewComponent) {
         $this->items[] = $params;
     } else {
-        $component = NewComponent::create($params);
+        $component = NewComponent::factory()
+            ->setContent($params);
         $this->items[] = $component;
     }
     return $this;
@@ -202,8 +193,11 @@ echo $processor->process($content);
 // GUT
 echo RenderEngine::render($content);
 
-// NOCH BESSER
-echo RenderEngine::renderBootstrap('component', $content, $config);
+// NOCH BESSER - Direkt in Komponenten
+$component = Card::factory()
+    ->setContent($content)
+    ->addClass('custom-card');
+echo $component->show();
 ```
 
 ## 🔄 **Migration-Workflow**
@@ -212,8 +206,8 @@ echo RenderEngine::renderBootstrap('component', $content, $config);
 
 ```markdown
 1. **Analyse**
-   - Fragment oder renderHtml Komponente?
    - Welche Daten werden verwendet?
+   - Wie komplex ist die HTML-Struktur?
    - Gibt es Tests?
 
 2. **Backup erstellen**
@@ -221,9 +215,9 @@ echo RenderEngine::renderBootstrap('component', $content, $config);
    - Tests dokumentieren
 
 3. **Schrittweise Migration**
-   - Neue Methoden hinzufügen
-   - getFragmentData() beibehalten (deprecated)
-   - RenderEngine in Fragmenten einbauen
+   - renderHtml() Methode implementieren
+   - Alte Methoden als deprecated markieren
+   - RenderEngine für finale Ausgabe nutzen
 
 4. **Validierung**
    - Gleiche Ausgabe wie vorher?
@@ -242,9 +236,9 @@ echo RenderEngine::renderBootstrap('component', $content, $config);
 ```markdown
 ## ComponentName
 
-**Pfad**: `src/addons/mfragment/lib/MFragment/Components/.../ComponentName.php`
-**Rendering**: [Fragment-basiert|renderHtml]
-**Version**: 1.1.0+
+**Pfad**: `src/addons/mfragment/components/.../ComponentName.php`
+**Rendering**: Pure HTML (renderHtml)
+**Version**: 2.0.0+
 
 ### Verwendung
 
@@ -264,11 +258,11 @@ echo $component->show();
 ### Migration von v1.0
 
 ```php
-// Alt
+// Alt (v1.x Fragment-basiert)
 $fragment = new MFragmentItem(...);
 
-// Neu  
-$component = ComponentName::create(...);
+// Neu (v2.0 Component-basiert)
+$component = ComponentName::factory(...);
 ```
 ```
 
@@ -278,27 +272,38 @@ $component = ComponentName::create(...);
 
 ```php
 // 1. Einfacher Tag mit Inhalt
-RenderEngine::renderTag('div', $content, ['class' => 'wrapper']);
+echo HTMLElement::factory('div')
+    ->setContent($content)
+    ->addClass('wrapper')
+    ->show();
 
 // 2. Bootstrap-Komponente
-RenderEngine::renderBootstrap('accordion', $items, $config);
+echo Card::factory()
+    ->setHeader($title)
+    ->setBody($content)
+    ->addClass('shadow')
+    ->show();
 
-// 3. Komplexe Struktur
-$structure = MFragmentHelper::createTag('section', [
-    MFragmentHelper::createTag('h2', $title),
-    MFragmentHelper::createTag('div', $content, ['class' => 'content'])
+// 3. Komplexe Struktur mit verschachtelten Komponenten
+$section = HTMLElement::factory('section')
+    ->addClass('content-section');
+
+$section->setContent([
+    HTMLElement::factory('h2')->setContent($title)->show(),
+    HTMLElement::factory('div')->addClass('content')->setContent($content)->show()
 ]);
-echo RenderEngine::render($structure);
 
-// 4. Fragment-Einbindung
-$fragment = MFragmentHelper::createFragment('bootstrap/card', [
-    'content' => $cardContent,
-    'config' => $cardConfig
-]);
-echo RenderEngine::render($fragment);
+echo $section->show();
 
-// 5. Config zusammenführen
-$mergedConfig = MFragmentHelper::mergeConfig($defaultConfig, $userConfig);
+// 4. Liste von Items
+echo ListElement::factory('ul')
+    ->addItem('Erstes Element')
+    ->addItem('Zweites Element')
+    ->addClass('custom-list')
+    ->show();
+
+// 5. RenderEngine für Legacy-Kompatibilität (falls externe Fragmente)
+echo RenderEngine::render($legacyStructure);
 ```
 
 ## 🔍 **Debugging-Guide**
@@ -312,27 +317,18 @@ MFragment::factory()
     ->show(); // Zeigt Debug-Info
 
 // Oder direkt:
-echo RenderEngine::getDebugInfo();
-```
-
-### **Fragment-Daten inspizieren:**
-
-```php
-// In Fragment-Dateien
-var_dump($this->getVar('content'));
-var_dump($this->getVar('config'));
-die();
+echo RenderEngine::getStats();
 ```
 
 ### **Komponenten-Daten prüfen:**
 
 ```php
 // In Komponenten
-protected function getContentForFragment()
+protected function renderHtml(): string
 {
-    $content = $this->sections;
-    // var_dump($content); // Auskommentiert für Debug
-    return $content;
+    $output = $this->buildMyHtml();
+    // var_dump($output); // Auskommentiert für Debug
+    return $output;
 }
 ```
 
@@ -349,8 +345,8 @@ protected function getContentForFragment()
    ```
 
 2. **Rückwärtskompatibilität**
-  - Alle alten Methoden funktionieren?
-  - getFragmentData() gibt deprecation warning?
+  - Alle Komponenten-Methoden funktionieren?
+  - RenderEngine für externe Fragment-Nutzung verfügbar?
 
 3. **Dokumentation**
   - README aktualisiert?

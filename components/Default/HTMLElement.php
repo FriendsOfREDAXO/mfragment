@@ -39,7 +39,7 @@ class HTMLElement extends AbstractComponent
      */
     public function __construct(string $tag = 'div', $content = null, array $attributes = [])
     {
-        parent::__construct('');
+        
         $this->tag = $tag;
         $this->content = $content;
         $this->attributes = $attributes;

@@ -61,7 +61,7 @@ class Collapse extends AbstractComponent
      */
     public function __construct(bool $multiple = true)
     {
-        parent::__construct('bootstrap/collapse');
+        
         $this->setMultiple($multiple);
     }
 

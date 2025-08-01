@@ -110,7 +110,7 @@ class Modal extends AbstractComponent
      */
     public function __construct($content, ?string $title = null, $footer = null)
     {
-        parent::__construct('');
+        
         $this->content = $content;
         $this->title = $title;
         $this->footer = $footer;

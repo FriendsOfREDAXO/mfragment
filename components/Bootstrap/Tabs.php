@@ -41,7 +41,7 @@ class Tabs extends AbstractComponent
      */
     public function __construct()
     {
-        parent::__construct('');
+        
     }
 
     /**

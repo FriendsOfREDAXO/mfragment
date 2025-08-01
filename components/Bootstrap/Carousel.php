@@ -42,7 +42,6 @@ class Carousel extends AbstractComponent
      */
     public function __construct()
     {
-        parent::__construct();
         $this->addClass('carousel slide');
     }
 

@@ -59,7 +59,7 @@ class Table extends AbstractComponent
      */
     public function __construct(array $body = [], array $header = [], array $footer = [])
     {
-        parent::__construct(''); // Kein Fragment, wir nutzen renderHtml()
+         // Kein Fragment, wir nutzen renderHtml()
 
         $this->setBody($body);
         $this->setHeader($header);
