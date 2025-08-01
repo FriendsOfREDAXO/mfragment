@@ -317,14 +317,4 @@ class Carousel extends AbstractComponent
         }
     }
 
-    /**
-     * Gibt die Datenstruktur für das Fragment zurück
-     * (Wird nicht verwendet, da kein Fragment-Aufruf)
-     *
-     * @return array Leeres Array
-     */
-    public function getFragmentData(): array
-    {
-        return [];
-    }
 }
