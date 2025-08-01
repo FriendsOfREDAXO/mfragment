@@ -1,9 +1,4 @@
 <?php
-/**
- * @author Joachim Doerr
- * @package redaxo5
- * @license MIT
- */
 
 use FriendsOfRedaxo\MForm;
 use FriendsOfRedaxo\MForm\Inputs\MFormInputsAbstract;

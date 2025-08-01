@@ -46,8 +46,48 @@ class MFragmentHelper
     private static function mergeClassAttributes($default, $custom)
     {
         $result = array_merge($default, $custom);
+
+        // Überprüfen, ob class Attribute vorhanden sind
         if (isset($custom['class'])) {
-            $result['class'] = array_merge($default['class'], $custom['class']);
+            // Wenn default['class'] nicht existiert, erstelle ein leeres Array
+            if (!isset($default['class'])) {
+                $default['class'] = [];
+            }
+
+            // Wenn custom['class'] ein String ist, konvertiere ihn zu einem Array
+            if (is_string($custom['class'])) {
+                $customClass = explode(' ', $custom['class']);
+                $result['class'] = is_array($default['class']) ?
+                    array_merge($default['class'], $customClass) :
+                    $customClass;
+            }
+            // Wenn custom['class'] ein Array ist, merge es mit default['class']
+            elseif (is_array($custom['class'])) {
+                // Flache Array erstellen, um default-Werte zu erhalten
+                $flatDefault = [];
+                foreach ($default['class'] as $key => $value) {
+                    if ($key === 'default' || is_numeric($key)) {
+                        $flatDefault[] = $value;
+                    }
+                }
+
+                // Flache Array für custom erstellen
+                $flatCustom = [];
+                foreach ($custom['class'] as $key => $value) {
+                    if ($key === 'default' || is_numeric($key)) {
+                        $flatCustom[] = $value;
+                    }
+                }
+
+                // Zusammenführen ohne Duplikate
+                $result['class'] = array_unique(array_merge($flatDefault, $flatCustom));
+            }
+            // Sonst behalte den default Wert
+            else {
+                $result['class'] = $default['class'];
+            }
         }
+
         return $result;
-    }}
+    }
+}

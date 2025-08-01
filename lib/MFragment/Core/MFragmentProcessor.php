@@ -1,7 +1,9 @@
 <?php
+# path: src/addons/mfragment/lib/MFragment/Core/MFragmentProcessor.php
 namespace FriendsOfRedaxo\MFragment\Core;
 
 use FriendsOfRedaxo\MFragment;
+use FriendsOfRedaxo\MFragment\Components\ComponentInterface;
 use FriendsOfRedaxo\MFragment\DTO\MFragmentItem;
 
 class MFragmentProcessor
@@ -32,53 +34,52 @@ class MFragmentProcessor
         }
 
         $this->currentDepth++;
-
-        $output = '';
-
-        if ($content instanceof MFragment) {
-            $output .= $this->processMFragmentItems($content->getItems());
-        } elseif (is_array($content)) {
-            $output .= $this->processArray($content);
-        } elseif ($content instanceof MFragmentItem) {
-            $output .= $this->processMFragmentItem($content);
-        } elseif (is_string($content)) {
-            $output .= $content;
-        }
-
+        $output = $this->renderContent($content);
         $this->currentDepth--;
 
         return $output;
     }
 
+    /**
+     * Zentrale Methode zum Rendern verschiedener Content-Typen
+     */
+    private function renderContent($content): string
+    {
+        return match(true) {
+            $content instanceof ComponentInterface => $content->show(),
+            $content instanceof MFragment => $this->processMFragmentItems($content->getItems()),
+            is_array($content) => $this->processArray($content),
+            $content instanceof MFragmentItem => $this->processMFragmentItem($content),
+            is_string($content) => $content,
+            default => ''
+        };
+    }
+
     private function processMFragmentItems(array $items): string
     {
-        $output = '';
-        foreach ($items as $item) {
-            $output .= $this->processInternal($item);
-        }
-        return $output;
+        return implode('', array_map([$this, 'processInternal'], $items));
     }
 
     private function processArray(array $content): string
     {
-        $output = '';
-
         // If the content is a single item (not a list of items), wrap it in an array
         if (isset($content['tag']) || isset($content['fragment'])) {
             $content = [$content];
         }
 
+        $output = '';
         foreach ($content as $item) {
-            if (is_array($item)) {
-                if (isset($item['fragment'])) {
-                    $output .= MFragment::parse($item['fragment'], $item);
-                } elseif (isset($item['tag'])) {
-                    $output .= $this->processTag($item);
-                } elseif (isset($item['content'])) {
-                    $output .= $this->processInternal($item['content']);
-                }
-            } else {
-                $output .= $this->processInternal($item);
+            if (!is_array($item)) {
+                $output .= $this->renderContent($item);
+                continue;
+            }
+
+            if (isset($item['fragment'])) {
+                $output .= MFragment::parse($item['fragment'], $item);
+            } elseif (isset($item['tag'])) {
+                $output .= $this->processTag($item);
+            } elseif (isset($item['content'])) {
+                $output .= $this->renderContent($item['content']);
             }
         }
 
@@ -93,7 +94,9 @@ class MFragmentProcessor
                 'config' => $item->config,
                 'attributes' => $item->attributes,
             ]);
-        } elseif ($item->tag) {
+        }
+
+        if ($item->tag) {
             return $this->processTag([
                 'tag' => $item->tag,
                 'content' => $item->content,
@@ -101,7 +104,8 @@ class MFragmentProcessor
                 'attributes' => $item->attributes
             ]);
         }
-        return $this->processInternal($item->content);
+
+        return $this->renderContent($item->content);
     }
 
     private function processTag(array $item): string
@@ -109,9 +113,15 @@ class MFragmentProcessor
         $tag = $item['tag'];
         $attributes = array_merge(($item['attributes'] ?? []), ((isset($item['config']['attributes'])) ? $item['config']['attributes'] : []));
         $attributes = (count($attributes) > 0) ? $this->buildAttributes($attributes) : '';
-        $content = isset($item['content']) ? $this->processInternal($item['content']) : '';
+        $content = isset($item['content']) ? $this->renderContent($item['content']) : '';
 
-        if (in_array($tag, ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'])) {
+        if ($tag === 'contentOnly') {
+            return $content;
+        }
+
+        $selfClosingTags = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+
+        if (in_array($tag, $selfClosingTags)) {
             return "<{$tag}{$attributes}>";
         }
 
@@ -121,40 +131,74 @@ class MFragmentProcessor
     private function buildAttributes(array $attributes): string
     {
         $output = [];
+
         foreach ($attributes as $key => $value) {
             if ($value === null || $value === false) {
                 continue;
             }
+
             if ($value === true) {
                 $output[] = $key;
-            } elseif (is_array($value)) {
-                $processedValue = $this->processArrayValue($value);
+                continue;
+            }
+
+            if (is_array($value)) {
+                $processedValue = ($key === 'class')
+                    ? $this->processClassArray($value)
+                    : $this->processArrayValue($value);
+
                 $output[] = $key . '="' . htmlspecialchars($processedValue, ENT_QUOTES, 'UTF-8') . '"';
-            } elseif (is_string($value) && strpos($value, '{') === 0 && strpos($value, '}') === strlen($value) - 1) {
-                // Handle strings that look like JSON
+                continue;
+            }
+
+            // Handle JSON-like strings
+            if (is_string($value) && str_starts_with($value, '{') && str_ends_with($value, '}')) {
                 $output[] = $key . "='" . $value . "'";
             } else {
                 $output[] = $key . '="' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '"';
             }
         }
+
         return $output ? ' ' . implode(' ', $output) : '';
+    }
+
+    private function processClassArray(array $value): string
+    {
+        $allClasses = [];
+
+        foreach ($value as $key => $val) {
+            // Handle nested arrays
+            if (is_array($val)) {
+                foreach ($val as $subVal) {
+                    if (is_string($subVal) && !in_array($subVal, $allClasses)) {
+                        $allClasses[] = $subVal;
+                    }
+                }
+                continue;
+            }
+
+            // Handle normal values
+            if (is_string($val) && !in_array($val, $allClasses)) {
+                $allClasses[] = $val;
+            }
+        }
+
+        return implode(' ', array_filter($allClasses));
     }
 
     private function processArrayValue(array $value): string
     {
-        if ($this->isAssociativeArray($value)) {
-            $classes = [];
-            foreach ($value as $subKey => $subValue) {
-                if (is_array($subValue)) {
-                    $classes[] = $this->processArrayValue($subValue);
-                } else {
-                    $classes[] = $subValue;
-                }
+        $classes = [];
+
+        foreach ($value as $subValue) {
+            if (is_array($subValue)) {
+                $classes[] = $this->processArrayValue($subValue);
+            } else {
+                $classes[] = $subValue;
             }
-            return implode(' ', array_filter($classes));
-        } else {
-            return implode(' ', array_filter($value));
         }
+
+        return implode(' ', array_filter($classes));
     }
 
     private function isAssociativeArray(array $arr): bool

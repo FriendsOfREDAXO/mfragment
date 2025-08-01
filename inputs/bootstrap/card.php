@@ -1,9 +1,4 @@
 <?php
-/**
- * @author Joachim Doerr
- * @package redaxo5
- * @license MIT
- */
 
 use Cke5\Utils\Cke5Lang;
 use FriendsOfRedaxo\MForm;
@@ -15,8 +10,9 @@ class card extends MFormInputsAbstract implements MFormInputsInterface
     protected array $config = [
         'id' => 'card',
         // card content headline
-        'headlineAttributes' => ['label' => 'Headline Titel', 'type' => 'text'],
+//        'headlineAttributes' => ['label' => 'Headline', 'type' => 'text'],
         'headline' => true,
+        'cke5HeadlineProfile' => '',
         // card content leadtext
         'cke5LeadProfile' => 'light',
         'leadAttributes' => ['label' => 'Leadtext'],
@@ -25,8 +21,6 @@ class card extends MFormInputsAbstract implements MFormInputsInterface
         'cke5TextProfile' => 'default',
         'textAttributes' => ['label' => 'Fließtext'],
         'text' => true,
-        // card content accordion
-        'accordion' => true,
         // card content buttons
         'buttons' => true,
         // header
@@ -37,6 +31,7 @@ class card extends MFormInputsAbstract implements MFormInputsInterface
         'list' => false,
         // card footer
         'footer' => false,
+        'config' => false,
         // settings die selben wie bei section
         'marginLabel' => 'Außenabstand',
         'marginDefaultValue' => 1,
@@ -69,28 +64,29 @@ class card extends MFormInputsAbstract implements MFormInputsInterface
         $cardContentInputForm = MForm::factory()
             ->setShowWrapper(false);
 
-        if ($this->config['headline'] === true && (!empty($this->config['headlineAttributes']) && (!isset($this->config['headlineAttributes']['hide']) || !$this->config['headlineAttributes']['hide']))) {
-            $addField = (isset($this->config['headlineAttributes']['type']) && $this->config['headlineAttributes']['type'] === 'text') ? 'addTextField' : 'addTextAreaField';
-            // text oder textarea look at line 34
-            // addTextAreaField
-            // addTextField
-            $cardContentInputForm->$addField($id . 'headline', $this->config['headlineAttributes']);
-        }
+//        if ($this->config['headline'] === true && (!empty($this->config['headlineAttributes']) && (!isset($this->config['headlineAttributes']['hide']) || !$this->config['headlineAttributes']['hide']))) {
+//            $addField = (isset($this->config['headlineAttributes']['type']) && $this->config['headlineAttributes']['type'] === 'text') ? 'addTextField' : 'addTextAreaField';
+//            // text oder textarea look at line 34
+//            // addTextAreaField
+//            // addTextField
+//            $cardContentInputForm->$addField($id . 'headline', $this->config['headlineAttributes']);
+//        }
 
-        foreach (['cke5LeadProfile' => 'lead', 'cke5TextProfile' => 'text'] as $profile => $attributesKey) {
+        foreach (['cke5HeadlineProfile' => 'headline', 'cke5LeadProfile' => 'lead', 'cke5TextProfile' => 'text'] as $profile => $attributesKey) {
             if ($this->config[$attributesKey] === true) {
                 if (isset($this->config[$attributesKey . 'Attributes']) && !is_array($this->config[$attributesKey . 'Attributes'])) $this->config[$attributesKey . 'Attributes'] = [];
-                $addField = (isset($this->config[$profile]['type']) && $this->config[$profile]['type'] === 'text') ? 'addTextField' : 'addTextAreaField';
+                $addField = (isset($this->config[$profile.'Type']) && $this->config[$profile.'Type'] === 'text') ? 'addTextField' : 'addTextAreaField';
                 if ($addField === 'addTextAreaField' && !empty($this->config[$profile])) {
                     $this->config[$attributesKey . 'Attributes']['data-lang'] =  Cke5Lang::getUserLang();
                     $this->config[$attributesKey . 'Attributes']['data-profile'] =  $this->config[$profile];
-                    $this->config[$attributesKey . 'Attributes']['class'] =  ((!empty($this->config['class'])) ? $this->config['class'] : '') . ' cke5-editor';
+                    $this->config[$attributesKey . 'Attributes']['class'] =  ((!empty($this->config[$attributesKey . 'Attributes']['class'])) ? $this->config[$attributesKey . 'Attributes']['class'] : '') . ' cke5-editor';
                 }
                 if ($this->config[$attributesKey] === true) {
                     // text oder textarea look at line 44
                     // addTextAreaField
                     // addTextField
-                    $cardContentInputForm->$addField($id . $attributesKey, $this->config[$attributesKey . 'Attributes']);
+                    $defaultValue = (!empty($this->config[$attributesKey . 'DefaultValue'])) ? $this->config[$attributesKey . 'DefaultValue'] : null;
+                    $cardContentInputForm->$addField($id . $attributesKey, $this->config[$attributesKey . 'Attributes'], $defaultValue);
                 }
             }
         }
@@ -100,40 +96,45 @@ class card extends MFormInputsAbstract implements MFormInputsInterface
         }
 
         $mform = MForm::factory();
-        $mform->addTabElement('<i class="fa fa-file-text" aria-hidden="true"></i> Inhalt', $cardContentInputForm, true);
+        if ($this->config['config'] === false) {
+            $mform->setShowWrapper(false);
+            $mform = $cardContentInputForm;
+        } else {
+            $mform->addTabElement('<i class="fa fa-file-text" aria-hidden="true"></i> Inhalt', $cardContentInputForm, true);
+        }
 
-//        if ($this->config['image'] !== false) {
-//            $mform->addTabElement('<i class="fa fa-image"></i> Bild', MForm::factory()->addAlertInfo('TODO<br>
-//                - [ ] medium auswahl<br>
-//                - [ ] image optionen<br>
-//                - [ ] image format<br>
-//                - [ ] image caption<br>
-//                - [ ] image link<br>
-//                - [ ] slider<br>
-//                - [ ] zitat<br>
-//                - [ ] lead<br>
-//                - [ ] top mform<br>
-//                '
-//            ));
-//        }
-//
-//        if ($this->config['list'] !== false) {
-//            $mform->addTabElement('<i class="fa fa-list"></i> Liste', MForm::factory()->addAlertInfo('TODO<br>
-//                - [ ] Repeater List Items<br>
-//                - [ ] list mform<br>
-//                '
-//            ));
-//        }
-//
-//        if ($this->config['footer'] !== false) {
-//            $mform->addTabElement('<i class="fa fa-square-o"></i> Footer', MForm::factory()->addAlertInfo('TODO<br>
-//                - [ ] Text und Link Buttons<br>
-//                - [ ] footer mform<br>
-//                '
-//            ));
-//        }
+        if ($this->config['image'] !== false) {
+            $mform->addTabElement('<i class="fa fa-image"></i> Bild', MForm::factory()->addAlertInfo('TODO<br>
+                - [ ] medium auswahl<br>
+                - [ ] image optionen<br>
+                - [ ] image format<br>
+                - [ ] image caption<br>
+                - [ ] image link<br>
+                - [ ] slider<br>
+                - [ ] zitat<br>
+                - [ ] lead<br>
+                - [ ] top mform<br>
+                '
+            ));
+        }
 
-        if ($this->config['margin'] !== false || $this->config['padding'] !== false || $this->config['bgClass'] !== false || $this->config['bgImg'] !== false) {
+        if ($this->config['list'] !== false) {
+            $mform->addTabElement('<i class="fa fa-list"></i> Liste', MForm::factory()->addAlertInfo('TODO<br>
+                - [ ] Repeater List Items<br>
+                - [ ] list mform<br>
+                '
+            ));
+        }
+
+        if ($this->config['footer'] !== false) {
+            $mform->addTabElement('<i class="fa fa-square-o"></i> Footer', MForm::factory()->addAlertInfo('TODO<br>
+                - [ ] Text und Link Buttons<br>
+                - [ ] footer mform<br>
+                '
+            ));
+        }
+
+        if ($this->config['config'] && ($this->config['margin'] !== false || $this->config['padding'] !== false || $this->config['bgClass'] !== false || $this->config['bgImg'] !== false)) {
             $this->config['fitting'] = false;
             // TODO padding und margin icons für abstände der card contents
             $mform->addTabElement('<i class="fa fa-cog"></i> Einstellungen', MForm::factory()->addInputs($id.'cardConfig', 'bootstrap/section', $this->config), false, true);

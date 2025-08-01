@@ -1,13 +1,9 @@
 <?php
-/**
- * @author Joachim Doerr
- * @package redaxo5
- * @license MIT
- */
 
 namespace FriendsOfRedaxo\MFragment\Helper;
 
 use rex;
+use rex_addon;
 use rex_managed_media;
 use rex_media;
 use rex_media_manager;
@@ -36,7 +32,7 @@ class MFragmentMediaHelper {
         $mediaType = (empty($mediaType)) ? 'original' : $mediaType;
         $urlMediaTypeQueryParameter = 'rex_media_type=' . $mediaType .'&';
         $urlMediaTypePathString = (!empty($mediaType)) ? self::MEDIA_REWRITE_DIR . '/' . $mediaType . '/' : '';
-        $urlMediaType = (\rex_addon::get('yrewrite')->isAvailable()) ? $urlMediaTypePathString : 'index.php?' . $urlMediaTypeQueryParameter . 'rex_media_file=';
+        $urlMediaType = (rex_addon::get('yrewrite')->isAvailable()) ? $urlMediaTypePathString : 'index.php?' . $urlMediaTypeQueryParameter . 'rex_media_file=';
 
         $image = array_merge(
             ['src' => rex_url::frontend() . $urlMediaType . $file],

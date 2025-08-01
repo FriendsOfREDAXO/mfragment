@@ -1,9 +1,4 @@
 <?php
-/**
- * @author Joachim Doerr
- * @package redaxo5
- * @license MIT
- */
 
 use FriendsOfRedaxo\MForm;
 use FriendsOfRedaxo\MForm\Inputs\MFormInputsAbstract;
@@ -16,12 +11,15 @@ class section extends MFormInputsAbstract implements MFormInputsInterface
     protected array $config = [
         'id' => 'section',
         'fittingLabel' => 'Einpassung',
+        'fittingToggle' => true,
         'fittingDefaultValue' => 'box',
         'fitting' => [],
         'marginLabel' => 'Außenabstand',
+        'marginToggle' => true,
         'marginDefaultValue' => 1,
         'margin' => [],
         'paddingLabel' => 'Innenabstand',
+        'paddingToggle' => true,
         'paddingDefaultValue' => 1,
         'padding' => [],
         'borderLabel' => '',

@@ -1,5 +1,5 @@
 <?php
-
+# path: src/addons/mfragment/lib/MFragment/Utils/SVGConfigIconSet.php
 namespace FriendsOfRedaxo\MFragment\Utils;
 
 class SVGConfigIconSet
@@ -40,7 +40,7 @@ class SVGConfigIconSet
         'lines' => [
             'color' => '#000',
             'width' => 27,
-            'opacity' => 0.18,
+            'opacity' => 0.12,
             'x1' => 384.815,
             'x2' => 2393.52,
             'y1' => 314.252,
@@ -477,6 +477,89 @@ class SVGConfigIconSet
         return self::createBaseWrapper($container1 . $container2);
     }
 
+    public static function getDoubleContainerLayoutImgIcon($description = '', $imgPositionStart = 'left', $boxConfig1 = [], $contentLinesConfig1 = [], $containerConfig1 = [], $boxConfig2 = [], $contentLinesConfig2 = [], $containerConfig2 = [], $descriptionTextTop = 2451.55): string
+    {
+        $imgPosition = ($imgPositionStart == 'left') ? 'right' : 'left';
+        $height = self::config['container']['height'] - 300;
+        $top = 10;
+
+        $boxConfig1 = array_merge([
+            'lines' => 8,
+            'vertical' => 'center',
+            'position' => 0,
+            'col' => 12,
+            'top' => $top,
+            'fitType' => 'fit',
+            'containerHeight' => $height,
+        ], $boxConfig1 ?? []);
+        $top = $boxConfig1['top'];
+        $height = $boxConfig1['containerHeight'];
+
+        $contentLinesConfig1 = array_merge([
+            'lines' => 4,
+            'vertical' => 'center',
+            'position' => 6,
+            'col' => 6,
+            'top' => $top,
+            'fitType' => 'fit',
+            'containerHeight' => $height,
+        ], $contentLinesConfig1 ?? []);
+
+        $containerConfig1 = array_merge([
+            'width' => self::config['container']['width'],
+            'height' => $height,
+            'left' => 0,
+            'top' => $top,
+            'style' => self::config['container']['style'],
+        ], $containerConfig1 ?? []);
+
+        $boxConfig2 = array_merge([
+            'lines' => 8,
+            'vertical' => 'center',
+            'position' => 0,
+            'col' => 12,
+            'top' => $top,
+            'fitType' => 'fit',
+            'containerHeight' => $height,
+        ], $boxConfig2 ?? []);
+        $top = $boxConfig2['top'];
+        $boxHeight = $boxConfig2['containerHeight'];
+        $boxConfig2['top'] = $boxConfig2['top'] + $height;
+
+        $contentLinesConfig2 = array_merge([
+            'lines' => 4,
+            'vertical' => 'center',
+            'position' => 6,
+            'col' => 6,
+            'top' => $top,
+            'fitType' => 'fit',
+            'containerHeight' => $boxHeight,
+        ], $contentLinesConfig2 ?? []);
+        $contentLinesConfig2['top'] = $contentLinesConfig2['top'] + $height;
+
+        $containerConfig2 = array_merge([
+            'width' => self::config['container']['width'],
+            'height' => $boxHeight,
+            'left' => 0,
+            'top' => $top,
+            'style' => self::config['container']['style'],
+        ], $containerConfig2 ?? []);
+        $containerConfig2['top'] = $containerConfig2['top'] + $height;
+
+        // Container ohne Textstreifen erstellen (nur Boxen/Bilder)
+        $container1 = 
+            self::createContainer($containerConfig1['left'], $containerConfig1['top'], $containerConfig1['height'])
+            . self::createBox($boxConfig1['lines'], $boxConfig1['vertical'], $boxConfig1['position'], $boxConfig1['col'], 0, false, $boxConfig1['top'], $boxConfig1['containerHeight']);
+
+        $container2 = 
+            self::createContainer($containerConfig2['left'], $containerConfig2['top'], $containerConfig2['height'])
+            . (is_string($description) ? self::createDescriptionText($description, self::config['container']['width'] / 2, $descriptionTextTop, self::config['text']['fontSize']) : '')
+            . self::createBox($boxConfig2['lines'], $boxConfig2['vertical'], $boxConfig2['position'], $boxConfig2['col'], 0, false, $boxConfig2['top'], $boxConfig2['containerHeight']);
+
+        // SVG erstellen mit beiden Containern übereinander
+        return self::createBaseWrapper($container1 . $container2);
+    }
+
     public static function getContainerTextLayoutImgIcon($description = '', $type = '', $imgPosition = 'left', $fitType = '', $getWrapper = true, $boxConfig = [], $contentLinesConfig = [], $containerConfig = [], $descriptionTextTop = 2451.55): string
     {
         $gutter = self::config['grid']['gutter'];
@@ -709,7 +792,7 @@ class SVGConfigIconSet
                 $y = $top;
                 break;
             case 'bottom':
-                $y = $top + ($containerHeight - $boxHeight);
+                $y = (($containerHeight - $boxHeight) - ($top/2));
                 break;
             case 'center':
             default:
@@ -724,7 +807,7 @@ class SVGConfigIconSet
         $width = ($col * $colWidth) + (($col - 1) * $gutter);
         $x = $left + ($position * ($colWidth + $gutter));
 
-        $style = 'width: ' . $width . 'px; height: ' . $boxHeight . 'px; background-color: #000; opacity: 0.8;';
+        $style = 'width: ' . $width . 'px; height: ' . $boxHeight . 'px; background-color: #000; opacity: 0.4;';
         return '<rect style="' . $style . '" x="' . $x . '" y="' . $y . '"></rect>';
     }
 
@@ -1239,4 +1322,51 @@ class SVGConfigIconSet
     }
 
 
+    public static function getImgColumnWidthIcon($description = '', $col = 6, $position = 'left', $showLines = false): string
+    {
+        // Position der Spalte bestimmen
+        $columnPosition = match($position) {
+            'left' => 0,
+            'right' => 12 - $col,
+            'center' => (12 - $col) / 2, // Zentriert die Spalte
+            default => 0
+        };
+
+        // Container Konfiguration
+        $containerConfig = [
+            'width' => self::config['container']['width'],
+            'height' => self::config['container']['height'],
+            'left' => 0,
+            'top' => self::config['container']['top'],
+            'style' => self::config['container']['style'],
+        ];
+
+        // Image-Box Konfiguration (statt Text-Lines)
+        $boxConfig = [
+            'lines' => 8, // Anzahl der Linien für die Box-Höhe
+            'vertical' => 'center',
+            'position' => $columnPosition,
+            'col' => $col,
+            'top' => self::config['container']['top'],
+            'containerHeight' => $containerConfig['height'],
+            'fitType' => 'fit' // Standard-Bildanpassung
+        ];
+
+        // Container erstellen mit Box statt Text
+        $container =
+            self::createContainer($containerConfig['left'], $containerConfig['top'], $containerConfig['height']) .
+            (is_string($description) ? self::createDescriptionText($description, self::config['container']['width'] / 2, 2451.55, self::config['text']['fontSize']) : '') .
+            self::createBox(
+                $boxConfig['lines'],
+                $boxConfig['vertical'],
+                $boxConfig['position'],
+                $boxConfig['col'],
+                self::config['grid']['gutter'],
+                false, // stretch
+                $boxConfig['top'],
+                $boxConfig['containerHeight']
+            );
+
+        return self::createBaseWrapper($container . (($showLines === true) ? self::createLines() : ''));
+    }
 }

@@ -1,10 +1,6 @@
 <?php
-/**
- * @author Joachim Doerr
- * @package redaxo5
- * @license MIT
- */
 
+use Cke5\Utils\Cke5Lang;
 use FriendsOfRedaxo\MForm;
 use FriendsOfRedaxo\MForm\Inputs\MFormInputsAbstract;
 use FriendsOfRedaxo\MForm\Inputs\MFormInputsInterface;
@@ -13,14 +9,14 @@ class accordion extends MFormInputsAbstract implements MFormInputsInterface
 {
     protected array $config = [
         'id' => 'accordion',
-        'cke5Profile' => 'main_default',
+        'cke5Profile' => 'default',
         'open' => false,
         'confirmDelete' => true,
         'btn_text' => 'Accordion hinzufügen',
         'btn_class' => 'btn-default',
         'confirm_delete_msg' => 'Accordion Element löschen?'
     ];
-    public function generateInputsForm(): \FriendsOfRedaxo\MForm
+    public function generateInputsForm(): MForm
     {
         $contentMForm = MForm::factory()->setShowWrapper(false);
         $headlineAttributes = (!isset($this->config['headlineAttributes']) || !is_array($this->config['headlineAttributes'])) ? [] : $this->config['headlineAttributes'];
@@ -29,7 +25,7 @@ class accordion extends MFormInputsAbstract implements MFormInputsInterface
             $contentMForm->addForm($this->config['contentMForm']->setShowWrapper(false));
         } else {
             // add card
-            $contentMForm->addTextAreaField("content", ['full' => true, 'placeholder' => 'Fließtext Accordioninhalt', 'data-lang' => \Cke5\Utils\Cke5Lang::getUserLang(), 'data-profile' => $this->config['cke5Profile'], 'class' => 'cke5-editor']);
+            $contentMForm->addTextAreaField("content", ['full' => true, 'placeholder' => 'Fließtext Accordioninhalt', 'data-lang' => Cke5Lang::getUserLang(), 'data-profile' => $this->config['cke5Profile'], 'class' => 'cke5-editor']);
         }
 
         $contentMForm->addToggleCheckboxField('show', [1 => 'Accordion-Element initial geöffnet'], ['full' => true]);

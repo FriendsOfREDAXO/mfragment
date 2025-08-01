@@ -1,9 +1,4 @@
 <?php
-/**
- * User: joachimdoerr
- * Date: 04.10.24
- * Time: 14:01
- */
 
 namespace FriendsOfRedaxo\MFragment\DTO;
 

@@ -1,9 +1,4 @@
 <?php
-/**
- * @author Joachim Doerr
- * @package redaxo5
- * @license MIT
- */
 
 use FriendsOfRedaxo\MForm;
 use FriendsOfRedaxo\MForm\Inputs\MFormInputsAbstract;
@@ -13,7 +8,7 @@ class buttons extends MFormInputsAbstract implements MFormInputsInterface
 {
     protected array $config = [
         'id' => 'buttons',
-        'customLinkAttributes' => ['full' => true, 'data-intern' => 'enable', 'data-extern' => 'enable', 'data-media' => 'enable', 'data-mailto' => 'enable', 'data-tel' => 'disable', 'data-extern-link-prefix' => 'https://www.'],
+        'customLinkAttributes' => ['full' => true, 'data-anchor' => 'enable', 'data-intern' => 'enable', 'data-extern' => 'enable', 'data-media' => 'enable', 'data-mailto' => 'enable', 'data-tel' => 'disable', 'data-extern-link-prefix' => 'https://www.'],
         'open' => false,
         'openBtnText' => 'Buttons hinzufügen',
         'confirmDelete' => true,

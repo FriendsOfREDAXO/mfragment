@@ -1,9 +1,5 @@
 <?php
-/**
- * @author Joachim Doerr
- * @package redaxo5
- * @license MIT
- */
+# path: src/addons/mfragment/inputs/default/media.php
 
 use FriendsOfRedaxo\MForm;
 use FriendsOfRedaxo\MForm\Inputs\MFormInputsAbstract;
@@ -22,6 +18,7 @@ class media extends MFormInputsAbstract implements MFormInputsInterface
         'lightboxDefaultValue' => 0,
         'lightbox' => true,
         'link' => true,
+        'customLinkAttributes' => ['label' => 'Link', 'data-intern'=>'enable','data-extern'=>'enable','data-media'=>'disable','data-mailto'=>'disable','data-tel'=>'disable', 'data-extern-link-prefix' => 'https://www.']
     ];
 
     public function generateInputsForm(): MForm
@@ -70,13 +67,13 @@ class media extends MFormInputsAbstract implements MFormInputsInterface
                 ->setToggleOptions([1 => '0null', 2 => '0null', 3 => 'customLink'])
                 ->addCollapseElement('',null, false, true, ['data-group-collapse-id' => '0null'])
                 ->addCollapseElement('', MForm::factory()
-                    ->addCustomLinkField($id.'link', ['label' => 'Link', 'data-intern'=>'enable','data-extern'=>'enable','data-media'=>'disable','data-mailto'=>'disable','data-tel'=>'disable', 'data-extern-link-prefix' => 'https://www.'])
+                    ->addCustomLinkField($id.'link', $this->config['customLinkAttributes'])
                     , false, true, ['data-group-collapse-id' => 'customLink']
                 )
             );
         } else {
             if ((!empty($this->config['link'])) && $this->config['link'] === true) {
-                $mform->addCustomLinkField($id.'link', ['label' => 'Link', 'data-intern'=>'enable','data-extern'=>'enable','data-media'=>'disable','data-mailto'=>'disable','data-tel'=>'disable', 'data-extern-link-prefix' => 'https://www.']);
+                $mform->addCustomLinkField($id.'link', $this->config['customLinkAttributes']);
             }
             if ((!empty($this->config['lightbox'])) && $this->config['lightbox'] === true) {
                 $mform->addToggleCheckboxField($id.'linkOption', [1 => 'Bild in Lightbox anzeigen (vergrößern)'], ['Label' => 'Lightbox', 'data-toggle-item' => 'collapseTitleAndDescription'], $this->config['lightboxDefaultValue']);
