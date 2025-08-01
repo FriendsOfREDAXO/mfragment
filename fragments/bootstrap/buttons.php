@@ -1,11 +1,13 @@
 <?php
+# path: src/addons/mfragment/fragments/bootstrap/buttons.php
+
 /**
  * @var rex_fragment $this
  * @psalm-scope-this rex_fragment
  */
 
 use FriendsOfRedaxo\MFragment\Helper\MFragmentHelper;
-use FriendsOfRedaxo\MFragment\Core\MFragmentProcessor;
+use FriendsOfRedaxo\MFragment\Core\RenderEngine;
 
 $content = $this->getVar('content', []);
 $config = $this->getVar('config', []);
@@ -13,11 +15,11 @@ $config = $this->getVar('config', []);
 $defaultConfig = [
     'wrapper' => [
         'tag' => 'div',
-        'attributes' => ['class' => ['default' => 'button-group']]
+        'attributes' => ['class' => 'button-group']
     ],
     'button' => [
         'tag' => 'a',
-        'attributes' => ['class' => ['default' => 'btn', 'primary' => 'btn-primary']]
+        'attributes' => ['class' => 'btn btn-primary']
     ]
 ];
 
@@ -63,6 +65,6 @@ if (is_array($content) && count($content) > 0) {
         ['attributes' => $config['wrapper']['attributes']]
     );
 
-    $processor = new MFragmentProcessor();
-    echo $processor->process($buttonGroup);
+    // RenderEngine verwenden statt direkte Processor-Instanz
+    echo RenderEngine::render($buttonGroup);
 }
