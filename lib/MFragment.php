@@ -28,6 +28,7 @@ class MFragment extends MFragmentElements
 
     /**
      * Rendert das MFragment-Objekt mit der RenderEngine
+     * Dies ist die einzige öffentliche Render-Methode - alle anderen sind deprecated
      *
      * @return string Gerenderter HTML-String
      */
@@ -46,7 +47,18 @@ class MFragment extends MFragmentElements
     }
 
     /**
-     * @description  filename can be with or without .php extension
+     * Alias für show() - wird in Zukunft entfernt
+     * @deprecated Verwende show() stattdessen
+     */
+    public function render(): string
+    {
+        return $this->show();
+    }
+
+    /**
+     * Legacy Fragment-Parser (nur für Rückwärtskompatibilität)
+     * @description filename can be with or without .php extension
+     * @deprecated Verwende stattdessen show() mit Komponenten
      */
     public static function parse(string $filename, array $vars): string
     {
@@ -56,46 +68,6 @@ class MFragment extends MFragmentElements
         }
         $fragment = new rex_fragment($vars);
         return $fragment->parse($filename . '.php');
-    }
-
-    /**
-     * Optimierte Methode zum direkten Rendern von Komponenten
-     *
-     * @param string $componentName Name der Komponente
-     * @param array $content Content-Array
-     * @param array $config Config-Array
-     * @param array $attributes Attribute-Array
-     * @return string Gerenderter HTML-String
-     */
-    public static function render(string $componentName, array $content = [], array $config = [], array $attributes = []): string
-    {
-        return RenderEngine::renderWithData($componentName, $content, $config, $attributes);
-    }
-
-    /**
-     * Shortcut für Bootstrap-Komponenten
-     *
-     * @param string $component Bootstrap-Komponenten-Name
-     * @param array $content Content-Array
-     * @param array $config Config-Array
-     * @return string Gerenderter HTML-String
-     */
-    public static function bootstrap(string $component, array $content = [], array $config = []): string
-    {
-        return RenderEngine::renderBootstrap($component, $content, $config);
-    }
-
-    /**
-     * Shortcut für Default-Komponenten
-     *
-     * @param string $component Default-Komponenten-Name
-     * @param array $content Content-Array
-     * @param array $config Config-Array
-     * @return string Gerenderter HTML-String
-     */
-    public static function default(string $component, array $content = [], array $config = []): string
-    {
-        return RenderEngine::renderDefault($component, $content, $config);
     }
 
     /**
@@ -124,11 +96,13 @@ class MFragment extends MFragmentElements
 
     /**
      * HTML-Element mit FORHtml parsen (falls verfügbar), sonst nativer Fallback
+     * Interne Hilfsmethode - verwende show() für normale Rendering-Zwecke
      *
      * @param string $tag HTML-Tag
      * @param mixed $content Inhalt des Elements
      * @param array $config Konfiguration mit attributes
      * @return string Gerenderter HTML-String
+     * @internal
      */
     public static function parseHtml(string $tag, $content = '', array $config = []): string
     {
