@@ -59,16 +59,6 @@ class MFragment extends MFragmentElements
     }
 
     /**
-     * @description Parse content using RenderEngine
-     *
-     * @deprecated Verwende stattdessen RenderEngine::render()
-     */
-    public static function process($content): string
-    {
-        return RenderEngine::render($content);
-    }
-
-    /**
      * Optimierte Methode zum direkten Rendern von Komponenten
      *
      * @param string $componentName Name der Komponente

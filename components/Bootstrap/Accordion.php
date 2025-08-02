@@ -14,14 +14,34 @@ use FriendsOfRedaxo\MFragment\Components\AbstractComponent;
  */
 class Accordion extends Collapse
 {
-
     /**
      * Konstruktor
      *
-     * @param bool $multiple Erlaubt mehrere offene Items gleichzeitig
+     * @param bool $multiple Erlaubt mehrere offene Items gleichzeitig (default: false für Accordion)
      */
     public function __construct(bool $multiple = false)
     {
-         // false = nur ein Item offen
+        parent::__construct($multiple);
+        
+        // Accordion-spezifische Konfiguration
+        $this->config['wrapper'] = [
+            'attributes' => ['class' => ['default' => 'accordion']]
+        ];
+        
+        // Generiere eindeutige ID für das Accordion
+        if (empty($this->getAttribute('id'))) {
+            $this->setAttribute('id', 'accordion-' . uniqid());
+        }
+    }
+
+    /**
+     * Factory-Methode für Accordion
+     *
+     * @param bool $multiple Erlaubt mehrere offene Items gleichzeitig (default: false)
+     * @return static
+     */
+    public static function create(bool $multiple = false): self
+    {
+        return new static($multiple);
     }
 }
