@@ -3,6 +3,7 @@
 namespace FriendsOfRedaxo\MFragment;
 
 use FriendsOfRedaxo\MFragment;
+use FriendsOfRedaxo\MFragment\Components\Bootstrap\Accordion;
 use FriendsOfRedaxo\MFragment\Components\Bootstrap\Badge;
 use FriendsOfRedaxo\MFragment\Components\Bootstrap\Card;
 use FriendsOfRedaxo\MFragment\Components\Bootstrap\Carousel;
@@ -731,7 +732,7 @@ abstract class MFragmentElements
         if (!is_array($items) || empty($items)) return $this;
 
         // Nutze die Accordion-Komponente (erbt von Collapse)
-        $accordion = \FriendsOfRedaxo\MFragment\Components\Bootstrap\Accordion::create();
+        $accordion = Accordion::create();
 
         // Items hinzufügen
         $accordion->addItems($items);
@@ -753,6 +754,11 @@ abstract class MFragmentElements
                 $config['header']['textTag'] ?? null,
                 $config['header']['textClass'] ?? null
             );
+        }
+
+        // Item-spezifische Konfiguration
+        if (isset($config['item'])) {
+            $accordion->configureItems($config['item']);
         }
 
         $this->items[] = $accordion;
@@ -1302,6 +1308,35 @@ abstract class MFragmentElements
             $component = Downloads::fromMediaIds($mediaIds);
             return $this->addDownloads($component->getDownloads(), $title, $config);
         }
+    }
+
+    /**
+     * Fügt ein Menu hinzu
+     *
+     * @param array $items Menu-Items als Array oder Menü-Datenstruktur
+     * @param array $config Konfiguration für das Menu
+     * @param array $attributes Attribute für das Menu-Element
+     * @return $this Für Method Chaining
+     */
+    public function addMenu(array $items, array $config = [], array $attributes = []): self
+    {
+        $menu = \FriendsOfRedaxo\MFragment\Components\Bootstrap\Menu::factory();
+
+        // Items setzen
+        $menu->setItems($items);
+
+        // Konfiguration als Ganzes setzen
+        if (!empty($config)) {
+            $menu->setConfig($config);
+        }
+
+        // Attribute setzen
+        if (!empty($attributes)) {
+            $menu->setAttributes($attributes);
+        }
+
+        $this->items[] = $menu;
+        return $this;
     }
 
     /**

@@ -127,6 +127,22 @@ class Collapse extends AbstractComponent
     }
 
     /**
+     * Konfiguriert die Accordion-Items
+     *
+     * @param array $itemConfig Item-Konfiguration
+     * @return $this
+     */
+    public function configureItems(array $itemConfig): self
+    {
+        if (isset($itemConfig['attributes']['class'])) {
+            // Speichere zusätzliche CSS-Klassen für Items
+            $this->config['item']['additionalClasses'] = $itemConfig['attributes']['class'];
+        }
+        
+        return $this;
+    }
+
+    /**
      * Fügt ein Accordion-Item hinzu (Wrapper für parent::addItem)
      *
      * @param string $title Titel des Accordion-Items
@@ -323,10 +339,75 @@ class Collapse extends AbstractComponent
     }
 
     /**
-     * Direktes HTML-Rendering (nicht verwendet, da Fragment-basiert)
+     * HTML-Rendering für Collapse/Accordion
      */
     protected function renderHtml(): string
     {
-        return '';
+        if (empty($this->items)) {
+            return '';
+        }
+
+        $accordionId = $this->getAttribute('id') ?: 'accordion_' . uniqid();
+        $html = '';
+        
+        // Accordion Container - exakt wie Original
+        $html .= '<div class="accordion" id="' . $accordionId . '">';
+        
+        foreach ($this->items as $index => $item) {
+            if (!$item['hasContent']) continue;
+
+            $itemId = $item['id'];
+            $collapseId = 'collapse-' . $accordionId . '_' . $index;
+            $isFirst = ($index === 0);
+            
+            // Accordion Item - mit zusätzlichen CSS-Klassen aus Konfiguration
+            $itemClass = 'accordion-item';
+            if (isset($this->config['item']['additionalClasses'])) {
+                foreach ($this->config['item']['additionalClasses'] as $key => $value) {
+                    $itemClass .= ' ' . $value;
+                }
+            }
+            $html .= '<div class="' . $itemClass . '" data-accordion-item="' . $itemId . '">';
+            
+            // Button Header - exakt wie Original (Button direkt im Item, nicht in separatem Header)
+            $buttonClass = 'accordion-header accordion-button';
+            if (!$item['show'] && !$isFirst) {
+                $buttonClass .= ' collapsed';
+            }
+            
+            $html .= '<button class="' . $buttonClass . '" type="button" ';
+            $html .= 'data-bs-toggle="collapse" data-bs-target="#' . $collapseId . '" ';
+            $html .= 'aria-expanded="' . ($item['show'] || $isFirst ? 'true' : 'false') . '">';
+            
+            // Header Text INNERHALB des Buttons - exakt wie Original
+            $headerTextClass = 'accordion-header-text lh-140';
+            $html .= '<h4 class="' . $headerTextClass . '">' . $item['header'] . '</h4>';
+            
+            // Toggle Icon - exakt wie Original
+            $html .= '<div class="accordion-header-toggle accordion-header-toggle-icon"></div>';
+            
+            $html .= '</button>';
+            
+            // Collapse Content - exakt wie Original
+            $collapseClass = 'accordion-collapse collapse accordion-collapse';
+            if ($item['show'] || $isFirst) {
+                $collapseClass .= ' show';
+            }
+            
+            $html .= '<div class="' . $collapseClass . '" id="' . $collapseId . '" data-bs-parent="#' . $accordionId . '">';
+            
+            // Body - exakt wie Original
+            $bodyClass = 'accordion-body accordion-body ck-content';
+            $html .= '<div class="' . $bodyClass . '">';
+            $html .= $item['content'];
+            $html .= '</div>';
+            
+            $html .= '</div>'; // collapse
+            $html .= '</div>'; // item
+        }
+        
+        $html .= '</div>'; // accordion
+        
+        return $html;
     }
 }
