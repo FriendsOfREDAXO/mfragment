@@ -2,67 +2,173 @@
 
 ## Entwicklungsstand: Modernisiert - Component-First Architecture
 
-Das MFragment Addon für REDAXO ist ein modernes Component-System zur Erstellung von wiederverwendbaren UI-Komponenten. Version 2.0 konzentriert sich vollständig auf Komponenten und hat die Fragment-Unterstützung entfernt.
+Das MFragment Addon für REDAXO ist ein modernes Component-System zur Erstellung von wiederverwendbaren UI-Komponenten. Version 2.0 konzentriert sich vollständig auf Komponenten mit direkter HTML-Renderung für optimale Performance.
 
-## ✅ Aktuelle Features
+### SQL-Installation (install/ Verzeichnis)
+
+**Responsive Media Types** (empfohlen):
+```sql
+source install/responsive_mediatypes.sql  -- 48 responsive Types
+```
+
+## Aktuelle Features
 
 ### Core System
-- ✅ **RenderEngine** - Optimierte Rendering-Engine mit Performance-Monitoring
-- ✅ **Component Architecture** - Moderne Komponenten-basierte Architektur
-- ✅ **Factory Pattern** - Saubere Objekt-Erstellung mit Fluent API
-- ✅ **Performance-Stats** - Eingebaute Performance-Überwachung
-- ✅ **Debug-Modus** - Detaillierte Debug-Informationen
-- ✅ **Method Chaining** - Flüssige API für alle Komponenten
+- **RenderEngine** - Optimierte Rendering-Engine mit Performance-Monitoring
+- **Component Architecture** - Moderne Komponenten-basierte Architektur
+- **Factory Pattern** - Saubere Objekt-Erstellung mit Fluent API
+- **Performance-Stats** - Eingebaute Performance-Überwachung
+- **Debug-Modus** - Detaillierte Debug-Informationen
+- **Method Chaining** - Flüssige API für alle Komponenten
 
 ### Komponenten-System
-- ✅ **ComponentInterface** - Standardisierte Komponenten-API
-- ✅ **AbstractComponent** - Optimierte Basis-Komponente mit direktem HTML-Rendering
-- ✅ **Bootstrap Components** - Card, Accordion, Tabs, Modal, Carousel, Alert, Badge, Progress, Collapse
-- ✅ **Default Components** - Figure, HTMLElement, ListElement, Table
-- ✅ **Pure HTML Rendering** - Keine Fragment-Abhängigkeiten mehr
+- **ComponentInterface** - Standardisierte Komponenten-API
+- **AbstractComponent** - Optimierte Basis-Komponente mit direktem HTML-Rendering
+- **Bootstrap Components** - Card, Accordion, Tabs, Modal, Carousel, Alert, Badge, Progress, Collapse
+- **Default Components** - Figure, HTMLElement, ListElement, Table
+- **Pure HTML Rendering** - Keine Fragment-Abhängigkeiten mehr
 
 ### HTML Generation  
-- ✅ **BaseHtmlGenerator** - FORHtml-Wrapper mit intelligentem Fallback
-- ✅ **FORHtml Integration** - Optional mit intelligentem Fallback auf native HTML
-- ✅ **Direct Rendering** - Direkte HTML-Ausgabe ohne Template-Overhead
-- ✅ **REDAXO-kompatibel** - Vollständig integriert in REDAXO-Umgebung
+- **BaseHtmlGenerator** - FORHtml-Wrapper mit intelligentem Fallback
+- **FORHtml Integration** - Optional mit intelligentem Fallback auf native HTML
+- **Direct Rendering** - Direkte HTML-Ausgabe ohne Template-Overhead
 
-### UI/Backend Integration
-- ✅ **MForm Inputs** - Bootstrap Form-Felder (UIKit entfernt)
-- ✅ **SVG Icon Sets** - Umfangreiches Icon-System für Backend
-- ✅ **Custom Inputs** - Spezielle Input-Felder für REDAXO Backend
+## Version 2.0 Änderungen
 
-## 🎯 **Version 2.0 Änderungen**
-
-### ❌ **Entfernt in v2.0:**
+### Entfernt in v2.0:
 - Fragment-Dateien und Template-System
 - UIKit-Unterstützung (Fokus auf Bootstrap)
 - Fragment-Registry aus boot.php
 - Alte getFragmentData() API
 
-### ✅ **Neu in v2.0:**
+### Neu in v2.0:
 - Pure Component Architecture
 - 100% Direct HTML Rendering
 - Optimierte Performance ohne Template-Overhead
 - Vereinfachte API ohne Fragment-Komplexität
 
-## 🔧 **Primäre Entwicklungsprinzipien**
+## Hauptkomponenten
 
-### 1. **Component-First Architecture**
+### Figure Component
+Die Figure-Komponente ist die Kernkomponente für Bilddarstellung mit umfangreichen Features:
 
-| Use Case | Lösung | Vorteil |
-|----------|---------|---------|
-| Bootstrap Card | Card::factory() | Typsicher, Features, Fluent API |
-| HTML Element | HTMLElement::factory() | Flexibel, Attribute-Management |
-| Liste/Tabelle | ListElement/Table | Strukturiert, wiederverwendbar |
-| Custom Component | extend AbstractComponent | Vollständige Kontrolle |
+```php
+use FriendsOfRedaxo\MFragment\Components\Default\Figure;
 
-### 2. **API-Pattern**
+$figure = Figure::factory()
+    ->setMedia('image.jpg')
+    ->setMediaManagerType('half')
+    ->enableAutoResponsive()
+    ->setAlt('Beschreibender Alt-Text')
+    ->enableLazyLoading()
+    ->setCover()
+    ->setRatio('16x9');
+
+echo $figure->show();
+```
+
+#### Figure Features:
+- **Responsive Images** - Automatische Srcset-Generierung
+- **Media Manager Integration** - Vollständige REDAXO Media Manager Unterstützung
+- **Flexible Aspect Ratios** - Standard-Typen nutzen flexibles Verhältnis
+- **Specific Ratios** - 1x1, 4x3, 16x9, 21x9, 3x2, 5x4 mit exakten Dimensionen
+- **Lazy Loading** - Performance-optimiertes Laden
+- **Cover/Background Images** - BG-Cover Funktionalität
+- **Accessibility** - Vollständige Barrierefreiheit
+- **Lightbox Support** - Integration mit Lightbox-Systemen
+- **SVG Support** - Spezielle Behandlung für SVG-Dateien
+
+#### Media Manager Types:
+- Standard-Typen: `small`, `half`, `full` (flexibles Verhältnis)
+- Legacy-Typen: `content_small`, `content_half`, `content_full` (flexibles Verhältnis)
+- Ratio-spezifische Typen: `1x1`, `4x3`, `16x9`, `21x9`, `3x2`, `5x4`
+
+### Bootstrap Components
+
+#### Card Component
+```php
+use FriendsOfRedaxo\MFragment\Components\Bootstrap\Card;
+
+$card = Card::factory()
+    ->setHeader('Titel')
+    ->setBody('Inhalt')
+    ->setFooter('Footer')
+    ->addClass('shadow')
+    ->setAttribute('data-custom', 'value');
+
+echo $card->show();
+```
+
+#### Weitere Bootstrap Components
+- **Accordion** - Erweiterbarer Inhalt
+- **Tabs** - Tab-Navigation
+- **Modal** - Popup-Dialoge
+- **Carousel** - Bild-Slider
+- **Alert** - Benachrichtigungen
+- **Badge** - Status-Kennzeichnungen
+- **Progress** - Fortschrittsbalken
+- **Collapse** - Ein-/Ausklappbare Bereiche
+
+### Default Components
+
+#### HTMLElement
+```php
+use FriendsOfRedaxo\MFragment\Components\Default\HTMLElement;
+
+$element = HTMLElement::factory('div')
+    ->setContent('Inhalt')
+    ->addClass('custom-class')
+    ->setAttribute('id', 'unique-id');
+
+echo $element->show();
+```
+
+#### ListElement
+```php
+use FriendsOfRedaxo\MFragment\Components\Default\ListElement;
+
+$list = ListElement::factory('ul')
+    ->addItem('Erstes Element')
+    ->addItem('Zweites Element')
+    ->addClass('custom-list');
+
+echo $list->show();
+```
+
+#### Table
+```php
+use FriendsOfRedaxo\MFragment\Components\Default\Table;
+
+$table = Table::factory()
+    ->setHeaders(['Name', 'Email', 'Status'])
+    ->addRow(['Max Mustermann', 'max@example.com', 'Aktiv'])
+    ->addRow(['Jane Doe', 'jane@example.com', 'Inaktiv'])
+    ->addClass('table-striped');
+
+echo $table->show();
+```
+
+## MFragment Container System
+
+```php
+use FriendsOfRedaxo\MFragment;
+
+$mfragment = MFragment::factory()
+    ->setDebug(true)  // Optional: Debug-Modus
+    ->addCard($card)
+    ->addFigure($figure)
+    ->addDiv($content, ['class' => 'wrapper'])
+    ->addSection($section, $sectionConfig);
+
+echo $mfragment->show();
+```
+
+## API-Pattern
 
 ```
 Komponente erstellen?
 └─ Einfache HTML-Struktur?
-   ├─ JA → renderHtml() verwenden
+   ├─ JA → HTMLElement verwenden
    │  └─ HTMLElement als Basis
    └─ NEIN → Komplexe Komponente
       ├─ Bootstrap? → Card, Modal, etc.
@@ -70,24 +176,11 @@ Komponente erstellen?
       └─ Custom → extend AbstractComponent
 ```
 
-## 🛠️ **Entwicklungs-Workflow**
+### Entwicklungs-Workflow
 
-### **Schritt 1: Analyse & Planung**
-
-```markdown
-**Vor jeder Entwicklung klären:**
-1. Ist es eine neue Komponente oder Migration?
-2. Welcher Rendering-Modus ist optimal?
-3. Welche bestehenden Patterns kann ich nutzen?
-4. Muss es rückwärtskompatibel sein?
-```
-
-### **Schritt 2: Implementierung**
-
-#### **A) Neue renderHtml-basierte Komponente**
-
+#### Neue renderHtml-basierte Komponente
 ```php
-// src/addons/mfragment/components/Bootstrap/NewComponent.php
+// src/addons/mfragment/components/Custom/NewComponent.php
 class NewComponent extends AbstractComponent
 {
     public function __construct()
@@ -98,6 +191,221 @@ class NewComponent extends AbstractComponent
     
     protected function renderHtml(): string
     {
+        return '<div' . $this->buildAttributesString() . '>' . 
+               $this->processContent($this->content) . 
+               '</div>';
+    }
+}
+```
+
+## Performance-Optimierung
+
+### Direkte Komponenten-Nutzung (Optimal)
+```php
+$component = Card::factory()
+    ->setContent($content)
+    ->addClass('custom-card');
+echo $component->show();
+```
+
+### RenderEngine für Legacy-Kompatibilität
+```php
+echo RenderEngine::render($content);
+```
+
+## Accessibility Features
+
+### Figure Component Accessibility
+```php
+$figure = Figure::factory()
+    ->setMedia('image.jpg')
+    ->setAlt('Beschreibender Alt-Text')
+    ->setAriaLabel('Zusätzliche Beschreibung')
+    ->setRole('img')
+    ->enableNoScriptFallback()
+    ->setDecorative(false); // oder true für dekorative Bilder
+```
+
+### Semantische HTML-Struktur
+```php
+$section = HTMLElement::factory('section')
+    ->setAttribute('aria-labelledby', 'section-title')
+    ->setContent([
+        HTMLElement::factory('h2')
+            ->setAttribute('id', 'section-title')
+            ->setContent('Abschnittstitel'),
+        HTMLElement::factory('div')
+            ->setContent('Abschnittsinhalt')
+    ]);
+```
+
+## Responsive Images System
+
+### Automatische Responsive Images
+```php
+$figure = Figure::factory()
+    ->setMedia('image.jpg')
+    ->setMediaManagerType('half')
+    ->enableAutoResponsive()  // Nutzt project/boot.php oder Fallback
+    ->optimizeForContainer('col-6'); // Optimiert für Bootstrap Grid
+```
+
+### Projekt-Integration mit project/boot.php
+```php
+// In project/boot.php verfügbare Funktionen:
+// - generateSrcset($filename, $baseType)
+// - generateSizesForType($baseType)
+// - getResponsiveImageData($filename, $baseType, $containerType)
+```
+
+### Eingebaute Fallback-Funktionalität
+```php
+$figure = Figure::factory()
+    ->setMedia('image.jpg')
+    ->setMediaManagerType('half')
+    ->forceBuiltinResponsive(true); // Keine project/boot.php Abhängigkeit
+```
+
+## Debugging
+
+### Performance Monitoring
+```php
+MFragment::factory()
+    ->setDebug(true)
+    ->addComponent($component)
+    ->show(); // Zeigt Debug-Info
+
+// Oder direkt:
+$stats = RenderEngine::getStats();
+var_dump($stats);
+```
+
+### Component Debug
+```php
+// In Komponenten
+protected function renderHtml(): string
+{
+    $output = $this->buildMyHtml();
+    // var_dump($output); // Auskommentiert für Debug
+    return $output;
+}
+```
+
+## Migration von v1.0
+
+### Fragment-basiert zu Komponenten-basiert
+```php
+// Alt (v1.x Fragment-basiert)
+$fragment = new MFragmentItem('bootstrap/card', $data);
+
+// Neu (v2.0 Component-basiert)
+$card = Card::factory()
+    ->setHeader($data['header'])
+    ->setBody($data['body']);
+```
+
+### Alte getFragmentData() API
+```php
+// Alt
+public function getFragmentData(): array
+{
+    return [
+        'content' => $this->content,
+        'config' => $this->config
+    ];
+}
+
+// Neu - falls Fragment-Kompatibilität benötigt
+protected function getContentForFragment()
+{
+    return $this->content;
+}
+
+protected function getConfigForFragment(): array
+{
+    return $this->config;
+}
+```
+
+## Best Practices
+
+### 1. Fluent API nutzen
+```php
+$figure = Figure::factory()
+    ->setMedia($media)
+    ->setMediaManagerType('half')
+    ->enableLazyLoading()
+    ->setCover()
+    ->setRatio('16x9')
+    ->addClass('custom-figure');
+```
+
+### 2. Container-Optimierung
+```php
+$figure = Figure::factory()
+    ->setMedia($media)
+    ->optimizeForContainer('col-6', '16x9'); // Automatische Optimierung
+```
+
+### 3. Accessibility berücksichtigen
+```php
+$figure = Figure::factory()
+    ->setMedia($media)
+    ->setAlt('Beschreibender Alt-Text')
+    ->setDecorative(false) // Nicht dekorativ
+    ->enableNoScriptFallback();
+```
+
+### 4. Performance optimieren
+```php
+$figure = Figure::factory()
+    ->setMedia($media)
+    ->enableLazyLoading(true) // Für Bilder außerhalb des Viewports
+    ->setHeroBanner('Hero-Beschreibung'); // Für Hero-Bilder (kein Lazy Loading)
+```
+
+## Code-Standards
+
+### Namespaces
+- Bootstrap Components: `FriendsOfRedaxo\MFragment\Components\Bootstrap\`
+- Default Components: `FriendsOfRedaxo\MFragment\Components\Default\`
+- Custom Components: `FriendsOfRedaxo\MFragment\Components\Custom\`
+
+### Dateistruktur
+```
+src/addons/mfragment/
+├── components/
+│   ├── Bootstrap/          # Bootstrap-spezifische Komponenten
+│   ├── Default/            # Standard-Komponenten
+│   └── Custom/             # Projekt-spezifische Komponenten
+├── lib/                    # Core-Klassen
+├── inputs/                 # MForm Input-Helpers
+└── README.md              # Diese Dokumentation
+```
+
+## Qualitätssicherung
+
+### Performance-Benchmark
+```php
+RenderEngine::resetStats();
+// ... Code ausführen ...
+$stats = RenderEngine::getStats();
+// Verbesserung von mindestens 5% erwarten
+```
+
+### Rückwärtskompatibilität
+- Alle Komponenten-Methoden funktionieren
+- RenderEngine für externe Fragment-Nutzung verfügbar
+- Bestehende Module unverändert nutzbar
+
+## Support und Entwicklung
+
+- **Version**: 2.0.0+
+- **REDAXO**: 5.x kompatibel
+- **PHP**: 8.0+ erforderlich
+- **Bootstrap**: 5.x optimiert
+
+**Letztes Update**: Basierend auf aktueller Codebase mit flexiblen Aspect Ratios und optimierter Figure-Komponente
         return '<div' . $this->buildAttributesString() . '>' . 
                $this->processContent($this->content) . 
                '</div>';
