@@ -4,6 +4,7 @@ namespace FriendsOfRedaxo\MFragment;
 
 use FriendsOfRedaxo\MFragment;
 use FriendsOfRedaxo\MFragment\Components\Bootstrap\Accordion;
+use FriendsOfRedaxo\MFragment\Components\Bootstrap\Alert;
 use FriendsOfRedaxo\MFragment\Components\Bootstrap\Badge;
 use FriendsOfRedaxo\MFragment\Components\Bootstrap\Card;
 use FriendsOfRedaxo\MFragment\Components\Bootstrap\Carousel;
@@ -139,7 +140,7 @@ abstract class MFragmentElements
      */
     public function addUl(array $items, array $attributes = [], array $itemAttributes = []): self
     {
-//        $this->items[] = ListElement::createUnordered($items, $attributes, $itemAttributes);
+        $this->items[] = ListElement::createUnordered($items, $attributes, $itemAttributes);
         return $this;
     }
 
@@ -153,7 +154,7 @@ abstract class MFragmentElements
      */
     public function addOl(array $items, array $attributes = [], array $itemAttributes = []): self
     {
-//        $this->items[] = ListElement::createOrdered($items, $attributes, $itemAttributes);
+        $this->items[] = ListElement::createOrdered($items, $attributes, $itemAttributes);
         return $this;
     }
 
@@ -168,7 +169,7 @@ abstract class MFragmentElements
      */
     public function addDl(array $items, array $attributes = [], array $termAttributes = [], array $descriptionAttributes = []): self
     {
-//        $this->items[] = ListElement::createDescription($items, $attributes, $termAttributes, $descriptionAttributes);
+        $this->items[] = ListElement::createDescription($items, $attributes, $termAttributes, $descriptionAttributes);
         return $this;
     }
 
@@ -470,6 +471,33 @@ abstract class MFragmentElements
     }
 
     /**
+     * Fügt eine Alert-Box hinzu
+     *
+     * @param ComponentInterface|MFragment|array|string|null $content Inhalt der Alert
+     * @param string $variant Alert-Typ (primary, secondary, success, danger, warning, info, light, dark)
+     * @param array $config Konfiguration für die Alert
+     * @return $this Für Method Chaining
+     */
+    public function addAlert(ComponentInterface|MFragment|array|string|null $content, string $variant = 'info', array $config = []): self
+    {
+        $alert = \FriendsOfRedaxo\MFragment\Components\Bootstrap\Alert::create()
+            ->setContent($content)
+            ->setVariant($variant);
+
+        // Konfiguration anwenden
+        if (isset($config['dismissible']) && $config['dismissible']) {
+            $alert->setDismissible(true);
+        }
+
+        if (isset($config['attributes'])) {
+            $alert->setAttributes($config['attributes']);
+        }
+
+        $this->items[] = $alert;
+        return $this;
+    }
+
+    /**
      * Fügt ein Nav-Element hinzu
      *
      * @param ComponentInterface|MFragment|array|string|null $content Inhalt des Nav-Elements
@@ -642,6 +670,82 @@ abstract class MFragmentElements
     }
 
     /**
+     * Fügt einen Separator/Trennlinie hinzu (mit Bootstrap-Styling)
+     *
+     * @param array $attributes Attribute für das Element
+     * @return $this Für Method Chaining
+     */
+    public function addSeparator(array $attributes = []): self
+    {
+        if (!isset($attributes['class'])) {
+            $attributes['class'] = 'my-4';
+        }
+        $this->items[] = HTMLElement::create('hr', null, $attributes);
+        return $this;
+    }
+
+    /**
+     * Fügt einen Spacer (leeres Div für Abstände) hinzu
+     *
+     * @param string|int $size Größe des Spacers - Optionen:
+     *                         - Zahl: rem-Wert (z.B. 2 = "2rem")
+     *                         - String mit Einheit: "20px", "3rem", "5vh"
+     *                         - Bootstrap-Klassen: "my-4", "mt-3 mb-5"
+     *                         - Voreinstellungen: "xs", "sm", "md", "lg", "xl"
+     * @param array $attributes Zusätzliche Attribute für das Element
+     * @return $this Für Method Chaining
+     */
+    public function addSpacer(string|int $size = 'md', array $attributes = []): self
+    {
+        // Wenn es eine Zahl ist, als rem interpretieren
+        if (is_numeric($size)) {
+            $style = "height: {$size}rem;";
+            if (!isset($attributes['style'])) {
+                $attributes['style'] = $style;
+            } else {
+                $attributes['style'] .= ' ' . $style;
+            }
+        }
+        // Wenn es eine Einheit enthält (px, rem, vh, etc.)
+        elseif (preg_match('/^\d+(\.\d+)?(px|rem|em|vh|vw|%)$/', $size)) {
+            $style = "height: {$size};";
+            if (!isset($attributes['style'])) {
+                $attributes['style'] = $style;
+            } else {
+                $attributes['style'] .= ' ' . $style;
+            }
+        }
+        // Vordefinierte Größen (als Fallback für Bootstrap-Projekte)
+        elseif (in_array($size, ['xs', 'sm', 'md', 'lg', 'xl'])) {
+            $spacerClasses = [
+                'xs' => 'my-2',
+                'sm' => 'my-3', 
+                'md' => 'my-4',
+                'lg' => 'my-5',
+                'xl' => 'my-6'
+            ];
+            
+            $class = $spacerClasses[$size];
+            if (!isset($attributes['class'])) {
+                $attributes['class'] = $class;
+            } else {
+                $attributes['class'] .= ' ' . $class;
+            }
+        }
+        // Alles andere als CSS-Klasse interpretieren
+        else {
+            if (!isset($attributes['class'])) {
+                $attributes['class'] = $size;
+            } else {
+                $attributes['class'] .= ' ' . $size;
+            }
+        }
+
+        $this->items[] = HTMLElement::create('div', null, $attributes);
+        return $this;
+    }
+
+    /**
      * Fügt eine Tabelle hinzu
      *
      * @param array $body Tabelleninhalt
@@ -652,7 +756,7 @@ abstract class MFragmentElements
      */
     public function addTable(array $body, array $header = [], array $footer = [], array $attributes = []): self
     {
-//        $this->items[] = Table::create($body, $header, $footer, $attributes);
+        $this->items[] = \FriendsOfRedaxo\MFragment\Components\Default\Table::create($body, $header, $footer, $attributes);
         return $this;
     }
 

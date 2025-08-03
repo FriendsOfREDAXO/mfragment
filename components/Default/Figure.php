@@ -11,6 +11,18 @@ use FriendsOfRedaxo\MFragment\Components\AbstractComponent;
 /**
  * Erweiterte Figure-Komponente mit vollständiger Config-Unterstützung
  * Vollständig fragment-frei mit direkter HTML-Erzeugung
+ * 
+ * Responsive Images-Unterstützung:
+ * - Nutzt standardmäßig project/boot.php Funktionen (generateSrcset, generateSizesForType)
+ * - Hat eingebaute Fallback-Funktionalität ohne project/boot.php Abhängigkeit
+ * - Kann mit forceBuiltinResponsive() komplett ohne externe Abhängigkeiten betrieben werden
+ * 
+ * Verwendung:
+ * $figure = Figure::factory()
+ *   ->setMedia('image.jpg')
+ *   ->setMediaManagerType('half')
+ *   ->enableAutoResponsive()          // Nutzt project/boot.php oder Fallback
+ *   ->forceBuiltinResponsive(true);   // Optional: Nur eingebaute Funktionalität
  */
 class Figure extends AbstractComponent
 {
@@ -36,7 +48,15 @@ class Figure extends AbstractComponent
         'lightbox' => false,
         'link' => null,
         'style' => '',
-        'imgWrapper' => null // Wichtig: imgWrapper Config hinzugefügt
+        'imgWrapper' => null, // Wichtig: imgWrapper Config hinzugefügt
+        'accessibility' => [
+            'enableNoScriptFallback' => true,
+            'role' => null, // null = automatisch, 'img', 'presentation', etc.
+            'ariaLabel' => null,
+            'ariaDescribedBy' => null,
+            'ariaLabelledBy' => null,
+            'focusable' => null // null = automatisch, true/false
+        ]
     ];
 
     /**
@@ -152,12 +172,12 @@ class Figure extends AbstractComponent
      */
     private function setAutoDimensionsForType(string $type): void
     {
-        // Bootstrap 5 Media Manager Types mit optimierten Dimensionen
+        // Bootstrap 5 Media Manager Types mit flexiblen Dimensionen
         $dimensionMap = [
-            // Standard responsive Typen (ohne Ratio)
-            'small' => ['width' => 250, 'height' => 167],          // 3:2 für kleine Bilder
-            'half' => ['width' => 800, 'height' => 533],           // 3:2 für mittlere Bilder
-            'full' => ['width' => 1400, 'height' => 933],          // 3:2 für große Bilder
+            // Standard responsive Typen (ohne Ratio) - Flexibles Verhältnis
+            'small' => ['width' => 250, 'height' => null],         // Flexibles Verhältnis für kleine Bilder
+            'half' => ['width' => 800, 'height' => null],          // Flexibles Verhältnis für mittlere Bilder
+            'full' => ['width' => 1400, 'height' => null],         // Flexibles Verhältnis für große Bilder
             
             // 1x1 Ratio Typen (Quadratisch)
             'small_1x1' => ['width' => 180, 'height' => 180],      // Kleine Quadrate
@@ -171,10 +191,10 @@ class Figure extends AbstractComponent
             'full_4x3' => ['width' => 1200, 'height' => 900],      // Große 4:3
             '4x3' => ['width' => 700, 'height' => 525],            // Standard 4:3
             
-            // Legacy Typen (Rückwärtskompatibilität)
-            'content_full' => ['width' => 1400, 'height' => 933],  // 3:2 für Full-Width
-            'content_half' => ['width' => 800, 'height' => 533],   // 3:2 für Half-Width
-            'content_small' => ['width' => 250, 'height' => 167],  // 3:2 für kleine Bilder
+            // Legacy Typen (Rückwärtskompatibilität) - Flexibles Verhältnis
+            'content_full' => ['width' => 1400, 'height' => null], // Flexibles Verhältnis für Full-Width
+            'content_half' => ['width' => 800, 'height' => null],  // Flexibles Verhältnis für Half-Width
+            'content_small' => ['width' => 250, 'height' => null], // Flexibles Verhältnis für kleine Bilder
             
             // Weitere Ratio-Typen für spezielle Anwendungen
             '16x9' => ['width' => 1920, 'height' => 1080],         // 16:9 Widescreen
@@ -197,6 +217,26 @@ class Figure extends AbstractComponent
     public function enableAutoResponsive(bool $enabled = true): self
     {
         $this->config['media']['autoResponsive'] = $enabled;
+        return $this;
+    }
+
+    /**
+     * Forciert die Nutzung der eingebauten responsive Images-Funktionalität
+     * Ignoriert project/boot.php Funktionen komplett (für Portable Setups)
+     */
+    public function forceBuiltinResponsive(bool $enabled = true): self
+    {
+        $this->config['media']['forceBuiltinResponsive'] = $enabled;
+        return $this;
+    }
+
+    /**
+     * Setzt eine projektspezifische responsive Images-Konfiguration
+     * Überschreibt die Standard-Konfiguration für diese Figure-Instanz
+     */
+    public function setResponsiveConfig(array $config): self
+    {
+        $this->config['media']['customResponsiveConfig'] = $config;
         return $this;
     }
 
@@ -244,10 +284,10 @@ class Figure extends AbstractComponent
     {
         // Bootstrap 5 Standard-Dimensionen für verschiedene Media Manager Types
         $dimensionsMap = [
-            // Standard responsive Typen (ohne Ratio)
-            'small' => ['width' => 250, 'height' => 167],          // 3:2 für kleine Bilder
-            'half' => ['width' => 800, 'height' => 533],           // 3:2 für mittlere Bilder
-            'full' => ['width' => 1400, 'height' => 933],          // 3:2 für große Bilder
+            // Standard responsive Typen (ohne Ratio) - Flexibles Verhältnis
+            'small' => ['width' => 250, 'height' => null],         // Flexibles Verhältnis für kleine Bilder
+            'half' => ['width' => 800, 'height' => null],          // Flexibles Verhältnis für mittlere Bilder
+            'full' => ['width' => 1400, 'height' => null],         // Flexibles Verhältnis für große Bilder
             
             // 1x1 Ratio Typen (Quadratisch)
             'small_1x1' => ['width' => 180, 'height' => 180],      // Kleine Quadrate
@@ -261,10 +301,10 @@ class Figure extends AbstractComponent
             'full_4x3' => ['width' => 1200, 'height' => 900],      // Große 4:3
             '4x3' => ['width' => 700, 'height' => 525],            // Standard 4:3
             
-            // Legacy Typen (Rückwärtskompatibilität)
-            'content_full' => ['width' => 1400, 'height' => 933],  // 3:2 für Full-Width
-            'content_half' => ['width' => 800, 'height' => 533],   // 3:2 für Half-Width
-            'content_small' => ['width' => 250, 'height' => 167],  // 3:2 für kleine Bilder
+            // Legacy Typen (Rückwärtskompatibilität) - Flexibles Verhältnis
+            'content_full' => ['width' => 1400, 'height' => null], // Flexibles Verhältnis für Full-Width
+            'content_half' => ['width' => 800, 'height' => null],  // Flexibles Verhältnis für Half-Width
+            'content_small' => ['width' => 250, 'height' => null], // Flexibles Verhältnis für kleine Bilder
             
             // Weitere Ratio-Typen
             '16x9' => ['width' => 1920, 'height' => 1080],         // 16:9 Widescreen
@@ -273,7 +313,7 @@ class Figure extends AbstractComponent
             '5x4' => ['width' => 900, 'height' => 720],            // 5:4 Klassisch
         ];
 
-        return $dimensionsMap[$type] ?? ['width' => 800, 'height' => 533]; // Standard 3:2
+        return $dimensionsMap[$type] ?? ['width' => 800, 'height' => null]; // Standard flexibles Verhältnis
     }
 
     /**
@@ -292,6 +332,60 @@ class Figure extends AbstractComponent
     public function enableAutoDimensions(bool $enabled = true): self
     {
         $this->config['media']['autoDimensions'] = $enabled;
+        return $this;
+    }
+
+    /**
+     * Aktiviert/deaktiviert NoScript-Fallback für Lazy Loading
+     */
+    public function enableNoScriptFallback(bool $enabled = true): self
+    {
+        $this->config['accessibility']['enableNoScriptFallback'] = $enabled;
+        return $this;
+    }
+
+    /**
+     * Setzt ARIA-Attribute für Barrierefreiheit
+     */
+    public function setAriaLabel(string $label): self
+    {
+        $this->config['accessibility']['ariaLabel'] = $label;
+        return $this;
+    }
+
+    /**
+     * Setzt aria-describedby für Barrierefreiheit
+     */
+    public function setAriaDescribedBy(string $id): self
+    {
+        $this->config['accessibility']['ariaDescribedBy'] = $id;
+        return $this;
+    }
+
+    /**
+     * Setzt aria-labelledby für Barrierefreiheit
+     */
+    public function setAriaLabelledBy(string $id): self
+    {
+        $this->config['accessibility']['ariaLabelledBy'] = $id;
+        return $this;
+    }
+
+    /**
+     * Setzt die Rolle für Screenreader
+     */
+    public function setRole(string $role): self
+    {
+        $this->config['accessibility']['role'] = $role;
+        return $this;
+    }
+
+    /**
+     * Macht das Element fokussierbar oder nicht-fokussierbar
+     */
+    public function setFocusable(bool $focusable): self
+    {
+        $this->config['accessibility']['focusable'] = $focusable;
         return $this;
     }
 
@@ -475,7 +569,7 @@ class Figure extends AbstractComponent
     }
 
     /**
-     * Konfiguriert als Cover-Bild
+     * Konfiguriert als Cover-Bild (vollständig kompatibel mit bestehendem BG-System)
      */
     public function setCover(bool $stretch = false): self
     {
@@ -487,7 +581,7 @@ class Figure extends AbstractComponent
             $this->addFigureClass('h-100');
         }
 
-        // Media-Klassen für BG-Cover
+        // Media-Klassen für BG-Cover (kompatibel mit bestehendem JS/CSS)
         $this->addMediaClass('img-fluid');
         $this->addMediaClass('invisible');
         $this->addMediaClass('opacity-0');
@@ -504,7 +598,8 @@ class Figure extends AbstractComponent
     }
 
     /**
-     * Setzt image ratio (z.B. 16x9)
+     * Setzt image ratio (z.B. 4x3, 16x9, 21x9, 1x1, 5x2, etc.)
+     * Flexibel für alle aktuellen und zukünftigen Ratio-Formate
      */
     public function setRatio(string $ratio = '16x9'): self
     {
@@ -514,76 +609,214 @@ class Figure extends AbstractComponent
     }
 
     /**
-     * Convenience-Methode: Setzt Media Manager Type auf 'small' mit Auto-Responsive
+     * Convenience-Methode: Optimiert automatisch für Container-Typ mit flexiblem Ratio
+     * Intelligent media type selection based on Bootstrap container context
+     * 
+     * @param string $containerType Bootstrap container type (col-4, col-8, hero, etc.)
+     * @param string|null $aspectRatio Optional aspect ratio (1x1, 4x3, 16x9, 21x9, 5x2, etc.)
+     * @return $this
      */
-    public function setSmall(): self
-    {
-        $this->setMediaManagerType('small');
-        return $this;
-    }
-
-    /**
-     * Convenience-Methode: Setzt Media Manager Type auf 'half' mit Auto-Responsive
-     */
-    public function setHalf(): self
-    {
-        $this->setMediaManagerType('half');
-        return $this;
-    }
-
-    /**
-     * Convenience-Methode: Setzt Media Manager Type auf 'full' mit Auto-Responsive
-     */
-    public function setFull(): self
-    {
-        $this->setMediaManagerType('full');
-        return $this;
-    }
-
-    /**
-     * Convenience-Methode: Setzt quadratisches Format (1x1)
-     */
-    public function setSquare(string $size = 'half'): self
-    {
-        $this->setMediaManagerType($size . '_1x1');
-        return $this;
-    }
-
-    /**
-     * Convenience-Methode: Setzt 4:3 Format
-     */
-    public function setClassic(string $size = 'half'): self
-    {
-        $this->setMediaManagerType($size . '_4x3');
-        return $this;
-    }
-
-    /**
-     * Convenience-Methode: Optimiert automatisch für Container-Typ
-     */
-    public function optimizeForContainer(string $containerType = 'container'): self
+    public function optimizeForContainer(string $containerType = 'container', ?string $aspectRatio = null): self
     {
         // Intelligente Media Type Auswahl basierend auf Container
-        $optimalType = 'half'; // Standard
-
-        switch ($containerType) {
-            case 'col-3':
-            case 'col-4':
-                $optimalType = 'small';
-                break;
-            case 'col-6':
-            case 'col-8':
-                $optimalType = 'half';
-                break;
-            case 'col-12':
-            case 'container-fluid':
-            case 'hero':
-                $optimalType = 'full';
-                break;
+        $optimalType = $this->determineOptimalMediaType($containerType);
+        
+        // Wenn Aspect Ratio angegeben, kombiniere sie mit dem Media Type
+        if ($aspectRatio) {
+            $optimalType .= '_' . $aspectRatio;
+            
+            // Setze auch die Bootstrap Ratio-Klassen
+            $this->setRatio($aspectRatio);
         }
 
         $this->setMediaManagerType($optimalType);
         $this->setContainerSize($containerType);
+        
+        return $this;
+    }
+
+    /**
+     * Bestimmt den optimalen Media Manager Type basierend auf Container-Kontext
+     * Angepasst an die verfügbaren Media Manager Types im Projekt
+     */
+    private function determineOptimalMediaType(string $containerType): string
+    {
+        // Bootstrap Grid-System basierte Optimierung - mit neuen Bootstrap 5 Media Manager Types
+        $typeMap = [
+            // Small containers - nutzen small
+            'col-1' => 'small',
+            'col-2' => 'small', 
+            'col-3' => 'small',
+            'col-4' => 'small',
+            
+            // Medium containers - nutzen half
+            'col-5' => 'half',
+            'col-6' => 'half',
+            'col-7' => 'half',
+            'col-8' => 'half',
+            
+            // Large containers - nutzen full
+            'col-9' => 'full',
+            'col-10' => 'full',
+            'col-11' => 'full',
+            'col-12' => 'full',
+            
+            // Special containers
+            'container' => 'half',
+            'container-fluid' => 'full',
+            'hero' => 'full',
+            'banner' => 'full',
+            'fullwidth' => 'full',
+            
+            // Thumbnail/Preview contexts
+            'thumbnail' => 'small',
+            'preview' => 'small',
+            'card' => 'half'
+        ];
+        
+        // Fallback auf 'half' wenn kein Match
+        return $typeMap[$containerType] ?? 'half';
+    }
+
+    /**
+     * Setzt Bildgröße basierend auf semantischen Größen
+     * Flexibler Ersatz für die alten setSmall/setHalf/setFull Methoden
+     */
+    public function setSize(string $size, ?string $aspectRatio = null): self
+    {
+        $mediaType = $size;
+        
+        // Wenn Aspect Ratio angegeben, kombiniere sie
+        if ($aspectRatio) {
+            $mediaType .= '_' . $aspectRatio;
+        }
+        
+        $this->setMediaManagerType($mediaType);
+        return $this;
+    }
+
+    /**
+     * Convenience-Methode: Konfiguriert als dekoratives Bild (nicht essentiell für Inhalt)
+     */
+    public function setDecorative(bool $decorative = true): self
+    {
+        if ($decorative) {
+            $this->config['accessibility']['role'] = 'presentation';
+            $this->config['accessibility']['focusable'] = false;
+            // Für dekorative Bilder sollte alt="" gesetzt werden
+            $this->setAlt('');
+        } else {
+            $this->config['accessibility']['role'] = null;
+            $this->config['accessibility']['focusable'] = null;
+        }
+        return $this;
+    }
+
+    /**
+     * Bootstrap 5 Convenience-Methoden für semantische Größen
+     */
+    
+    /**
+     * Kleine Bilder (small_320, small_576, small_768)
+     */
+    public function setSmall(): self
+    {
+        return $this->setMediaManagerType('small');
+    }
+    
+    /**
+     * Mittlere Bilder (half_320-1400px)
+     */
+    public function setHalf(): self
+    {
+        return $this->setMediaManagerType('half');
+    }
+    
+    /**
+     * Große Bilder (full_320-1400px)
+     */
+    public function setFull(): self
+    {
+        return $this->setMediaManagerType('full');
+    }
+    
+    /**
+     * Flexibel: Setzt beliebiges Ratio mit Größe
+     * @param string $ratio Beliebiges Ratio (4x3, 16x9, 21x9, 5x2, 3x1, etc.)
+     * @param string $size 'small', 'half', oder 'full'
+     */
+    public function setRatioSize(string $ratio, string $size = 'half'): self
+    {
+        return $this->setMediaManagerType($size . '_' . $ratio);
+    }
+    
+    /**
+     * Quadratische Bilder (1x1 Ratio)
+     * @param string $size 'small', 'half', oder 'full'
+     */
+    public function setSquare(string $size = 'half'): self
+    {
+        return $this->setRatioSize('1x1', $size);
+    }
+    
+    /**
+     * 4:3 Format Bilder (klassisches Seitenverhältnis)
+     * @param string $size 'small', 'half', oder 'full'
+     */
+    public function set4x3(string $size = 'half'): self
+    {
+        return $this->setRatioSize('4x3', $size);
+    }
+
+    /**
+     * 1:1 Format Bilder (quadratisch) - Alias für setSquare()
+     * @param string $size 'small', 'half', oder 'full'
+     */
+    public function set1x1(string $size = 'half'): self
+    {
+        return $this->setSquare($size);
+    }
+
+    /**
+     * 16:9 Format Bilder (Widescreen)
+     * @param string $size 'small', 'half', oder 'full'
+     */
+    public function set16x9(string $size = 'half'): self
+    {
+        return $this->setRatioSize('16x9', $size);
+    }
+
+    /**
+     * 21:9 Format Bilder (Ultrawide)
+     * @param string $size 'small', 'half', oder 'full'
+     */
+    public function set21x9(string $size = 'half'): self
+    {
+        return $this->setRatioSize('21x9', $size);
+    }
+
+    /**
+     * @deprecated Use setRatioSize('4x3', $size) instead - more flexible for future ratios
+     * Klassische 4:3 Bilder
+     * @param string $size 'small', 'half', oder 'full'
+     */
+    public function setClassic(string $size = 'half'): self
+    {
+        return $this->set4x3($size);
+    }
+
+    /**
+     * Convenience-Methode: Konfiguriert als Hero/Banner-Bild mit hoher Priorität
+     */
+    public function setHeroBanner(?string $ariaLabel = null): self
+    {
+        $this->setSize('full'); // Nutze die neue setSize() Methode mit full-size
+        $this->enableLazyLoading(false); // Hero-Bilder sollten nicht lazy geladen werden
+        $this->config['accessibility']['focusable'] = false;
+        
+        if ($ariaLabel) {
+            $this->setAriaLabel($ariaLabel);
+        }
         
         return $this;
     }
@@ -628,27 +861,43 @@ class Figure extends AbstractComponent
             $responsiveBaseType = $this->config['media']['responsiveBaseType'] ?? null;
             
             // Auto-Responsive Images für unterstützte Base-Types
-            if (!$isSvg && $autoResponsive && $responsiveBaseType && function_exists('generateSrcset')) {
-                $srcset = generateSrcset($this->sections['media']->getFileName(), $responsiveBaseType);
-                if (function_exists('generateSizesForType')) {
-                    $sizes = generateSizesForType($responsiveBaseType);
-                }
+            if (!$isSvg && $autoResponsive && $responsiveBaseType) {
+                $forceBuiltin = $this->config['media']['forceBuiltinResponsive'] ?? false;
                 
-                // Fallback-Versuch mit Media Manager Type falls base type nicht funktioniert
-                if (empty($srcset) && function_exists('generateSrcset')) {
-                    $srcset = generateSrcset($this->sections['media']->getFileName(), $this->config['media']['mediaManagerType']);
-                    if (function_exists('generateSizesForType')) {
-                        $sizes = generateSizesForType($this->config['media']['mediaManagerType']);
+                if (!$forceBuiltin) {
+                    // Erst versuchen mit project/boot.php Funktionen (falls verfügbar)
+                    if (function_exists('generateSrcset')) {
+                        $srcset = generateSrcset($this->sections['media']->getFileName(), $responsiveBaseType);
+                        if (function_exists('generateSizesForType')) {
+                            $sizes = generateSizesForType($responsiveBaseType);
+                        }
+                        
+                        // Fallback-Versuch mit Media Manager Type falls base type nicht funktioniert
+                        if (empty($srcset) && function_exists('generateSrcset')) {
+                            $srcset = generateSrcset($this->sections['media']->getFileName(), $this->config['media']['mediaManagerType']);
+                            if (function_exists('generateSizesForType')) {
+                                $sizes = generateSizesForType($this->config['media']['mediaManagerType']);
+                            }
+                        }
+                        
+                        // Alternative: Nutze die neue getResponsiveImageData Funktion falls verfügbar
+                        if (empty($srcset) && function_exists('getResponsiveImageData')) {
+                            $containerType = $this->config['media']['responsiveImages']['sizesAttribute'] ?? 'container';
+                            $imageData = getResponsiveImageData($this->sections['media']->getFileName(), $responsiveBaseType, $containerType);
+                            if ($imageData && !empty($imageData['srcset'])) {
+                                $srcset = $imageData['srcset'];
+                                $sizes = $imageData['sizes'];
+                            }
+                        }
                     }
                 }
                 
-                // Alternative: Nutze die neue getResponsiveImageData Funktion falls verfügbar
-                if (empty($srcset) && function_exists('getResponsiveImageData')) {
-                    $containerType = $this->config['media']['responsiveImages']['sizesAttribute'] ?? 'container';
-                    $imageData = getResponsiveImageData($this->sections['media']->getFileName(), $responsiveBaseType, $containerType);
-                    if ($imageData && !empty($imageData['srcset'])) {
-                        $srcset = $imageData['srcset'];
-                        $sizes = $imageData['sizes'];
+                // Fallback oder Forced: Eigene responsive Images-Generierung ohne project/boot.php
+                if (empty($srcset) || $forceBuiltin) {
+                    $responsiveData = $this->generateBuiltinResponsiveImages($this->sections['media']->getFileName(), $responsiveBaseType);
+                    if (!empty($responsiveData['srcset'])) {
+                        $srcset = $responsiveData['srcset'];
+                        $sizes = $responsiveData['sizes'];
                     }
                 }
             }
@@ -668,6 +917,13 @@ class Figure extends AbstractComponent
             $figureClasses = implode(' ', $figureClasses);
         }
 
+        // Alt-Text zuerst holen
+        $alt = $this->getAlt();
+
+        // Barrierefreiheits-Attribute sammeln
+        $accessibilityConfig = $this->config['accessibility'];
+        $ariaAttributes = $this->buildAriaAttributes($accessibilityConfig, $alt);
+
         // BG-Cover Funktionalität prüfen
         $isBgCover = strpos($figureClasses, 'bg-cover') !== false || strpos($figureClasses, 'img-cover') !== false;
         
@@ -680,9 +936,6 @@ class Figure extends AbstractComponent
         // Lazy Loading
         $lazyLoading = $this->config['media']['lazyLoading'] ?? false;
 
-        // Alt-Text
-        $alt = $this->getAlt();
-
         // Width und Height Attribute für img-Tag
         $imgWidth = $this->config['media']['width'] ?? null;
         $imgHeight = $this->config['media']['height'] ?? null;
@@ -692,11 +945,13 @@ class Figure extends AbstractComponent
         $lightbox = $this->config['lightbox'] ?? false;
 
         $html = '';
+        
+        // Figure mit Barrierefreiheits-Attributen
         if ($isBgCover && $imageSrc) {
-            // BG-Cover: Figure ohne direktes background-image - wird via JS gesetzt
-            $html .= '<figure class="' . htmlspecialchars($figureClasses) . '" data-bg-cover="true">';
+            // BG-Cover: Figure mit data-bg-cover="true" für JS-System
+            $html .= '<figure class="' . htmlspecialchars($figureClasses) . '" data-bg-cover="true"' . $ariaAttributes['figure'] . '>';
         } else {
-            $html .= '<figure class="' . htmlspecialchars($figureClasses) . '">';
+            $html .= '<figure class="' . htmlspecialchars($figureClasses) . '"' . $ariaAttributes['figure'] . '>';
         }
 
         // Link-Wrapper
@@ -710,7 +965,7 @@ class Figure extends AbstractComponent
             }
         }
 
-        // Image Tag
+        // Image Tag mit vollständiger Barrierefreiheit
         if ($isBgCover && $imageSrc) {
             // BG-Cover: IMG mit Lazy Loading für automatisches BG-Setting via JS
             if ($lazyLoading && !empty($srcset)) {
@@ -723,7 +978,7 @@ class Figure extends AbstractComponent
                 $html .= 'src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3C/svg%3E" ';
                 if ($imgWidth) $html .= 'width="' . htmlspecialchars($imgWidth) . '" ';
                 if ($imgHeight) $html .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-                $html .= 'alt="' . htmlspecialchars($alt) . '" aria-hidden="true" loading="lazy">';
+                $html .= 'alt="" aria-hidden="true" loading="lazy"' . $ariaAttributes['img'] . '>';
             } elseif ($lazyLoading) {
                 // Lazy Loading ohne Srcset für BG-Cover
                 $html .= '<img class="' . htmlspecialchars($mediaClasses) . ' lazy bg-cover-img" ';
@@ -732,7 +987,7 @@ class Figure extends AbstractComponent
                 $html .= 'src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3C/svg%3E" ';
                 if ($imgWidth) $html .= 'width="' . htmlspecialchars($imgWidth) . '" ';
                 if ($imgHeight) $html .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-                $html .= 'alt="' . htmlspecialchars($alt) . '" aria-hidden="true" loading="lazy">';
+                $html .= 'alt="" aria-hidden="true" loading="lazy"' . $ariaAttributes['img'] . '>';
             } elseif (!empty($srcset)) {
                 // Normal Loading mit Srcset für BG-Cover
                 $html .= '<img class="' . htmlspecialchars($mediaClasses) . ' bg-cover-img" ';
@@ -742,7 +997,7 @@ class Figure extends AbstractComponent
                 $html .= 'data-bg="true" ';
                 if ($imgWidth) $html .= 'width="' . htmlspecialchars($imgWidth) . '" ';
                 if ($imgHeight) $html .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-                $html .= 'alt="' . htmlspecialchars($alt) . '" aria-hidden="true">';
+                $html .= 'alt="" aria-hidden="true"' . $ariaAttributes['img'] . '>';
             } else {
                 // Normal Loading ohne Srcset für BG-Cover
                 $html .= '<img class="' . htmlspecialchars($mediaClasses) . ' bg-cover-img" ';
@@ -750,7 +1005,7 @@ class Figure extends AbstractComponent
                 $html .= 'data-bg="true" ';
                 if ($imgWidth) $html .= 'width="' . htmlspecialchars($imgWidth) . '" ';
                 if ($imgHeight) $html .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-                $html .= 'alt="' . htmlspecialchars($alt) . '" aria-hidden="true">';
+                $html .= 'alt="" aria-hidden="true"' . $ariaAttributes['img'] . '>';
             }
         } elseif ($lazyLoading && !empty($srcset)) {
             // Lazy Loading mit Srcset
@@ -761,7 +1016,7 @@ class Figure extends AbstractComponent
             $html .= 'src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3C/svg%3E" ';
             if ($imgWidth) $html .= 'width="' . htmlspecialchars($imgWidth) . '" ';
             if ($imgHeight) $html .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-            $html .= 'alt="' . htmlspecialchars($alt) . '" loading="lazy">';
+            $html .= 'alt="' . htmlspecialchars($alt) . '" loading="lazy"' . $ariaAttributes['img'] . '>';
         } elseif ($lazyLoading) {
             // Lazy Loading ohne Srcset
             $html .= '<img class="' . htmlspecialchars($mediaClasses) . ' lazy" ';
@@ -769,7 +1024,7 @@ class Figure extends AbstractComponent
             $html .= 'src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3C/svg%3E" ';
             if ($imgWidth) $html .= 'width="' . htmlspecialchars($imgWidth) . '" ';
             if ($imgHeight) $html .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-            $html .= 'alt="' . htmlspecialchars($alt) . '" loading="lazy">';
+            $html .= 'alt="' . htmlspecialchars($alt) . '" loading="lazy"' . $ariaAttributes['img'] . '>';
         } elseif (!empty($srcset)) {
             // Normal Loading mit Srcset
             $html .= '<img class="' . htmlspecialchars($mediaClasses) . '" ';
@@ -778,14 +1033,19 @@ class Figure extends AbstractComponent
             $html .= 'sizes="' . htmlspecialchars($sizes) . '" ';
             if ($imgWidth) $html .= 'width="' . htmlspecialchars($imgWidth) . '" ';
             if ($imgHeight) $html .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-            $html .= 'alt="' . htmlspecialchars($alt) . '">';
+            $html .= 'alt="' . htmlspecialchars($alt) . '"' . $ariaAttributes['img'] . '>';
         } else {
             // Normal Loading ohne Srcset
             $html .= '<img class="' . htmlspecialchars($mediaClasses) . '" ';
             $html .= 'src="' . htmlspecialchars($imageSrc) . '" ';
             if ($imgWidth) $html .= 'width="' . htmlspecialchars($imgWidth) . '" ';
             if ($imgHeight) $html .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-            $html .= 'alt="' . htmlspecialchars($alt) . '">';
+            $html .= 'alt="' . htmlspecialchars($alt) . '"' . $ariaAttributes['img'] . '>';
+        }
+
+        // NoScript-Fallback für Lazy Loading
+        if ($lazyLoading && $accessibilityConfig['enableNoScriptFallback']) {
+            $html .= $this->generateNoScriptFallback($imageSrc, $srcset, $sizes, $alt, $mediaClasses, $imgWidth, $imgHeight, $ariaAttributes['img']);
         }
 
         // Link schließen
@@ -1032,5 +1292,227 @@ class Figure extends AbstractComponent
     public function __toString(): string
     {
         return $this->render();
+    }
+
+    /**
+     * Prüft ob ein Media Manager Type existiert (mit statischem Caching)
+     * Separate Methode für saubere Trennung der Concerns
+     */
+    private function hasMediaManagerType(string $typeName): bool
+    {
+        static $availableTypes = null;
+        
+        if ($availableTypes === null) {
+            $availableTypes = [];
+            $sql = \rex_sql::factory();
+            $sql->setQuery('SELECT name FROM ' . \rex::getTable('media_manager_type'));
+            foreach ($sql as $row) {
+                $availableTypes[] = (string) $row->getValue('name');
+            }
+        }
+        
+        return in_array($typeName, $availableTypes);
+    }
+
+    /**
+     * Eigene responsive Images-Generierung ohne Abhängigkeit zur project/boot.php
+     * Bootstrap 5 optimiert für Standard Media Manager Typen
+     */
+    private function generateBuiltinResponsiveImages(string $mediaFile, string $baseType): array
+    {
+        if (!$mediaFile || !file_exists(\rex_path::media($mediaFile))) {
+            return ['srcset' => '', 'sizes' => ''];
+        }
+        
+        // Hole verfügbare responsive Breakpoints und Konfiguration
+        $responsiveConfig = $this->getResponsiveConfig();
+        $breakpoints = $responsiveConfig['breakpoints'][$baseType] ?? $responsiveConfig['defaultBreakpoints'];
+        $actualWidths = $responsiveConfig['actualWidths'];
+        
+        $srcsetArray = [];
+        
+        foreach ($breakpoints as $breakpoint) {
+            $responsiveType = $baseType . '_' . $breakpoint;
+            
+            // Prüfe ob Media Manager Type existiert (nutzt Caching-Methode)
+            if ($this->hasMediaManagerType($responsiveType)) {
+                $url = \rex_media_manager::getUrl($responsiveType, $mediaFile);
+                
+                // Ermittle die tatsächliche Bildbreite für diesen Media Manager Type
+                $actualWidth = $actualWidths[$responsiveType] ?? $breakpoint;
+                $srcsetArray[] = $url . ' ' . $actualWidth . 'w';
+            }
+        }
+        
+        $srcset = implode(', ', $srcsetArray);
+        $sizes = $this->generateSizesForTypeBuiltin($baseType);
+        
+        return [
+            'srcset' => $srcset,
+            'sizes' => $sizes
+        ];
+    }
+
+    /**
+     * Holt die responsive Images-Konfiguration
+     * Kann projektspezifisch überschrieben werden
+     */
+    private function getResponsiveConfig(): array
+    {
+        // Standard-Konfiguration
+        $defaultConfig = [
+            'defaultBreakpoints' => [576, 768, 992, 1200],
+            'breakpoints' => [
+                // Minimal-Set für grundlegende Responsive Images
+                'small' => [576, 768],
+                'half' => [576, 768, 992, 1200],
+                'full' => [576, 768, 992, 1200, 1400],
+            ],
+            'actualWidths' => [
+                // Standard-Bildbreiten (können überschrieben werden)
+                'small_576' => 280,
+                'small_768' => 350,
+                
+                'half_576' => 400,
+                'half_768' => 500,
+                'half_992' => 600,
+                'half_1200' => 700,
+                
+                'full_576' => 576,
+                'full_768' => 768,
+                'full_992' => 992,
+                'full_1200' => 1200,
+                'full_1400' => 1400,
+            ]
+        ];
+
+        // Projektspezifische Überschreibung aus MFragment-Konfiguration
+        $projectConfig = [];
+        if (\rex_addon::get('mfragment')->isAvailable()) {
+            $projectConfig = \rex_addon::get('mfragment')->getConfig('responsive_images', []);
+        }
+
+        // Instanz-spezifische Konfiguration
+        $instanceConfig = $this->config['media']['customResponsiveConfig'] ?? [];
+
+        // Konfigurationen mergen: Standard < Projekt < Instanz
+        return array_merge_recursive($defaultConfig, $projectConfig, $instanceConfig);
+    }
+
+    /**
+     * Sizes-Attribute Generierung basierend auf Bootstrap 5 Container-Logik
+     * Eigene Implementierung ohne project/boot.php Abhängigkeit
+     */
+    private function generateSizesForTypeBuiltin(string $baseType): string
+    {
+        // Hole die sizes-Konfiguration
+        $sizesConfig = $this->getSizesConfig();
+        
+        return $sizesConfig[$baseType] ?? $sizesConfig['default'];
+    }
+
+    /**
+     * Holt die sizes-Attribut-Konfiguration
+     * Kann projektspezifisch überschrieben werden
+     */
+    private function getSizesConfig(): array
+    {
+        $defaultSizes = [
+            'default' => '(max-width: 575px) 280px, (max-width: 767px) 400px, (max-width: 991px) 500px, (max-width: 1199px) 600px, 700px',
+            
+            // Standard responsive Typen
+            'full' => '(max-width: 575px) 320px, (max-width: 767px) 576px, (max-width: 991px) 768px, (max-width: 1199px) 992px, (max-width: 1399px) 1200px, 1400px',
+            'half' => '(max-width: 575px) 280px, (max-width: 767px) 400px, (max-width: 991px) 500px, (max-width: 1199px) 600px, (max-width: 1399px) 700px, 800px',
+            'small' => '(max-width: 575px) 160px, (max-width: 767px) 200px, 250px',
+            
+            // Legacy Unterstützung
+            'content_full' => '(max-width: 575px) 320px, (max-width: 767px) 576px, (max-width: 991px) 768px, (max-width: 1199px) 992px, (max-width: 1399px) 1200px, 1400px',
+            'content_half' => '(max-width: 575px) 280px, (max-width: 767px) 400px, (max-width: 991px) 500px, (max-width: 1199px) 600px, (max-width: 1399px) 700px, 800px',
+            'content_small' => '(max-width: 575px) 160px, (max-width: 767px) 200px, 250px',
+        ];
+
+        // Projektspezifische Überschreibung aus MFragment-Konfiguration
+        $projectSizes = [];
+        if (\rex_addon::get('mfragment')->isAvailable()) {
+            $projectSizes = \rex_addon::get('mfragment')->getConfig('responsive_sizes', []);
+        }
+
+        // Instanz-spezifische Konfiguration
+        $instanceSizes = [];
+        if (isset($this->config['media']['customResponsiveConfig']['sizes'])) {
+            $instanceSizes = $this->config['media']['customResponsiveConfig']['sizes'];
+        }
+
+        return array_merge($defaultSizes, $projectSizes, $instanceSizes);
+    }
+
+    /**
+     * Baut ARIA-Attribute für Barrierefreiheit auf
+     */
+    private function buildAriaAttributes(array $accessibilityConfig, string $alt): array
+    {
+        $figureAttrs = [];
+        $imgAttrs = [];
+
+        // Role-Attribut
+        if (!empty($accessibilityConfig['role'])) {
+            $imgAttrs[] = 'role="' . htmlspecialchars($accessibilityConfig['role']) . '"';
+        }
+
+        // ARIA-Label
+        if (!empty($accessibilityConfig['ariaLabel'])) {
+            $imgAttrs[] = 'aria-label="' . htmlspecialchars($accessibilityConfig['ariaLabel']) . '"';
+        }
+
+        // ARIA-DescribedBy
+        if (!empty($accessibilityConfig['ariaDescribedBy'])) {
+            $imgAttrs[] = 'aria-describedby="' . htmlspecialchars($accessibilityConfig['ariaDescribedBy']) . '"';
+        }
+
+        // ARIA-LabelledBy
+        if (!empty($accessibilityConfig['ariaLabelledBy'])) {
+            $imgAttrs[] = 'aria-labelledby="' . htmlspecialchars($accessibilityConfig['ariaLabelledBy']) . '"';
+        }
+
+        // Focusable
+        if (isset($accessibilityConfig['focusable'])) {
+            $tabindex = $accessibilityConfig['focusable'] ? '0' : '-1';
+            $imgAttrs[] = 'tabindex="' . $tabindex . '"';
+        }
+
+        return [
+            'figure' => !empty($figureAttrs) ? ' ' . implode(' ', $figureAttrs) : '',
+            'img' => !empty($imgAttrs) ? ' ' . implode(' ', $imgAttrs) : ''
+        ];
+    }
+
+    /**
+     * Generiert NoScript-Fallback für Lazy Loading
+     */
+    private function generateNoScriptFallback(string $imageSrc, string $srcset, string $sizes, string $alt, string $mediaClasses, ?int $imgWidth, ?int $imgHeight, string $ariaAttributes): string
+    {
+        $noscript = '<noscript>';
+        
+        if (!empty($srcset)) {
+            // Fallback mit Srcset
+            $noscript .= '<img class="' . htmlspecialchars($mediaClasses) . '" ';
+            $noscript .= 'src="' . htmlspecialchars($imageSrc) . '" ';
+            $noscript .= 'srcset="' . htmlspecialchars($srcset) . '" ';
+            $noscript .= 'sizes="' . htmlspecialchars($sizes) . '" ';
+            if ($imgWidth) $noscript .= 'width="' . htmlspecialchars($imgWidth) . '" ';
+            if ($imgHeight) $noscript .= 'height="' . htmlspecialchars($imgHeight) . '" ';
+            $noscript .= 'alt="' . htmlspecialchars($alt) . '"' . $ariaAttributes . '>';
+        } else {
+            // Einfacher Fallback
+            $noscript .= '<img class="' . htmlspecialchars($mediaClasses) . '" ';
+            $noscript .= 'src="' . htmlspecialchars($imageSrc) . '" ';
+            if ($imgWidth) $noscript .= 'width="' . htmlspecialchars($imgWidth) . '" ';
+            if ($imgHeight) $noscript .= 'height="' . htmlspecialchars($imgHeight) . '" ';
+            $noscript .= 'alt="' . htmlspecialchars($alt) . '"' . $ariaAttributes . '>';
+        }
+        
+        $noscript .= '</noscript>';
+        
+        return $noscript;
     }
 }
