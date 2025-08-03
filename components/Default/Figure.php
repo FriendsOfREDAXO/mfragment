@@ -201,6 +201,7 @@ class Figure extends AbstractComponent
             '21x9' => ['width' => 1920, 'height' => 823],          // 21:9 Ultrawide
             '3x2' => ['width' => 900, 'height' => 600],            // 3:2 Foto-Standard
             '5x4' => ['width' => 900, 'height' => 720],            // 5:4 Klassisch
+            '2x1' => ['width' => 900, 'height' => 450],            // 2:1 Banner-Format
         ];
         
         if (isset($dimensionMap[$type])) {
@@ -311,6 +312,7 @@ class Figure extends AbstractComponent
             '21x9' => ['width' => 1920, 'height' => 823],          // 21:9 Ultrawide
             '3x2' => ['width' => 900, 'height' => 600],            // 3:2 Foto-Standard
             '5x4' => ['width' => 900, 'height' => 720],            // 5:4 Klassisch
+            '2x1' => ['width' => 900, 'height' => 450],            // 2:1 Banner-Format
         ];
 
         return $dimensionsMap[$type] ?? ['width' => 800, 'height' => null]; // Standard flexibles Verhältnis
@@ -1367,6 +1369,13 @@ class Figure extends AbstractComponent
                 'small' => [576, 768],
                 'half' => [576, 768, 992, 1200],
                 'full' => [576, 768, 992, 1200, 1400],
+                
+                // Neue Ratio-Formate
+                '3x2' => [576, 768, 992, 1200],
+                '5x4' => [576, 768, 992, 1200],
+                '2x1' => [576, 768, 992, 1200],
+                '16x9' => [576, 768, 992, 1200],
+                '21x9' => [576, 768, 992, 1200],
             ],
             'actualWidths' => [
                 // Standard-Bildbreiten (können überschrieben werden)
