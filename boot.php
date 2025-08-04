@@ -3,6 +3,9 @@
 
 /** @var rex_addon $this */
 
+// Responsive Media Helper Funktionen laden (vollständiges System)
+require_once rex_path::addon('mfragment', 'lib/responsive_media_helpers.php');
+
 // Namespaces für externe Komponenten beim REDAXO-Autoloader registrieren
 rex_extension::register('PACKAGES_INCLUDED', function() {
     // Komponenten-Registry initialisieren
@@ -58,6 +61,17 @@ rex_extension::register('PACKAGES_INCLUDED', function() {
         rex_addon::get('mfragment')->setProperty('components', $components);
     }
 }, rex_extension::LATE);
+
+// Backend-spezifische Funktionen
+if (rex::isBackend()) {
+    // Debug-Seite für responsive Media Types (nur für Admins)
+    if (rex::getUser() && rex::getUser()->isAdmin() && rex_request('debug_responsive', 'bool', false)) {
+        echo "<div style='margin: 20px;'>";
+        echo "<h2>MFragment Responsive Media Types Debug</h2>";
+        debugResponsiveMediaTypes();
+        echo "</div>";
+    }
+}
 
 /**
  * Scannt ein Verzeichnis nach MFragmentComponents-Klassen

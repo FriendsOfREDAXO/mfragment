@@ -602,11 +602,21 @@ class Figure extends AbstractComponent
     /**
      * Setzt image ratio (z.B. 4x3, 16x9, 21x9, 1x1, 5x2, etc.)
      * Flexibel für alle aktuellen und zukünftigen Ratio-Formate
+     * Passt automatisch den Media Manager Type an wenn bereits ein Base-Type gesetzt ist
      */
     public function setRatio(string $ratio = '16x9'): self
     {
         $this->addFigureClass('ratio');
         $this->addFigureClass('ratio-' . $ratio);
+        
+        // Wenn bereits ein Media Manager Type gesetzt ist, passe ihn an das Ratio an
+        $currentType = $this->config['media']['mediaManagerType'] ?? null;
+        if ($currentType && !str_contains($currentType, '_')) {
+            // Base-Type ohne Ratio gefunden (z.B. "half"), füge Ratio hinzu
+            $newType = $currentType . '_' . $ratio;
+            $this->setMediaManagerType($newType);
+        }
+        
         return $this;
     }
 
@@ -971,9 +981,8 @@ class Figure extends AbstractComponent
         if ($isBgCover && $imageSrc) {
             // BG-Cover: IMG mit Lazy Loading für automatisches BG-Setting via JS
             if ($lazyLoading && !empty($srcset)) {
-                // Lazy Loading mit Srcset für BG-Cover
+                // Lazy Loading mit Srcset für BG-Cover - data-src wird nicht benötigt
                 $html .= '<img class="' . htmlspecialchars($mediaClasses) . ' lazy bg-cover-img" ';
-                $html .= 'data-src="' . htmlspecialchars($imageSrc) . '" ';
                 $html .= 'data-srcset="' . htmlspecialchars($srcset) . '" ';
                 $html .= 'data-sizes="' . htmlspecialchars($sizes) . '" ';
                 $html .= 'data-bg="true" ';
@@ -1010,9 +1019,8 @@ class Figure extends AbstractComponent
                 $html .= 'alt="" aria-hidden="true"' . $ariaAttributes['img'] . '>';
             }
         } elseif ($lazyLoading && !empty($srcset)) {
-            // Lazy Loading mit Srcset
+            // Lazy Loading mit Srcset - data-src wird nicht benötigt, da srcset verwendet wird
             $html .= '<img class="' . htmlspecialchars($mediaClasses) . ' lazy" ';
-            $html .= 'data-src="' . htmlspecialchars($imageSrc) . '" ';
             $html .= 'data-srcset="' . htmlspecialchars($srcset) . '" ';
             $html .= 'data-sizes="' . htmlspecialchars($sizes) . '" ';
             $html .= 'src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3C/svg%3E" ';
