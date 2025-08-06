@@ -27,12 +27,12 @@ class Menu extends AbstractComponent
     /**
      * Wrapper-Tag (div oder ul)
      */
-    private string $wrapperTag = 'div';
+    private string $wrapperTag = 'ul';
     
     /**
      * Item-Tag (div oder li)
      */
-    private string $itemTag = 'div';
+    private string $itemTag = 'li';
 
     /**
      * Setzt die Menu-Items
@@ -174,9 +174,9 @@ class Menu extends AbstractComponent
         $isExternal = $this->isExternalUrl($url);
         
         // CSS-Klassen
-        $linkClass = $this->config['class']['link'] ?? 'nav-link-li';
-        $itemClass = $this->config['class']['item'] ?? 'nav-item-it';
-        $textClass = $this->config['class']['text'] ?? 'nav-text-te';
+        $linkClass = $this->config['class']['link'] ?? 'nav-link';
+        $itemClass = $this->config['class']['item'] ?? 'nav-item';
+        $textClass = $this->config['class']['text'] ?? 'nav-link-title';
 
         // Attribute
         $linkAttributes = $item['attributes']['link'] ?? [];
@@ -263,7 +263,7 @@ class Menu extends AbstractComponent
                 ->setItems($item['children'])
                 ->setConfig($childConfig)
                 ->setType($this->wrapperTag === 'ul' ? 'list' : 'div');
-            
+
             $html .= $childMenu->show();
         }
         
