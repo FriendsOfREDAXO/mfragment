@@ -977,6 +977,32 @@ class Figure extends AbstractComponent
             }
         }
 
+        // Image Wrapper (imgWrapper Config)
+        if ($this->config['imgWrapper']) {
+            $wrapperClasses = $this->config['imgWrapper']['attributes']['class'] ?? ['figure-image-container'];
+            if (is_array($wrapperClasses)) {
+                $wrapperClasses = implode(' ', $wrapperClasses);
+            }
+            
+            $wrapperAttributes = ' class="' . htmlspecialchars($wrapperClasses) . '"';
+            
+            // Style-Attribute hinzufügen
+            if (isset($this->config['imgWrapper']['attributes']['style'])) {
+                $wrapperAttributes .= ' style="' . htmlspecialchars($this->config['imgWrapper']['attributes']['style']) . '"';
+            }
+            
+            // Weitere Attribute hinzufügen
+            if (isset($this->config['imgWrapper']['attributes'])) {
+                foreach ($this->config['imgWrapper']['attributes'] as $attr => $value) {
+                    if ($attr !== 'class' && $attr !== 'style') {
+                        $wrapperAttributes .= ' ' . htmlspecialchars($attr) . '="' . htmlspecialchars($value) . '"';
+                    }
+                }
+            }
+            
+            $html .= '<div' . $wrapperAttributes . '>';
+        }
+
         // Image Tag mit vollständiger Barrierefreiheit
         if ($isBgCover && $imageSrc) {
             // BG-Cover: IMG mit Lazy Loading für automatisches BG-Setting via JS
@@ -1056,6 +1082,11 @@ class Figure extends AbstractComponent
         // NoScript-Fallback für Lazy Loading
         if ($lazyLoading && $accessibilityConfig['enableNoScriptFallback']) {
             $html .= $this->generateNoScriptFallback($imageSrc, $srcset, $sizes, $alt, $mediaClasses, $imgWidth, $imgHeight, $ariaAttributes['img']);
+        }
+
+        // Image Wrapper schließen
+        if ($this->config['imgWrapper']) {
+            $html .= '</div>';
         }
 
         // Link schließen
