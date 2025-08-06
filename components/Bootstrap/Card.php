@@ -35,7 +35,7 @@ class Card extends AbstractComponent
      */
     private array $defaultClasses = [
         'header' => ['card-header'],
-        'image' => ['card-img-top'],
+        'image' => ['card-image', 'card-img-top'],
         'body' => ['card-body'],
         'list' => ['list-group', 'list-group-flush'],
         'footer' => ['card-footer'],
