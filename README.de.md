@@ -109,30 +109,132 @@ echo $responsiveBild->show();
 
 ### Erweiterte Komponenten-Beispiele
 
+#### Hero-Section mit Card-Grid
+
 ```php
 <?php
+use FriendsOfRedaxo\MFragment\Components\Bootstrap\Card;
 use FriendsOfRedaxo\MFragment\Components\Bootstrap\Carousel;
 use FriendsOfRedaxo\MFragment\Components\Default\Figure;
+use FriendsOfRedaxo\MFragment;
 
-$carousel = Carousel::factory('hero-carousel')
+// Hero-Carousel mit responsiven Bildern
+$heroCarousel = Carousel::factory('hero-carousel')
     ->addSlide(
         Figure::factory()
             ->setMedia('slide1.jpg')
             ->setMediaManagerType('hero_21x9')
-            ->setCaption('Moderne Web-Entwicklung')
+            ->setCaption('Moderne Web-Entwicklung mit MFragment')
             ->addClass('carousel-image')
     )
     ->addSlide(
         Figure::factory()
             ->setMedia('slide2.jpg')
-            ->setMediaManagerType('hero_21x9')
-            ->setCaption('Responsive Design')
+            ->setMediaManagerType('hero_21x9')  
+            ->setCaption('Responsive Design für alle Geräte')
     )
     ->setControls(true)
     ->setIndicators(true)
-    ->setAutoplay(5000);
+    ->setAutoplay(5000)
+    ->addClass('hero-section');
 
-echo $carousel->show();
+// Service-Cards Grid
+$servicesGrid = MFragment::factory()
+    ->addDiv(
+        MFragment::factory()
+            ->addDiv(
+                Card::factory()
+                    ->setImage('service-webdev.jpg', 'full_4x3')
+                    ->setHeader('Web-Entwicklung')
+                    ->setBody('Moderne Websites mit REDAXO und MFragment - performant, wartbar und zukunftssicher.')
+                    ->setFooter('
+                        <a href="/services/webdev" class="btn btn-primary">Mehr erfahren</a>
+                    ')
+                    ->addClass('h-100'),
+                ['class' => 'col-lg-4 mb-4']
+            )
+            ->addDiv(
+                Card::factory()
+                    ->setImage('service-design.jpg', 'full_4x3') 
+                    ->setHeader('Responsive Design')
+                    ->setBody('Optimale Darstellung auf allen Endgeräten - von Smartphone bis Desktop.')
+                    ->setFooter('
+                        <a href="/services/design" class="btn btn-primary">Portfolio ansehen</a>
+                    ')
+                    ->addClass('h-100'),
+                ['class' => 'col-lg-4 mb-4']
+            )
+            ->addDiv(
+                Card::factory()
+                    ->setImage('service-support.jpg', 'full_4x3')
+                    ->setHeader('Support & Wartung')
+                    ->setBody('Kontinuierliche Betreuung und Updates für Ihre REDAXO-Installation.')
+                    ->setFooter('
+                        <a href="/services/support" class="btn btn-primary">Kontakt</a>
+                    ')
+                    ->addClass('h-100'),
+                ['class' => 'col-lg-4 mb-4']
+            ),
+        ['class' => 'row']
+    );
+
+// Komplette Seiten-Section zusammenbauen
+$heroSection = MFragment::factory()
+    ->addDiv($heroCarousel, ['class' => 'hero-wrapper mb-5'])
+    ->addDiv(
+        MFragment::factory()
+            ->addHeading(2, 'Unsere Services', ['class' => 'text-center mb-5'])
+            ->addFragment($servicesGrid),
+        ['class' => 'container']
+    );
+
+echo $heroSection->show();
+```
+
+#### Interaktive FAQ-Section mit Accordion
+
+```php
+<?php
+use FriendsOfRedaxo\MFragment\Components\Bootstrap\Accordion;
+use FriendsOfRedaxo\MFragment;
+
+$faqData = [
+    [
+        'question' => 'Was ist MFragment und warum sollte ich es verwenden?',
+        'answer' => 'MFragment ist ein REDAXO-Addon für strukturierte HTML-Generierung. Es ermöglicht die programmatische Erstellung von HTML-Elementen mit einer komponentenorientierten Architektur, ähnlich wie MForm für Formulare arbeitet.',
+    ],
+    [
+        'question' => 'Wie unterscheidet sich MFragment von normalen Templates?',
+        'answer' => 'Statt statischer Templates ermöglicht MFragment dynamische HTML-Generierung direkt in PHP. Dadurch können Sie komplexe Layouts programmgesteuert erstellen, Inhalte bedingt einbinden und wiederverwendbare Komponenten entwickeln.',
+    ],
+    [
+        'question' => 'Welche Vorteile bietet das responsive Media-System?',
+        'answer' => 'Das Media-System bietet 360 vordefinierte Media Manager Typen mit automatischer WebP-Konvertierung. Es unterstützt 4 Bildserien (small, half, full, hero) und verschiedene Seitenverhältnisse für optimale Performance auf allen Geräten.',
+    ]
+];
+
+$faqAccordion = Accordion::factory('faq-accordion');
+foreach ($faqData as $index => $item) {
+    $faqAccordion->addItem(
+        $item['question'],
+        MFragment::factory()
+            ->addParagraph($item['answer'])
+            ->addDiv(
+                '<small class="text-muted">Weitere Fragen? <a href="/kontakt">Kontaktieren Sie uns</a></small>',
+                ['class' => 'mt-3']
+            )
+    );
+}
+
+$faqSection = MFragment::factory()
+    ->addDiv(
+        MFragment::factory()
+            ->addHeading(2, 'Häufig gestellte Fragen', ['class' => 'text-center mb-5'])
+            ->addDiv($faqAccordion, ['class' => 'col-lg-8 mx-auto']),
+        ['class' => 'container py-5']
+    );
+
+echo $faqSection->show();
 ```
 
 ## Verfügbare Komponenten
@@ -202,32 +304,106 @@ MFragment ermöglicht es Ihnen, **beliebige HTML-Strukturen** mit den integriert
 namespace App\Components;
 
 use FriendsOfRedaxo\MFragment\Components\AbstractComponent;
+use FriendsOfRedaxo\MFragment;
 
-class MyComponent extends AbstractComponent
+/**
+ * Testimonial-Komponente für Kundenbewertungen
+ */
+class Testimonial extends AbstractComponent
 {
-    protected string $title = '';
-    protected string $content = '';
-    
-    public function setTitle(string $title): self
+    private string $quote = '';
+    private string $author = '';
+    private string $position = '';
+    private string $company = '';
+    private string $avatar = '';
+    private int $rating = 5;
+
+    public function setQuote(string $quote): self
     {
-        $this->title = $title;
+        $this->quote = $quote;
         return $this;
     }
-    
-    public function setContent(string $content): self
+
+    public function setAuthor(string $author): self
     {
-        $this->content = $content;
+        $this->author = $author;
         return $this;
     }
-    
+
+    public function setPosition(string $position): self
+    {
+        $this->position = $position;
+        return $this;
+    }
+
+    public function setCompany(string $company): self
+    {
+        $this->company = $company;
+        return $this;
+    }
+
+    public function setAvatar(string $avatar): self
+    {
+        $this->avatar = $avatar;
+        return $this;
+    }
+
+    public function setRating(int $rating): self
+    {
+        $this->rating = max(1, min(5, $rating));
+        return $this;
+    }
+
     protected function renderHtml(): string
     {
-        return '<div' . $this->buildAttributesString() . '>
-            <h2>' . htmlspecialchars($this->title) . '</h2>
-            <div class="content">' . $this->content . '</div>
+        // Avatar-Bild mit responsive Media Manager
+        $avatarImg = '';
+        if ($this->avatar) {
+            $avatarImg = '<img src="' . rex_media_manager::getUrl('small_1x1_160', $this->avatar) . '" 
+                              alt="' . htmlspecialchars($this->author) . '" 
+                              class="testimonial-avatar rounded-circle">';
+        }
+
+        // Sterne-Rating generieren
+        $stars = '';
+        for ($i = 1; $i <= 5; $i++) {
+            $starClass = $i <= $this->rating ? 'star-filled' : 'star-empty';
+            $stars .= '<i class="star ' . $starClass . '">★</i>';
+        }
+
+        $attributesStr = $this->buildAttributesString();
+
+        return '
+        <div class="testimonial' . ($this->hasClass('testimonial') ? '' : ' testimonial') . '"' . $attributesStr . '>
+            <div class="testimonial-content">
+                <blockquote class="testimonial-quote">
+                    "' . htmlspecialchars($this->quote) . '"
+                </blockquote>
+                <div class="testimonial-rating">' . $stars . '</div>
+            </div>
+            <div class="testimonial-author">
+                ' . $avatarImg . '
+                <div class="author-info">
+                    <h4 class="author-name">' . htmlspecialchars($this->author) . '</h4>
+                    ' . ($this->position ? '<p class="author-position">' . htmlspecialchars($this->position) . '</p>' : '') . '
+                    ' . ($this->company ? '<p class="author-company">' . htmlspecialchars($this->company) . '</p>' : '') . '
+                </div>
+            </div>
         </div>';
     }
 }
+
+// Verwendung der Testimonial-Komponente
+$testimonial = Testimonial::factory()
+    ->setQuote('MFragment hat unsere Entwicklungszeit um 40% reduziert und die Code-Qualität erheblich verbessert.')
+    ->setAuthor('Maria Müller')
+    ->setPosition('Lead Developer')
+    ->setCompany('Digital Innovations GmbH')
+    ->setAvatar('maria-mueller.jpg')
+    ->setRating(5)
+    ->addClass('featured-testimonial shadow-lg');
+
+echo $testimonial->show();
 ```
 
 ### Erweiterte Komponente mit verschachtelten Elementen
@@ -237,71 +413,220 @@ class MyComponent extends AbstractComponent
 namespace App\Components;
 
 use FriendsOfRedaxo\MFragment\Components\AbstractComponent;
-use FriendsOfRedaxo\MFragment\Components\Default\HTMLElement;
+use FriendsOfRedaxo\MFragment\Components\Bootstrap\Badge;
 use FriendsOfRedaxo\MFragment\Components\Default\Figure;
 
+/**
+ * Produkt-Karte für E-Commerce mit komplexer Struktur
+ */
 class ProductCard extends AbstractComponent
 {
-    private string $productName = '';
-    private string $price = '';
-    private string $imageUrl = '';
+    private string $title = '';
+    private string $description = '';
+    private float $price = 0.0;
+    private float $oldPrice = 0.0;
+    private string $image = '';
+    private array $badges = [];
     private array $features = [];
-    
-    public function setProductName(string $name): self
+    private bool $inStock = true;
+    private string $ctaText = 'In den Warenkorb';
+
+    public function setTitle(string $title): self
     {
-        $this->productName = $name;
+        $this->title = $title;
         return $this;
     }
-    
-    public function setPrice(string $price): self
+
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    public function setPrice(float $price): self
     {
         $this->price = $price;
         return $this;
     }
-    
-    public function setImage(string $imageUrl): self
+
+    public function setOldPrice(float $oldPrice): self
     {
-        $this->imageUrl = $imageUrl;
+        $this->oldPrice = $oldPrice;
         return $this;
     }
-    
-    public function addFeature(string $label, string $value): self
+
+    public function setImage(string $image): self
     {
-        $this->features[] = ['label' => $label, 'value' => $value];
+        $this->image = $image;
         return $this;
     }
-    
+
+    public function addBadge(string $text, string $type = 'primary'): self
+    {
+        $this->badges[] = ['text' => $text, 'type' => $type];
+        return $this;
+    }
+
+    public function addFeature(string $feature): self
+    {
+        $this->features[] = $feature;
+        return $this;
+    }
+
+    public function setInStock(bool $inStock): self
+    {
+        $this->inStock = $inStock;
+        return $this;
+    }
+
+    public function setCtaText(string $ctaText): self
+    {
+        $this->ctaText = $ctaText;
+        return $this;
+    }
+
     protected function renderHtml(): string
     {
-        // Use other MFragment components
-        $image = Figure::factory()
-            ->setMedia($this->imageUrl)
-            ->setMediaManagerType('half_4x3')
-            ->enableLazyLoading()
-            ->addClass('product-image');
-            
-        $features = '';
-        foreach ($this->features as $feature) {
-            $features .= '<li><strong>' . htmlspecialchars($feature['label']) . ':</strong> ' . htmlspecialchars($feature['value']) . '</li>';
+        // Produkt-Bild mit Lazy Loading
+        $productImage = '';
+        if ($this->image) {
+            $productImage = Figure::factory()
+                ->setMedia($this->image)
+                ->setMediaManagerType('full_4x3')
+                ->setAlt($this->title)
+                ->addClass('product-image w-100')
+                ->show();
         }
-        
-        return '<div' . $this->buildAttributesString() . '>
-            ' . $image->show() . '
-            <div class="product-info">
-                <h3>' . htmlspecialchars($this->productName) . '</h3>
-                <div class="price">' . htmlspecialchars($this->price) . '</div>
-                ' . ($features ? '<ul class="features">' . $features . '</ul>' : '') . '
+
+        // Badges rendern
+        $badgesHtml = '';
+        foreach ($this->badges as $badge) {
+            $badgesHtml .= Badge::factory()
+                ->setText($badge['text'])
+                ->setType($badge['type'])
+                ->addClass('me-1 mb-1')
+                ->show();
+        }
+
+        // Features-Liste
+        $featuresHtml = '';
+        if (!empty($this->features)) {
+            $features = '';
+            foreach ($this->features as $feature) {
+                $features .= '<li>' . htmlspecialchars($feature) . '</li>';
+            }
+            $featuresHtml = '<ul class="product-features list-unstyled small text-muted">' . $features . '</ul>';
+        }
+
+        // Preis-Bereich
+        $priceHtml = '';
+        if ($this->oldPrice > $this->price) {
+            $discount = round((($this->oldPrice - $this->price) / $this->oldPrice) * 100);
+            $priceHtml = '
+                <div class="price-wrapper">
+                    <span class="current-price text-success fw-bold">' . number_format($this->price, 2) . ' €</span>
+                    <span class="old-price text-muted text-decoration-line-through ms-2">' . number_format($this->oldPrice, 2) . ' €</span>
+                    <span class="discount-badge badge bg-danger ms-2">-' . $discount . '%</span>
+                </div>';
+        } else {
+            $priceHtml = '<div class="price text-success fw-bold">' . number_format($this->price, 2) . ' €</div>';
+        }
+
+        // CTA-Button
+        $ctaButton = '';
+        if ($this->inStock) {
+            $ctaButton = '<button type="button" class="btn btn-primary w-100">' . htmlspecialchars($this->ctaText) . '</button>';
+        } else {
+            $ctaButton = '<button type="button" class="btn btn-outline-secondary w-100" disabled>Nicht verfügbar</button>';
+        }
+
+        $attributesStr = $this->buildAttributesString();
+
+        return '
+        <div class="product-card card h-100' . ($this->inStock ? '' : ' out-of-stock') . '"' . $attributesStr . '>
+            <div class="position-relative">
+                ' . $productImage . '
+                ' . ($badgesHtml ? '<div class="product-badges position-absolute top-0 start-0 m-2">' . $badgesHtml . '</div>' : '') . '
+            </div>
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">' . htmlspecialchars($this->title) . '</h5>
+                <p class="card-text flex-grow-1">' . htmlspecialchars($this->description) . '</p>
+                ' . $featuresHtml . '
+                <div class="mt-auto">
+                    ' . $priceHtml . '
+                    <div class="mt-3">
+                        ' . $ctaButton . '
+                    </div>
+                </div>
             </div>
         </div>';
     }
 }
+
+// Verwendung der ProductCard-Komponente
+$product = ProductCard::factory()
+    ->setTitle('MacBook Pro 16" M3 Max')
+    ->setDescription('Professioneller Laptop für kreative Workflows und Entwicklung.')
+    ->setPrice(2799.00)
+    ->setOldPrice(2999.00)
+    ->setImage('macbook-pro-16.jpg')
+    ->addBadge('Neu', 'success')
+    ->addBadge('Bestseller', 'warning')
+    ->addFeature('M3 Max Chip')
+    ->addFeature('32GB RAM')
+    ->addFeature('1TB SSD')
+    ->addFeature('Retina Display')
+    ->setInStock(true)
+    ->addClass('product-featured shadow-sm')
+    ->setAttribute('data-product-id', '12345');
+
+echo $product->show();
 ```
 
-### Komponente mit MFragment Container
+### Integration eigener Komponenten
+
+Eigene Komponenten können problemlos mit Standard-MFragment-Elementen kombiniert werden:
 
 ```php
 <?php
-namespace App\Components;
+use FriendsOfRedaxo\MFragment;
+use FriendsOfRedaxo\MFragment\Components\Bootstrap\Card;
+
+// Kombiniere eigene Komponenten mit Standard-Komponenten
+$productGrid = MFragment::factory()
+    ->addDiv(
+        MFragment::factory()
+            ->addDiv(
+                ProductCard::factory()
+                    ->setTitle('Gaming Setup')
+                    ->setDescription('Komplettes Gaming-Setup für Profis')
+                    ->setPrice(1899.00)
+                    ->setImage('gaming-setup.jpg')
+                    ->addBadge('Gaming', 'danger')
+                    ->setInStock(true),
+                ['class' => 'col-lg-4 mb-4']
+            )
+            ->addDiv(
+                Card::factory()
+                    ->setHeader('Service-Paket')
+                    ->setBody('Installation und 2 Jahre Garantie inklusive')
+                    ->setFooter('<a href="/service" class="btn btn-outline-primary">Mehr Info</a>')
+                    ->addClass('h-100'),
+                ['class' => 'col-lg-4 mb-4']
+            )
+            ->addDiv(
+                Testimonial::factory()
+                    ->setQuote('Hervorragende Qualität und super Service!')
+                    ->setAuthor('Peter Schmidt')
+                    ->setRating(5)
+                    ->setAvatar('peter.jpg'),
+                ['class' => 'col-lg-4 mb-4']
+            ),
+        ['class' => 'row']
+    );
+
+echo $productGrid->show();
+```
 
 use FriendsOfRedaxo\MFragment;
 use FriendsOfRedaxo\MFragment\Components\AbstractComponent;
@@ -708,25 +1033,131 @@ echo "Render-Aufrufe: " . $stats['renderCalls'];
 echo "Gesamtzeit: " . $stats['processingTime'] . "ms";
 ```
 
-### Performance-Monitoring
+### Entwickler-Debugging-Workflow
 
 ```php
-// Detaillierte Performance-Statistiken abrufen
-$engine = \FriendsOfRedaxo\MFragment\Core\RenderEngine::getInstance();
-$stats = $engine->getDetailedStats();
+<?php
+// debug.php - Debugging-Hilfe für eigene Komponenten
 
-foreach ($stats['components'] as $component => $data) {
-    echo "{$component}: {$data['count']} Renders, {$data['time']}ms gesamt\n";
+use FriendsOfRedaxo\MFragment\Core\RenderEngine;
+use FriendsOfRedaxo\MFragment\Components\Bootstrap\Card;
+use App\Components\ProductCard;
+
+// Debug aktivieren
+if (rex::isDebugMode()) {
+    RenderEngine::enableDebug();
 }
+
+// Teste verschiedene Komponenten
+$components = [
+    'Standard Card' => Card::factory()->setHeader('Test Card')->setBody('Test Content'),
+    'Product Card' => ProductCard::factory()->setTitle('Test Product')->setPrice('€99.99'),
+    'Complex Layout' => MFragment::factory()
+        ->addDiv(
+            Card::factory()->setHeader('Nested Test'),
+            ['class' => 'col-md-6']
+        )
+];
+
+foreach ($components as $name => $component) {
+    echo "<h3>{$name}</h3>";
+    $startTime = microtime(true);
+    
+    $output = $component->show();
+    
+    $renderTime = round((microtime(true) - $startTime) * 1000, 2);
+    echo "<p><small>Render-Zeit: {$renderTime}ms</small></p>";
+    echo $output;
+    echo "<hr>";
+}
+
+// Gesamtstatistiken
+$stats = RenderEngine::getStats();
+echo "<h3>Performance-Übersicht</h3>";
+echo "<ul>";
+echo "<li>Gesamte Render-Aufrufe: " . $stats['renderCalls'] . "</li>";
+echo "<li>Gesamte Render-Zeit: " . $stats['processingTime'] . "ms</li>";
+echo "<li>Ø Render-Zeit: " . round($stats['processingTime'] / max($stats['renderCalls'], 1), 2) . "ms</li>";
+echo "</ul>";
 ```
 
-### Media Manager Tests
+### Media Manager Tests und Validierung
 
 ```php
-// Test der responsive Bild-Generierung
-$srcset = generateSrcset('test.jpg', 'hero_16x9');
-assertNotEmpty($srcset);
-assertStringContains('hero_16x9_768', $srcset);
+<?php
+// media_debug.php - Teste responsive Media System
+
+// Prüfe ob alle Media Manager Typen verfügbar sind
+function validateMediaTypes(): array
+{
+    $requiredTypes = [
+        'small_1x1_320', 'small_4x3_320', 'small_16x9_320',
+        'half_1x1_768', 'half_4x3_768', 'half_16x9_768',
+        'full_1x1_1200', 'full_4x3_1200', 'full_16x9_1200',
+        'hero_16x9_1400', 'hero_21x9_1920'
+    ];
+    
+    $available = [];
+    $missing = [];
+    
+    foreach ($requiredTypes as $type) {
+        if (rex_sql::factory()->getArray('SELECT id FROM ' . rex::getTable('media_manager_type') . ' WHERE name = ?', [$type])) {
+            $available[] = $type;
+        } else {
+            $missing[] = $type;
+        }
+    }
+    
+    return compact('available', 'missing');
+}
+
+// Test responsive Bild-Generierung
+function testResponsiveImages(string $mediaFile): void
+{
+    $types = ['small', 'half', 'full', 'hero'];
+    
+    echo "<h3>Responsive Image Test: {$mediaFile}</h3>";
+    
+    foreach ($types as $baseType) {
+        echo "<h4>{$baseType} Serie</h4>";
+        
+        if (function_exists('generateSrcset')) {
+            $srcset = generateSrcset($mediaFile, $baseType);
+            echo "<p><strong>Srcset:</strong> " . htmlspecialchars($srcset) . "</p>";
+            
+            $sizes = generateSizesForType($baseType);
+            echo "<p><strong>Sizes:</strong> " . htmlspecialchars($sizes) . "</p>";
+        }
+        
+        // Teste einzelne Größen
+        $breakpoints = [320, 576, 768, 992, 1200, 1400];
+        foreach ($breakpoints as $bp) {
+            $typeName = "{$baseType}_16x9_{$bp}";
+            if (rex_media_manager::getUrl($typeName, $mediaFile)) {
+                echo "<span class='badge bg-success'>{$typeName} ✓</span> ";
+            }
+        }
+        echo "<br><br>";
+    }
+}
+
+// Führe Tests aus
+$validation = validateMediaTypes();
+echo "<h2>Media Manager Validierung</h2>";
+echo "<p><strong>Verfügbare Types:</strong> " . count($validation['available']) . " von " . (count($validation['available']) + count($validation['missing'])) . "</p>";
+
+if (!empty($validation['missing'])) {
+    echo "<div class='alert alert-warning'>";
+    echo "<strong>Fehlende Types:</strong> " . implode(', ', $validation['missing']);
+    echo "<br><em>Führen Sie das SQL-Schema aus: install/responsive_complete_system.sql</em>";
+    echo "</div>";
+}
+
+// Teste mit einer Beispiel-Datei
+if ($media = rex_media::get('beispiel.jpg')) {
+    testResponsiveImages('beispiel.jpg');
+}
+```
 ```
 
 ## Optionale Abhängigkeiten
