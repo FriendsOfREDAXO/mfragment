@@ -50,20 +50,34 @@ if (!function_exists('generateSrcset')) {
             'small' => [320, 576, 768], // Thumbnails und kleine Bilder
             'half' => [320, 576, 768, 992, 1200, 1400], // Mittlere Bilder, alle Breakpoints
             'full' => [320, 576, 768, 992, 1200, 1400], // Große Bilder, alle Breakpoints
+            'hero' => [768, 992, 1200, 1400, 1920], // Hero-Bilder für Fullscreen-Bereiche
             
             // 1x1 Ratio Varianten - quadratische Bilder
             'small_1x1' => [320, 576, 768], // Kleine Quadrate (Icons, Avatare)
             'half_1x1' => [320, 576, 768, 992, 1200], // Mittlere Quadrate
             'full_1x1' => [320, 576, 768, 992, 1200], // Große Quadrate (performance-begrenzt)
+            'hero_1x1' => [768, 992, 1200, 1400, 1920], // Hero Quadrate (Fullscreen)
             
             // 4x3 Ratio Varianten - klassisches Foto-Verhältnis
             'small_4x3' => [320, 576, 768], // Kleine 4:3 Bilder
             'half_4x3' => [320, 576, 768, 992, 1200], // Mittlere 4:3 Bilder
             'full_4x3' => [320, 576, 768, 992, 1200], // Große 4:3 Bilder (web-optimiert)
+            'hero_4x3' => [768, 992, 1200, 1400, 1920], // Hero 4:3 (Fullscreen Standard)
+            
+            // 16x9 Ratio Varianten - Video-Format
+            'half_16x9' => [576, 768, 992, 1200], // Mittlere 16:9 Videos
+            'full_16x9' => [768, 992, 1200, 1400], // Große 16:9 Videos  
+            'hero_16x9' => [768, 992, 1200, 1400, 1920], // Hero 16:9 (Fullscreen Video)
+            
+            // 21x9 Ratio Varianten - Cinematic Format
+            'full_21x9' => [992, 1200, 1400], // Große 21:9 Cinematic
+            'hero_21x9' => [992, 1200, 1400, 1920], // Hero 21:9 (Ultra-wide)
             
             // Direkte Ratio-Typen (ohne Size-Prefix) - nutzen half-Dimensionen
             '1x1' => [320, 576, 768, 992, 1200], // Standard quadratisch
             '4x3' => [320, 576, 768, 992, 1200], // Standard 4:3
+            '16x9' => [576, 768, 992, 1200], // Standard 16:9
+            '21x9' => [992, 1200, 1400], // Standard 21:9
             
             // Legacy Mapping für Rückwärtskompatibilität
             'content_full' => [320, 576, 768, 992, 1200, 1400],
@@ -123,6 +137,13 @@ if (!function_exists('getActualImageWidth')) {
             'full_1200' => 1200, // Full für Desktop Standard
             'full_1400' => 1400, // Full für Large Desktop
             
+            // Hero Serie - Fullscreen Bilder für große Bereiche
+            'hero_768' => 768,   // Hero für Tablet Landscape
+            'hero_992' => 992,   // Hero für Desktop Small
+            'hero_1200' => 1200, // Hero für Desktop Standard
+            'hero_1400' => 1400, // Hero für Large Desktop
+            'hero_1920' => 1920, // Hero für Full HD
+            
             // ========== 1x1 RATIO VARIANTEN (Quadratisch) ==========
             
             // Small 1x1 Serie - Kleine quadratische Bilder (Icons, Avatare)
@@ -165,10 +186,40 @@ if (!function_exists('getActualImageWidth')) {
             'full_4x3_992' => 992,   // 992x744 für Desktop S
             'full_4x3_1200' => 1200, // 1200x900 für Desktop
             
+            // ========== HERO RATIO VARIANTEN ==========
+            
+            // Hero 1x1 Serie - Quadratische Hero-Bilder
+            'hero_1x1_768' => 768,   // 768x768 für Tablet Landscape
+            'hero_1x1_992' => 992,   // 992x992 für Desktop Small
+            'hero_1x1_1200' => 1200, // 1200x1200 für Desktop
+            'hero_1x1_1400' => 1400, // 1400x1400 für Large Desktop
+            'hero_1x1_1920' => 1920, // 1920x1920 für Full HD
+            
+            // Hero 4x3 Serie - Hero 4:3 Bilder  
+            'hero_4x3_768' => 768,   // 768x576 für Tablet Landscape
+            'hero_4x3_992' => 992,   // 992x744 für Desktop Small
+            'hero_4x3_1200' => 1200, // 1200x900 für Desktop
+            'hero_4x3_1400' => 1400, // 1400x1050 für Large Desktop
+            'hero_4x3_1920' => 1920, // 1920x1440 für Full HD
+            
+            // Hero 16x9 Serie - Hero Video-Format
+            'hero_16x9_768' => 768,  // 768x432 für Tablet Landscape
+            'hero_16x9_992' => 992,  // 992x558 für Desktop Small
+            'hero_16x9_1200' => 1200, // 1200x675 für Desktop
+            'hero_16x9_1400' => 1400, // 1400x788 für Large Desktop
+            'hero_16x9_1920' => 1920, // 1920x1080 für Full HD
+            
+            // Hero 21x9 Serie - Hero Cinematic
+            'hero_21x9_992' => 992,   // 992x425 für Desktop Small
+            'hero_21x9_1200' => 1200, // 1200x514 für Desktop
+            'hero_21x9_1400' => 1400, // 1400x600 für Large Desktop
+            'hero_21x9_1920' => 1920, // 1920x823 für Full HD
+            
             // ========== ORIGINAL GRUNDTYPEN (Fallback) ==========
             'half' => 600,   // Original half Bildgröße
             'full' => 1200,  // Original full Bildgröße  
             'small' => 300,  // Original small Bildgröße
+            'hero' => 1200,  // Hero Standard-Größe
             '1x1' => 600,    // 1x1 Ratio Quadratisch (600x600)
             '4x3' => 600,    // 4x3 Ratio Standard (600x450)
             '3x2' => 600,    // 3x2 Ratio Fotografie-Standard (600x400)
@@ -222,6 +273,10 @@ if (!function_exists('generateSizesForType')) {
                 // Small Bilder - Thumbnail-Größen
                 return '(max-width: 319px) 160px, (max-width: 575px) 200px, (max-width: 767px) 250px, 250px';
                 
+            case 'hero':
+                // Hero Bilder - Fullscreen-optimiert (startet bei 768px)
+                return '(max-width: 767px) 768px, (max-width: 991px) 992px, (max-width: 1199px) 1200px, (max-width: 1399px) 1400px, 1920px';
+                
             // ========== 1x1 RATIO TYPEN (Quadratisch) ==========
             
             case '1x1':
@@ -236,6 +291,10 @@ if (!function_exists('generateSizesForType')) {
             case 'full_1x1':
                 // Große quadratische Bilder (performance-begrenzt auf 1000px)
                 return '(max-width: 319px) 320px, (max-width: 575px) 576px, (max-width: 767px) 768px, (max-width: 991px) 900px, (max-width: 1199px) 1000px, 1000px';
+                
+            case 'hero_1x1':
+                // Hero quadratische Bilder (Fullscreen)
+                return '(max-width: 767px) 768px, (max-width: 991px) 992px, (max-width: 1199px) 1200px, (max-width: 1399px) 1400px, 1920px';
                 
             // ========== 4x3 RATIO TYPEN (Klassisches Foto-Verhältnis) ==========
             
@@ -252,10 +311,28 @@ if (!function_exists('generateSizesForType')) {
                 // Große 4:3 Bilder (web-optimiert, max 1200px)
                 return '(max-width: 319px) 320px, (max-width: 575px) 576px, (max-width: 767px) 768px, (max-width: 991px) 992px, (max-width: 1199px) 1200px, 1200px';
                 
+            case 'hero_4x3':
+                // Hero 4:3 Bilder (Fullscreen Standard)
+                return '(max-width: 767px) 768px, (max-width: 991px) 992px, (max-width: 1199px) 1200px, (max-width: 1399px) 1400px, 1920px';
+                
+            // ========== 16x9 RATIO TYPEN (Video-Format) ==========
+            
+            case 'hero_16x9':
+                // Hero 16:9 Bilder (Fullscreen Video)
+                return '(max-width: 767px) 768px, (max-width: 991px) 992px, (max-width: 1199px) 1200px, (max-width: 1399px) 1400px, 1920px';
+                
+            // ========== 21x9 RATIO TYPEN (Cinematic) ==========
+            
+            case 'hero_21x9':
+                // Hero 21:9 Bilder (Ultra-wide)
+                return '(max-width: 991px) 992px, (max-width: 1199px) 1200px, (max-width: 1399px) 1400px, 1920px';
+                
             // ========== FALLBACK FÜR UNBEKANNTE TYPEN ==========
             default:
                 // Intelligenter Fallback basierend auf Type-Namen
-                if (strpos($baseType, 'full') !== false) {
+                if (strpos($baseType, 'hero') !== false) {
+                    return '(max-width: 767px) 768px, (max-width: 991px) 992px, (max-width: 1199px) 1200px, (max-width: 1399px) 1400px, 1920px';
+                } elseif (strpos($baseType, 'full') !== false) {
                     return '(max-width: 319px) 320px, (max-width: 575px) 576px, (max-width: 767px) 768px, (max-width: 991px) 992px, (max-width: 1199px) 1200px, 1400px';
                 } elseif (strpos($baseType, 'half') !== false) {
                     return '(max-width: 319px) 280px, (max-width: 575px) 400px, (max-width: 767px) 500px, (max-width: 991px) 600px, (max-width: 1199px) 700px, 800px';
