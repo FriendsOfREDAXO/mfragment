@@ -481,6 +481,14 @@ class Figure extends AbstractComponent
     }
 
     /**
+     * Convenience-Methode zum Setzen des style-Attributs
+     */
+    public function setStyle(string $style): self
+    {
+        return $this->setMediaAttribute('style', $style);
+    }
+
+    /**
      * Fügt eine Media-Klasse hinzu
      */
     public function addMediaClass(string $class): self
@@ -952,6 +960,9 @@ class Figure extends AbstractComponent
         $imgWidth = $this->config['media']['width'] ?? null;
         $imgHeight = $this->config['media']['height'] ?? null;
 
+        // Media-Attribute (style, data-*, etc.) sammeln
+        $additionalMediaAttributes = $this->buildMediaAttributes();
+
         // Links
         $link = $this->config['link'] ?? null;
         $lightbox = $this->config['lightbox'] ?? false;
@@ -1015,7 +1026,7 @@ class Figure extends AbstractComponent
                 $html .= 'src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3C/svg%3E" ';
                 if ($imgWidth) $html .= 'width="' . htmlspecialchars($imgWidth) . '" ';
                 if ($imgHeight) $html .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-                $html .= 'alt="" aria-hidden="true" loading="lazy"' . $ariaAttributes['img'] . '>';
+                $html .= 'alt="" aria-hidden="true" loading="lazy"' . $ariaAttributes['img'] . $additionalMediaAttributes . '>';
             } elseif ($lazyLoading) {
                 // Lazy Loading ohne Srcset für BG-Cover
                 $html .= '<img class="' . htmlspecialchars($mediaClasses) . ' lazy bg-cover-img" ';
@@ -1024,7 +1035,7 @@ class Figure extends AbstractComponent
                 $html .= 'src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3C/svg%3E" ';
                 if ($imgWidth) $html .= 'width="' . htmlspecialchars($imgWidth) . '" ';
                 if ($imgHeight) $html .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-                $html .= 'alt="" aria-hidden="true" loading="lazy"' . $ariaAttributes['img'] . '>';
+                $html .= 'alt="" aria-hidden="true" loading="lazy"' . $ariaAttributes['img'] . $additionalMediaAttributes . '>';
             } elseif (!empty($srcset)) {
                 // Normal Loading mit Srcset für BG-Cover
                 $html .= '<img class="' . htmlspecialchars($mediaClasses) . ' bg-cover-img" ';
@@ -1034,7 +1045,7 @@ class Figure extends AbstractComponent
                 $html .= 'data-bg="true" ';
                 if ($imgWidth) $html .= 'width="' . htmlspecialchars($imgWidth) . '" ';
                 if ($imgHeight) $html .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-                $html .= 'alt="" aria-hidden="true"' . $ariaAttributes['img'] . '>';
+                $html .= 'alt="" aria-hidden="true"' . $ariaAttributes['img'] . $additionalMediaAttributes . '>';
             } else {
                 // Normal Loading ohne Srcset für BG-Cover
                 $html .= '<img class="' . htmlspecialchars($mediaClasses) . ' bg-cover-img" ';
@@ -1042,7 +1053,7 @@ class Figure extends AbstractComponent
                 $html .= 'data-bg="true" ';
                 if ($imgWidth) $html .= 'width="' . htmlspecialchars($imgWidth) . '" ';
                 if ($imgHeight) $html .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-                $html .= 'alt="" aria-hidden="true"' . $ariaAttributes['img'] . '>';
+                $html .= 'alt="" aria-hidden="true"' . $ariaAttributes['img'] . $additionalMediaAttributes . '>';
             }
         } elseif ($lazyLoading && !empty($srcset)) {
             // Lazy Loading mit Srcset - data-src wird nicht benötigt, da srcset verwendet wird
@@ -1052,7 +1063,7 @@ class Figure extends AbstractComponent
             $html .= 'src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3C/svg%3E" ';
             if ($imgWidth) $html .= 'width="' . htmlspecialchars($imgWidth) . '" ';
             if ($imgHeight) $html .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-            $html .= 'alt="' . htmlspecialchars($alt) . '" loading="lazy"' . $ariaAttributes['img'] . '>';
+            $html .= 'alt="' . htmlspecialchars($alt) . '" loading="lazy"' . $ariaAttributes['img'] . $additionalMediaAttributes . '>';
         } elseif ($lazyLoading) {
             // Lazy Loading ohne Srcset
             $html .= '<img class="' . htmlspecialchars($mediaClasses) . ' lazy" ';
@@ -1060,7 +1071,7 @@ class Figure extends AbstractComponent
             $html .= 'src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 1\'%3E%3C/svg%3E" ';
             if ($imgWidth) $html .= 'width="' . htmlspecialchars($imgWidth) . '" ';
             if ($imgHeight) $html .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-            $html .= 'alt="' . htmlspecialchars($alt) . '" loading="lazy"' . $ariaAttributes['img'] . '>';
+            $html .= 'alt="' . htmlspecialchars($alt) . '" loading="lazy"' . $ariaAttributes['img'] . $additionalMediaAttributes . '>';
         } elseif (!empty($srcset)) {
             // Normal Loading mit Srcset
             $html .= '<img class="' . htmlspecialchars($mediaClasses) . '" ';
@@ -1069,19 +1080,19 @@ class Figure extends AbstractComponent
             $html .= 'sizes="' . htmlspecialchars($sizes) . '" ';
             if ($imgWidth) $html .= 'width="' . htmlspecialchars($imgWidth) . '" ';
             if ($imgHeight) $html .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-            $html .= 'alt="' . htmlspecialchars($alt) . '"' . $ariaAttributes['img'] . '>';
+            $html .= 'alt="' . htmlspecialchars($alt) . '"' . $ariaAttributes['img'] . $additionalMediaAttributes . '>';
         } else {
             // Normal Loading ohne Srcset
             $html .= '<img class="' . htmlspecialchars($mediaClasses) . '" ';
             $html .= 'src="' . htmlspecialchars($imageSrc) . '" ';
             if ($imgWidth) $html .= 'width="' . htmlspecialchars($imgWidth) . '" ';
             if ($imgHeight) $html .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-            $html .= 'alt="' . htmlspecialchars($alt) . '"' . $ariaAttributes['img'] . '>';
+            $html .= 'alt="' . htmlspecialchars($alt) . '"' . $ariaAttributes['img'] . $additionalMediaAttributes . '>';
         }
 
         // NoScript-Fallback für Lazy Loading
         if ($lazyLoading && $accessibilityConfig['enableNoScriptFallback']) {
-            $html .= $this->generateNoScriptFallback($imageSrc, $srcset, $sizes, $alt, $mediaClasses, $imgWidth, $imgHeight, $ariaAttributes['img']);
+            $html .= $this->generateNoScriptFallback($imageSrc, $srcset, $sizes, $alt, $mediaClasses, $imgWidth, $imgHeight, $ariaAttributes['img'], $additionalMediaAttributes);
         }
 
         // Image Wrapper schließen
@@ -1535,9 +1546,34 @@ class Figure extends AbstractComponent
     }
 
     /**
+     * Baut zusätzliche Media-Attribute (style, data-*, etc.) auf
+     */
+    private function buildMediaAttributes(): string
+    {
+        $attributes = [];
+        
+        // Hole alle gesetzten Media-Attribute
+        $mediaAttributes = $this->config['media']['attributes'] ?? [];
+        
+        foreach ($mediaAttributes as $name => $value) {
+            // Class wird separat behandelt
+            if ($name === 'class') {
+                continue;
+            }
+            
+            // Alle anderen Attribute hinzufügen (style, data-*, id, etc.)
+            if (!empty($value)) {
+                $attributes[] = $name . '="' . htmlspecialchars($value) . '"';
+            }
+        }
+        
+        return !empty($attributes) ? ' ' . implode(' ', $attributes) : '';
+    }
+
+    /**
      * Generiert NoScript-Fallback für Lazy Loading
      */
-    private function generateNoScriptFallback(string $imageSrc, string $srcset, string $sizes, string $alt, string $mediaClasses, ?int $imgWidth, ?int $imgHeight, string $ariaAttributes): string
+    private function generateNoScriptFallback(string $imageSrc, string $srcset, string $sizes, string $alt, string $mediaClasses, ?int $imgWidth, ?int $imgHeight, string $ariaAttributes, string $additionalMediaAttributes = ''): string
     {
         $noscript = '<noscript>';
         
@@ -1549,14 +1585,14 @@ class Figure extends AbstractComponent
             $noscript .= 'sizes="' . htmlspecialchars($sizes) . '" ';
             if ($imgWidth) $noscript .= 'width="' . htmlspecialchars($imgWidth) . '" ';
             if ($imgHeight) $noscript .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-            $noscript .= 'alt="' . htmlspecialchars($alt) . '"' . $ariaAttributes . '>';
+            $noscript .= 'alt="' . htmlspecialchars($alt) . '"' . $ariaAttributes . $additionalMediaAttributes . '>';
         } else {
             // Einfacher Fallback
             $noscript .= '<img class="' . htmlspecialchars($mediaClasses) . '" ';
             $noscript .= 'src="' . htmlspecialchars($imageSrc) . '" ';
             if ($imgWidth) $noscript .= 'width="' . htmlspecialchars($imgWidth) . '" ';
             if ($imgHeight) $noscript .= 'height="' . htmlspecialchars($imgHeight) . '" ';
-            $noscript .= 'alt="' . htmlspecialchars($alt) . '"' . $ariaAttributes . '>';
+            $noscript .= 'alt="' . htmlspecialchars($alt) . '"' . $ariaAttributes . $additionalMediaAttributes . '>';
         }
         
         $noscript .= '</noscript>';

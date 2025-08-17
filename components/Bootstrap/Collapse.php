@@ -153,7 +153,24 @@ class Collapse extends AbstractComponent
      */
     public function addAccordionItem(string $title, $content, bool $show = false, array $config = []): self
     {
-        return $this->addItem('accordion-' . uniqid(), $title, $content, $show, $config['trigger'] ?? [], $config['collapse'] ?? [], $config['body'] ?? []);
+        // hasContent wird explizit basierend auf Content-Inhalt gesetzt
+        // Leerer Content ('') führt zu statischem Header ohne Aufklapp-Funktionalität
+        $hasContent = !empty($content);
+        
+        $this->items[] = [
+            'id' => 'accordion-' . uniqid(),
+            'header' => $title,
+            'content' => $content,
+            'show' => $show,
+            'config' => [
+                'button' => $config['trigger'] ?? [],
+                'collapseItem' => $config['collapse'] ?? [],
+                'body' => $config['body'] ?? []
+            ],
+            'hasContent' => $hasContent
+        ];
+
+        return $this;
     }
 
     /**
@@ -179,7 +196,16 @@ class Collapse extends AbstractComponent
 
     public function setConfig($key, $value): self
     {
-        if (isset($this->config[$key])) {
+        if ($key === 'item' && isset($value['attributes']['class'])) {
+            // Spezielle Behandlung für Item-Klassen
+            if (is_string($value['attributes']['class'])) {
+                // String in Array umwandeln und als additionalClasses speichern
+                $classes = explode(' ', trim($value['attributes']['class']));
+                $this->config['item']['additionalClasses'] = $classes;
+            } elseif (is_array($value['attributes']['class'])) {
+                $this->config['item']['additionalClasses'] = $value['attributes']['class'];
+            }
+        } elseif (isset($this->config[$key])) {
             $this->config[$key] = $value;
         }
         return $this;
@@ -350,26 +376,44 @@ class Collapse extends AbstractComponent
         $accordionId = $this->getAttribute('id') ?: 'accordion_' . uniqid();
         $html = '';
         
-        // Accordion Container - exakt wie Original
+        // Accordion Container
         $html .= '<div class="accordion" id="' . $accordionId . '">';
         
         foreach ($this->items as $index => $item) {
-            if (!$item['hasContent']) continue;
-
             $itemId = $item['id'];
+            
+            // Item-Klassen zusammensetzen (mit zusätzlichen Klassen aus Config)
+            $itemClass = 'accordion-item';
+            if (isset($this->config['item']['additionalClasses'])) {
+                if (is_array($this->config['item']['additionalClasses'])) {
+                    foreach ($this->config['item']['additionalClasses'] as $class) {
+                        if ($class !== 'accordion-item') { // Vermeiden von Duplikaten
+                            $itemClass .= ' ' . $class;
+                        }
+                    }
+                }
+            }
+
+            // Prüfen ob Content vorhanden ist
+            $hasContent = $item['hasContent'] && !empty($item['content']);
+
+            // Statisches Item ohne aufklappbaren Content (wie im Fragment)
+            if (!$hasContent) {
+                $html .= '<div class="' . $itemClass . '" data-accordion-item="' . $itemId . '">';
+                $html .= '<div class="static-accordion-header">';
+                $html .= '<h4 class="accordion-header-text lh-140">' . $item['header'] . '</h4>';
+                $html .= '</div>';
+                $html .= '</div>';
+                continue;
+            }
+
+            // Aufklappbares Accordion Item
             $collapseId = 'collapse-' . $accordionId . '_' . $index;
             $isFirst = ($index === 0);
             
-            // Accordion Item - mit zusätzlichen CSS-Klassen aus Konfiguration
-            $itemClass = 'accordion-item';
-            if (isset($this->config['item']['additionalClasses'])) {
-                foreach ($this->config['item']['additionalClasses'] as $key => $value) {
-                    $itemClass .= ' ' . $value;
-                }
-            }
             $html .= '<div class="' . $itemClass . '" data-accordion-item="' . $itemId . '">';
             
-            // Button Header - exakt wie Original (Button direkt im Item, nicht in separatem Header)
+            // Button Header - KORRIGIERT: accordion-header accordion-button (wie im Fragment)
             $buttonClass = 'accordion-header accordion-button';
             if (!$item['show'] && !$isFirst) {
                 $buttonClass .= ' collapsed';
@@ -383,21 +427,30 @@ class Collapse extends AbstractComponent
             $headerTextClass = 'accordion-header-text lh-140';
             $html .= '<h4 class="' . $headerTextClass . '">' . $item['header'] . '</h4>';
             
-            // Toggle Icon - exakt wie Original
-            $html .= '<div class="accordion-header-toggle accordion-header-toggle-icon"></div>';
+            // Toggle Icon
+            $html .= '<div class="accordion-header-toggle"></div>';
             
             $html .= '</button>';
             
-            // Collapse Content - exakt wie Original
-            $collapseClass = 'accordion-collapse collapse accordion-collapse';
+            // Collapse Content - KORRIGIERT: accordion-collapse (ohne doppelt)
+            $collapseClass = 'accordion-collapse collapse';
             if ($item['show'] || $isFirst) {
                 $collapseClass .= ' show';
             }
             
             $html .= '<div class="' . $collapseClass . '" id="' . $collapseId . '" data-bs-parent="#' . $accordionId . '">';
             
-            // Body - exakt wie Original
-            $bodyClass = 'accordion-body accordion-body ck-content';
+            // Body - KORRIGIERT: Standard-Klassen + aus Config
+            $bodyClass = 'accordion-body';
+            
+            // Body-Konfiguration aus dem Item verwenden, falls vorhanden
+            if (isset($item['config']['body']['attributes']['class']['default'])) {
+                $bodyClass = $item['config']['body']['attributes']['class']['default'];
+            } else {
+                // Fallback auf Standard aus Komponenten-Config
+                $bodyClass = implode(' ', $this->config['body']['attributes']['class']);
+            }
+            
             $html .= '<div class="' . $bodyClass . '">';
             $html .= $item['content'];
             $html .= '</div>';
