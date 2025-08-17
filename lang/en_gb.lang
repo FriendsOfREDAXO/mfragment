@@ -1,0 +1,104 @@
+# MFragment - English Language File
+
+# Addon Information
+mfragment = MFragment
+mfragment_title = MFragment - Structured HTML Generation
+mfragment_description = Component-oriented HTML architecture with responsive media system
+
+# Navigation and Menus
+mfragment_components = Components
+mfragment_media = Responsive Media
+mfragment_debug = Debug Tools
+mfragment_docs = Documentation
+
+# Components
+mfragment_component_bootstrap = Bootstrap Components
+mfragment_component_default = Default Components
+mfragment_component_card = Card
+mfragment_component_alert = Alert
+mfragment_component_badge = Badge
+mfragment_component_button = Button
+mfragment_component_carousel = Carousel
+mfragment_component_collapse = Collapse
+mfragment_component_modal = Modal
+mfragment_component_tabs = Tabs
+mfragment_component_accordion = Accordion
+mfragment_component_menu = Menu
+mfragment_component_progress = Progress Bar
+mfragment_component_figure = Figure
+mfragment_component_table = Table
+mfragment_component_list = List
+mfragment_component_htmlelement = HTML Element
+
+# Media Manager
+mfragment_media_types = Media Manager Types
+mfragment_media_responsive = Responsive Images
+mfragment_media_series = Image Series
+mfragment_media_series_small = Small (Thumbnails)
+mfragment_media_series_half = Half (Medium Width)
+mfragment_media_series_full = Full
+mfragment_media_series_hero = Hero (Full Screen)
+mfragment_media_webp = WebP Conversion
+mfragment_media_install = Install Media Types
+mfragment_media_install_success = 360 responsive Media Manager types installed successfully
+mfragment_media_install_error = Error installing Media Manager types
+mfragment_media_test = Media Test
+mfragment_media_validate = Validate Media Types
+
+# Debug and Development
+mfragment_debug_mode = Debug Mode
+mfragment_debug_enabled = Debug mode enabled
+mfragment_debug_disabled = Debug mode disabled
+mfragment_debug_performance = Performance Monitoring
+mfragment_debug_render_time = Render Time
+mfragment_debug_memory = Memory Usage
+mfragment_debug_components = Component Debug
+
+# Configuration
+mfragment_config = Configuration
+mfragment_config_saved = Configuration saved
+mfragment_config_error = Error saving configuration
+mfragment_config_forhtml = FOR Html Integration
+mfragment_config_media_manager = Media Manager Integration
+mfragment_config_components = Component Directories
+
+# Error Messages
+mfragment_error_component_not_found = Component not found
+mfragment_error_invalid_media_type = Invalid Media Manager type
+mfragment_error_media_not_found = Media file not found
+mfragment_error_template_not_found = Template not found
+mfragment_error_permission_denied = Permission denied
+
+# Success Messages
+mfragment_success_component_created = Component created successfully
+mfragment_success_media_processed = Media processed successfully
+mfragment_success_template_saved = Template saved successfully
+
+# General Terms
+mfragment_save = Save
+mfragment_cancel = Cancel
+mfragment_delete = Delete
+mfragment_edit = Edit
+mfragment_create = Create
+mfragment_back = Back
+mfragment_next = Next
+mfragment_previous = Previous
+mfragment_close = Close
+mfragment_open = Open
+mfragment_show = Show
+mfragment_hide = Hide
+
+# Help and Support
+mfragment_help = Help
+mfragment_documentation = Documentation
+mfragment_examples = Examples
+mfragment_support = Support
+mfragment_github = GitHub Repository
+mfragment_community = Community
+mfragment_version = Version
+
+# Permissions
+perm_options_mfragment[] = Use MFragment
+perm_options_mfragment[debug] = Use debug mode
+perm_options_mfragment[config] = Manage configuration
+perm_options_mfragment[media] = Manage Media Manager types
