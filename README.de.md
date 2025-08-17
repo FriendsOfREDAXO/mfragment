@@ -1,90 +1,90 @@
-# MFragment - Structured HTML Generation for REDAXO
+# MFragment - Strukturierte HTML-Generierung für REDAXO
 
 [![REDAXO Version](https://img.shields.io/badge/REDAXO-%3E%3D5.10-red.svg)](https://redaxo.org)
 [![PHP Version](https://img.shields.io/badge/PHP-%3E%3D7.4-blue.svg)](https://php.net)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **Programmatic HTML Structures for Modern REDAXO Websites**
+> **Programmatische HTML-Strukturen für moderne REDAXO-Websites**
 
-MFragment is a REDAXO addon for structured HTML generation with component-oriented architecture. It enables programmatic creation of HTML structures, responsive media management and Bootstrap 5 integration.
+MFragment ist ein REDAXO-Addon zur strukturierten HTML-Generierung mit komponentenorientierter Architektur. Es ermöglicht das programmatische Erstellen von HTML-Strukturen, responsiver Medienverwaltung und Bootstrap 5 Integration.
 
-## Key Features
+## Hauptfunktionen
 
-### **Structured HTML Generation**
-- **Programmatic HTML Creation** - Create HTML structures with PHP code
-- **Direct HTML Rendering** - No template engine required
-- **Bootstrap 5 Integration** - Includes standard Bootstrap components
-- **Method Chaining** - Fluent API design for improved developer experience
+### **Strukturierte HTML-Generierung**
+- **Programmatische HTML-Erstellung** - HTML-Strukturen mit PHP-Code erstellen
+- **Direktes HTML-Rendering** - Keine Template-Engine erforderlich
+- **Bootstrap 5 Integration** - Umfasst Standard-Bootstrap-Komponenten
+- **Method Chaining** - Fluent API-Design für verbesserte Entwicklererfahrung
 
-### **Create Custom Components**
-- **Extensible Architecture** - Custom components through AbstractComponent inheritance
-- **MFragment Integration** - All MFragment tools available
-- **HTML Element Creation** - Create arbitrary HTML structures with MFragment methods
-- **Modular Structure** - Components can be used in all contexts
+### **Eigene Komponenten erstellen**
+- **Erweiterbare Architektur** - Eigene Komponenten durch Vererbung von AbstractComponent
+- **Integration in MFragment** - Alle MFragment-Werkzeuge stehen zur Verfügung
+- **HTML-Element-Erstellung** - Beliebige HTML-Strukturen mit MFragment-Methoden erstellen
+- **Modularer Aufbau** - Komponenten können in allen Kontexten verwendet werden
 
-### **HTML Structure Generation**
-**As MForm is for forms, MFragment is for HTML structures** - create HTML layouts programmatically:
+### **HTML-Struktur-Generierung**
+**Wie MForm für Formulare, ist MFragment für HTML-Strukturen** - HTML-Layouts programmatisch erstellen:
 
-- **Complete HTML Coverage** - Generation of arbitrary HTML elements, attributes and structures
-- **Nested Components** - Complex layouts with unlimited nesting depth
-- **Dynamic Content Generation** - Generate HTML programmatically based on data
-- **Layout Systems** - From simple divs to complex grid systems and components
-- **Template Alternative** - Replace static templates with dynamic PHP structures
+- **Vollständige HTML-Abdeckung** - Generierung beliebiger HTML-Elemente, Attribute und Strukturen
+- **Verschachtelte Komponenten** - Komplexe Layouts mit unbegrenzter Verschachtelungstiefe
+- **Dynamische Inhaltsgenerierung** - HTML programmatisch basierend auf Daten generieren
+- **Layout-Systeme** - Von einfachen Divs bis zu komplexen Grid-Systemen und Komponenten
+- **Template-Alternative** - Statische Templates durch dynamische PHP-Strukturen ersetzen
 
-### **Responsive Media System**
-- **360 Media Manager Types** - Complete responsive image system
-- **4 Image Series** - `small`, `half`, `full`, `hero` for every use case
-- **Automatic WebP Conversion** - 25-35% smaller files for better performance
-- **Bootstrap 5 Breakpoints** - Perfect integration with modern grid systems
-- **Hero Series** - Full-screen images up to 1920px for modern websites
+### **Responsives Media-System**
+- **360 Media Manager Typen** - Vollständiges responsives Bildsystem
+- **4 Bildserien** - `small`, `half`, `full`, `hero` für jeden Anwendungsfall
+- **Automatische WebP-Konvertierung** - 25-35% kleinere Dateien für bessere Performance
+- **Bootstrap 5 Breakpoints** - Perfekte Integration mit modernen Grid-Systemen
+- **Hero-Serie** - Vollbild-Bilder bis 1920px für moderne Websites
 
-### **Performance Characteristics**
-- **Direct HTML Rendering** - No template engine required
-- **Performance Monitoring** - Render times measurable
-- **Database Query Optimization** - Request-local caching for Media Manager Types
-- **Memory Efficient** - Low resource consumption
+### **Performance-Eigenschaften**
+- **Direktes HTML-Rendering** - Keine Template-Engine erforderlich
+- **Performance-Monitoring** - Render-Zeiten messbar
+- **Datenbankabfragen-Optimierung** - Request-lokale Zwischenspeicherung für Media Manager Types
+- **Speicher-schonend** - Geringer Ressourcenverbrauch
 
-### **Developer Experience**
-- **Documented APIs** - Well-documented interfaces with type hints
-- **Debug Mode** - Detailed development information
-- **IDE Support** - Complete type hints and documentation
-- **Extensible** - Easy creation of custom components
+### **Entwicklererfahrung**
+- **Dokumentierte APIs** - Gut dokumentierte Schnittstellen mit Typ-Hints
+- **Debug-Modus** - Detaillierte Entwicklungsinformationen
+- **IDE-Unterstützung** - Vollständige Typ-Hints und Dokumentation
+- **Erweiterbar** - Einfache Erstellung eigener Komponenten
 
 ## Installation
 
 ### Via REDAXO Installer
-1. Go to **System → Packages**
-2. Search for "MFragment"
-3. Click **Install**
+1. Gehe zu **System → Pakete**
+2. Suche nach "MFragment"
+3. Klicke **Installieren**
 
-### Manual Installation
-1. Download the latest version from [GitHub](https://github.com/FriendsOfREDAXO/mfragment)
-2. Extract to `redaxo/src/addons/mfragment/`
-3. Install via REDAXO backend
+### Manuelle Installation
+1. Lade die neueste Version von [GitHub](https://github.com/FriendsOfREDAXO/mfragment) herunter
+2. Extrahiere nach `redaxo/src/addons/mfragment/`
+3. Installiere über das REDAXO Backend
 
-### Media Manager Types (Recommended)
-Install the comprehensive responsive media system:
+### Media Manager Typen (Empfohlen)
+Installiere das umfassende responsive Media-System:
 
 ```sql
--- Import via REDAXO SQL Import
+-- Import über REDAXO SQL Import
 source install/responsive_complete_system.sql
 ```
 
-This adds **360 responsive Media Manager types** with automatic WebP conversion.
+Dies fügt **360 responsive Media Manager Typen** mit automatischer WebP-Konvertierung hinzu.
 
-## Quick Start
+## Schnellstart
 
-### Basic Component Usage
+### Grundlegende Komponenten-Verwendung
 
 ```php
 <?php
 use FriendsOfRedaxo\MFragment\Components\Bootstrap\Card;
 use FriendsOfRedaxo\MFragment\Components\Default\Figure;
 
-// Create a Bootstrap Card with responsive image
+// Erstelle eine Bootstrap Card mit responsivem Bild
 $card = Card::factory()
-    ->setHeader('Welcome to MFragment')
-    ->setBody('Build modern websites with component architecture.')
+    ->setHeader('Willkommen bei MFragment')
+    ->setBody('Erstelle moderne Websites mit Komponenten-Architektur.')
     ->setImage('hero-image.jpg', 'full_16x9')
     ->addClass('shadow-sm');
 
@@ -97,17 +97,17 @@ echo $card->show();
 <?php
 use FriendsOfRedaxo\MFragment\Components\Default\Figure;
 
-// Generate responsive picture element
-$responsiveImage = Figure::factory()
+// Generiere responsives picture Element
+$responsiveBild = Figure::factory()
     ->setMedia('hero-background.jpg')
-    ->setMediaManagerType('hero_16x9')  // Use Hero series for fullscreen
+    ->setMediaManagerType('hero_16x9')  // Nutze Hero-Serie für Vollbild
     ->enableAutoResponsive()
     ->addClass('hero-bg');
 
-echo $responsiveImage->show();
+echo $responsiveBild->show();
 ```
 
-### Advanced Component Examples
+### Erweiterte Komponenten-Beispiele
 
 ```php
 <?php
@@ -119,7 +119,7 @@ $carousel = Carousel::factory('hero-carousel')
         Figure::factory()
             ->setMedia('slide1.jpg')
             ->setMediaManagerType('hero_21x9')
-            ->setCaption('Modern Web Development')
+            ->setCaption('Moderne Web-Entwicklung')
             ->addClass('carousel-image')
     )
     ->addSlide(
@@ -135,67 +135,67 @@ $carousel = Carousel::factory('hero-carousel')
 echo $carousel->show();
 ```
 
-## Available Components
+## Verfügbare Komponenten
 
-### Bootstrap 5 Components
-- **Card** - Content cards with images, headers and actions
-- **Carousel** - Image and content sliders
-- **Modal** - Overlay dialogs and lightboxes
-- **Accordion** - Collapsible content sections
-- **Tabs** - Tab navigation for content
-- **Alert** - Notifications and messages
-- **Badge** - Status indicators and labels
-- **Progress** - Progress bars and loading indicators
-- **Collapse** - Expandable content areas
+### Bootstrap 5 Komponenten
+- **Card** - Inhaltskarten mit Bildern, Headern und Aktionen
+- **Carousel** - Bild- und Inhalts-Slider
+- **Modal** - Overlay-Dialoge und Lightboxen
+- **Accordion** - Zusammenklappbare Inhaltsabschnitte
+- **Tabs** - Tab-Navigation für Inhalte
+- **Alert** - Benachrichtigungen und Meldungen
+- **Badge** - Status-Indikatoren und Labels
+- **Progress** - Fortschrittsbalken und Ladeindikatoren
+- **Collapse** - Ausklappbare Inhaltsbereiche
 
-### Default Components
-- **Figure** - Images with captions and responsive behavior
-- **HTMLElement** - Generic HTML elements with attribute management
-- **ListElement** - Ordered and unordered lists
-- **Table** - Data tables with responsive features
+### Standard-Komponenten
+- **Figure** - Bilder mit Bildunterschriften und responsivem Verhalten
+- **HTMLElement** - Generische HTML-Elemente mit Attribut-Management
+- **ListElement** - Geordnete und ungeordnete Listen
+- **Table** - Datentabellen mit responsiven Features
 
-## Responsive Media System
+## Responsives Media-System
 
-### Image Series Overview
+### Überblick der Bildserien
 
-| Series | Breakpoints | Usage | Examples |
-|--------|-------------|--------|----------|
-| **small** | 320-768px | Thumbnails, Icons | Avatars, small previews |
-| **half** | 320-1400px | Content images | Article images, galleries |
-| **full** | 320-1400px | Large content | Hero areas, main images |
-| **hero** | 768-1920px | Fullscreen areas | Headers, landing pages |
+| Serie | Breakpoints | Anwendung | Beispiele |
+|-------|-------------|-----------|-----------|
+| **small** | 320-768px | Thumbnails, Icons | Avatare, kleine Vorschaubilder |
+| **half** | 320-1400px | Inhaltsbilder | Artikel-Bilder, Galerien |
+| **full** | 320-1400px | Große Inhalte | Hero-Bereiche, Hauptbilder |
+| **hero** | 768-1920px | Vollbild-Bereiche | Header, Landing Pages |
 
-### Supported Aspect Ratios
-- **1:1** - Square images (avatars, thumbnails)
-- **4:3** - Standard photos (content images)
-- **16:9** - Video format (hero areas, media)
-- **21:9** - Cinema format (fullscreen headers)
-- **3:2** - Photography standard
-- **5:2** - Wide banners
+### Unterstützte Seitenverhältnisse
+- **1:1** - Quadratische Bilder (Avatare, Thumbnails)
+- **4:3** - Standard-Fotos (Inhaltsbilder)
+- **16:9** - Video-Format (Hero-Bereiche, Medien)
+- **21:9** - Kinoformat (Vollbild-Header)
+- **3:2** - Fotografie-Standard
+- **5:2** - Breite Banner
 
-### Usage Examples
+### Verwendungsbeispiele
 
 ```php
-// Hero header with video aspect ratio
+// Hero-Header mit Video-Seitenverhältnis
 rex_media_manager::getUrl('hero_16x9_max_1920', 'header-bg.jpg')
 
-// Content image for articles
+// Inhaltsbild für Artikel
 rex_media_manager::getUrl('half_4x3_768', 'article-image.jpg')
 
-// Small thumbnail
+// Kleines Thumbnail
 rex_media_manager::getUrl('small_1x1_320', 'avatar.jpg')
 
-// Fullscreen cinema format
+// Vollbild-Kinoformat
 rex_media_manager::getUrl('hero_21x9_max_1920', 'cinema-bg.jpg')
 ```
 
-## Creating Custom Components
+## Eigene Komponenten erstellen
 
-### Basic Principle
+### Grundprinzip
 
-MFragment allows you to create **arbitrary HTML structures** using the built-in tools. You can develop custom components that integrate seamlessly into the system and use all MFragment features.
+MFragment ermöglicht es Ihnen, **beliebige HTML-Strukturen** mit den integrierten Mitteln zu erstellen. Sie können eigene Komponenten entwickeln, die sich nahtlos in das System integrieren und alle MFragment-Features nutzen.
 
-### Simple Custom Component
+### Einfache eigene Komponente
 
 ```php
 <?php
@@ -230,7 +230,7 @@ class MyComponent extends AbstractComponent
 }
 ```
 
-### Advanced Component with Nested Elements
+### Erweiterte Komponente mit verschachtelten Elementen
 
 ```php
 <?php
@@ -297,7 +297,7 @@ class ProductCard extends AbstractComponent
 }
 ```
 
-### Component with MFragment Container
+### Komponente mit MFragment Container
 
 ```php
 <?php
@@ -353,7 +353,7 @@ class Dashboard extends AbstractComponent
 }
 ```
 
-### Using Components
+### Komponente verwenden
 
 ```php
 // Simple usage
@@ -388,7 +388,7 @@ echo $dashboard->show();
 
 ### Integration in MFragment
 
-Custom components can be used in all MFragment contexts:
+Eigene Komponenten können in allen MFragment-Kontexten verwendet werden:
 
 ```php
 $mfragment = MFragment::factory()
@@ -400,18 +400,18 @@ $mfragment = MFragment::factory()
 echo $mfragment->show();
 ```
 
-## Building HTML Structures
+## HTML-Strukturen erstellen
 
-**MFragment is for HTML what MForm is for forms** - create HTML layouts programmatically:
+**MFragment ist für HTML, was MForm für Formulare ist** - HTML-Layouts programmatisch erstellen:
 
-### Complex Layout Example
+### Komplexes Layout-Beispiel
 ```php
-// Create a complete article layout
+// Erstelle ein vollständiges Artikel-Layout
 $article = MFragment::factory()
     ->addDiv(
         MFragment::factory()
-            ->addHeading(1, 'Article Title', ['class' => 'display-4'])
-            ->addParagraph('Published on ' . date('F j, Y'), ['class' => 'text-muted'])
+            ->addHeading(1, 'Artikel-Titel', ['class' => 'display-4'])
+            ->addParagraph('Veröffentlicht am ' . date('j. F Y'), ['class' => 'text-muted'])
             ->addClass('article-header'),
         ['class' => 'container mb-4']
     )
@@ -419,16 +419,16 @@ $article = MFragment::factory()
         MFragment::factory()
             ->addDiv(
                 MFragment::factory()
-                    ->addParagraph('Article introduction...')
-                    ->addImage('/media/hero-image.jpg', 'Hero Image', ['class' => 'img-fluid rounded'])
-                    ->addParagraph('Main article content...'),
+                    ->addParagraph('Artikel-Einleitung...')
+                    ->addImage('/media/hero-image.jpg', 'Hero-Bild', ['class' => 'img-fluid rounded'])
+                    ->addParagraph('Hauptinhalt des Artikels...'),
                 ['class' => 'col-lg-8']
             )
             ->addDiv(
                 MFragment::factory()
-                    ->addHeading(3, 'Related Articles')
-                    ->addList(['Article 1', 'Article 2', 'Article 3'], 'ul', ['class' => 'list-unstyled'])
-                    ->addButton('Subscribe', 'button', ['class' => 'btn btn-primary']),
+                    ->addHeading(3, 'Verwandte Artikel')
+                    ->addList(['Artikel 1', 'Artikel 2', 'Artikel 3'], 'ul', ['class' => 'list-unstyled'])
+                    ->addButton('Abonnieren', 'button', ['class' => 'btn btn-primary']),
                 ['class' => 'col-lg-4']
             ),
         ['class' => 'container']
@@ -437,9 +437,9 @@ $article = MFragment::factory()
 echo $article->show();
 ```
 
-### Dynamic Navigation Menu
+### Dynamisches Navigationsmenü
 ```php
-// Create navigation from database data
+// Erstelle Navigation aus Datenbankdaten
 $navigation = MFragment::factory()->addClass('navbar-nav');
 
 foreach ($menuItems as $item) {
@@ -455,15 +455,15 @@ foreach ($menuItems as $item) {
 echo $navigation->show();
 ```
 
-### Form with Validation Display
+### Formular mit Validierungsanzeige
 ```php
-// Complex form structure with dynamic error handling
+// Komplexe Formularstruktur mit dynamischer Fehlerbehandlung
 $form = MFragment::factory()
     ->addTagElement('form', 
         MFragment::factory()
             ->addDiv(
                 MFragment::factory()
-                    ->addTagElement('label', 'Email Address', ['for' => 'email', 'class' => 'form-label'])
+                    ->addTagElement('label', 'E-Mail-Adresse', ['for' => 'email', 'class' => 'form-label'])
                     ->addTagElement('input', null, [
                         'type' => 'email',
                         'class' => 'form-control' . ($hasEmailError ? ' is-invalid' : ''),
@@ -475,8 +475,8 @@ $form = MFragment::factory()
             )
             ->addDiv(
                 MFragment::factory()
-                    ->addButton('Submit', 'submit', ['class' => 'btn btn-primary'])
-                    ->addButton('Cancel', 'button', ['class' => 'btn btn-secondary ms-2']),
+                    ->addButton('Senden', 'submit', ['class' => 'btn btn-primary'])
+                    ->addButton('Abbrechen', 'button', ['class' => 'btn btn-secondary ms-2']),
                 ['class' => 'd-flex justify-content-end']
             ),
         ['method' => 'post', 'action' => '/submit']
@@ -485,9 +485,9 @@ $form = MFragment::factory()
 echo $form->show();
 ```
 
-### Data-Driven Component Lists
+### Datenbasierte Komponentenlisten
 ```php
-// Generate structures based on data
+// Generiere Strukturen basierend auf Daten
 $productGrid = MFragment::factory()->addClass('row g-4');
 
 foreach ($products as $product) {
@@ -504,7 +504,7 @@ foreach ($products as $product) {
                                 ->addDiv(
                                     MFragment::factory()
                                         ->addSpan($product['price'], ['class' => 'h5 text-primary'])
-                                        ->addButton('Add to Cart', 'button', [
+                                        ->addButton('In Warenkorb', 'button', [
                                             'class' => 'btn btn-outline-primary btn-sm ms-2',
                                             'data-product-id' => $product['id']
                                         ]),
@@ -523,22 +523,22 @@ foreach ($products as $product) {
 echo $productGrid->show();
 ```
 
-### API Reference
+### API-Referenz
 
-All components inherit these methods:
+Alle Komponenten erben diese Methoden:
 
-### Base Methods for All Components
+### Basis-Methoden für alle Komponenten
 
-All components inherit these methods:
+Alle Komponenten erben diese Methoden:
 
 ```php
-// Attribute Management
+// Attribut-Management
 ->setAttribute(string $name, mixed $value)
 ->addClass(string $class)
 ->setId(string $id)
 ->setData(string $key, mixed $value)
 
-// Content Management  
+// Inhalt-Management  
 ->setContent(string $content)
 ->appendContent(string $content)
 ->prependContent(string $content)
@@ -551,25 +551,25 @@ All components inherit these methods:
 ### Responsive Image Helpers
 
 ```php
-// Generate srcset for responsive images
+// Generiere srcset für responsive Bilder
 generateSrcset(string $mediaFile, string $baseType): string
 
-// Generate sizes attribute
+// Generiere sizes-Attribut
 generateSizesForType(string $baseType): string
 
-// Generate complete picture element
+// Generiere vollständiges picture Element
 generateResponsivePicture(string $mediaFile, array $options): string
 ```
 
-## Advanced Configuration
+## Erweiterte Konfiguration
 
-### Creating and Placing Custom Components
+### Eigene Komponenten erstellen und ablegen
 
-MFragment offers several ways to organize custom components:
+MFragment bietet mehrere Möglichkeiten, eigene Komponenten zu organisieren:
 
-#### 1. Project Components (Recommended)
-**Directory:** `src/components/`  
-**Namespace:** Free choice (e.g., `App\Components\`, `MyProject\Components\`)
+#### 1. Projekt-Komponenten (Empfohlen)
+**Verzeichnis:** `src/components/`  
+**Namespace:** Frei wählbar (z.B. `App\Components\`, `MyProject\Components\`)
 
 ```
 src/components/
@@ -584,9 +584,9 @@ src/components/
     └── Footer.php           -> CustomNamespace\Components\Layout\Footer
 ```
 
-#### 2. Theme Components (with Theme Addon)
-**Directory:** `src/addons/theme/components/` or `src/addons/theme/private/components/`  
-**Namespace:** Free choice (e.g., `Theme\Components\`, `MyTheme\Components\`)
+#### 2. Theme-Komponenten (mit Theme-Addon)
+**Verzeichnis:** `src/addons/theme/components/` oder `src/addons/theme/private/components/`  
+**Namespace:** Frei wählbar (z.B. `Theme\Components\`, `MyTheme\Components\`)
 
 ```
 src/addons/theme/components/
@@ -596,9 +596,9 @@ src/addons/theme/components/
     └── ContactWidget.php    -> MyTheme\Components\Widgets\ContactWidget
 ```
 
-#### 3. Addon Components (for Addon Developers)
-**Directory:** `src/addons/{addon_name}/components/`  
-**Namespace:** Free choice according to your addon namespace
+#### 3. Addon-Komponenten (für Addon-Entwickler)
+**Verzeichnis:** `src/addons/{addon_name}/components/`  
+**Namespace:** Frei wählbar entsprechend Ihrem Addon-Namespace
 
 ```
 src/addons/myproject/components/
@@ -606,12 +606,12 @@ src/addons/myproject/components/
 │   └── SpecialComponent.php -> MyProject\Components\Custom\SpecialComponent
 ```
 
-### Creating Components - Step by Step
+### Komponente erstellen - Schritt für Schritt
 
-#### 1. Create File
+#### 1. Datei erstellen
 ```php
 <?php
-// File: src/components/Cards/ProductCard.php
+// Datei: src/components/Cards/ProductCard.php
 namespace YourNamespace\Components\Cards;
 
 use FriendsOfRedaxo\MFragment\Components\AbstractComponent;
@@ -643,12 +643,12 @@ class ProductCard extends AbstractComponent
 }
 ```
 
-#### 2. Use Component
+#### 2. Komponente verwenden
 ```php
 <?php
 use YourNamespace\Components\Cards\ProductCard;
 
-// Direct usage
+// Direkte Nutzung
 $card = ProductCard::factory()
     ->setTitle('Gaming Laptop')
     ->setPrice('€ 1,299.00')
@@ -662,87 +662,87 @@ $container = MFragment::factory()
     ->addClass('product-grid');
 ```
 
-### Automatic Loading
+### Automatisches Laden
 
-MFragment automatically loads components when properly placed:
+MFragment lädt Komponenten automatisch, wenn sie korrekt platziert sind:
 
 ```php
-// These directories are automatically scanned:
-src/components/                         -> Your chosen namespace
-theme_addon_path/components/            -> Your theme namespace
-theme_addon_path/private/components/    -> Your theme namespace
+// Diese Verzeichnisse werden automatisch gescannt:
+src/components/                         -> Ihr gewählter Namespace
+theme_addon_path/components/            -> Ihr Theme-Namespace
+theme_addon_path/private/components/    -> Ihr Theme-Namespace
 src/addons/mfragment/components/        -> FriendsOfRedaxo\MFragment\Components\*
 ```
 
-**Important:** 
-- The namespace is freely selectable
-- Namespace structure must match directory structure
-- Composer autoload or corresponding configuration required
+**Wichtig:** 
+- Der Namespace ist frei wählbar
+- Die Namespace-Struktur muss der Verzeichnisstruktur entsprechen
+- Composer-Autoload oder entsprechende Konfiguration erforderlich
 
 ## Debugging
 
-### Debug Mode
+### Debug-Modus
 
-Enable debug output for development:
+Debug-Ausgabe für die Entwicklung aktivieren:
 
 ```php
-// In development environment
+// Im Development-Environment
 \FriendsOfRedaxo\MFragment\Core\RenderEngine::enableDebug();
 
-// Components output debug information
+// Komponenten geben Debug-Informationen aus
 $card = Card::factory()->setHeader('Debug Card')->show();
-// Output: <!-- MFragment Debug: Card rendered in 0.5ms -->
+// Ausgabe: <!-- MFragment Debug: Card rendered in 0.5ms -->
 ```
 
-### Performance Optimization
+### Performance-Optimierung
 
 ```php
-// Enable performance monitoring in development
+// Performance-Monitoring im Development aktivieren
 if (rex::isDebugMode()) {
     \FriendsOfRedaxo\MFragment\Core\RenderEngine::enableDebug();
 }
 
-// Retrieve performance statistics
+// Performance-Statistiken abrufen
 $stats = \FriendsOfRedaxo\MFragment\Core\RenderEngine::getStats();
-echo "Render calls: " . $stats['renderCalls'];
-echo "Total time: " . $stats['processingTime'] . "ms";
+echo "Render-Aufrufe: " . $stats['renderCalls'];
+echo "Gesamtzeit: " . $stats['processingTime'] . "ms";
 ```
 
-### Performance Monitoring
+### Performance-Monitoring
 
 ```php
-// Retrieve detailed performance statistics
+// Detaillierte Performance-Statistiken abrufen
 $engine = \FriendsOfRedaxo\MFragment\Core\RenderEngine::getInstance();
 $stats = $engine->getDetailedStats();
 
 foreach ($stats['components'] as $component => $data) {
-    echo "{$component}: {$data['count']} renders, {$data['time']}ms total\n";
+    echo "{$component}: {$data['count']} Renders, {$data['time']}ms gesamt\n";
 }
 ```
 
 ### Media Manager Tests
 
 ```php
-// Test responsive image generation
+// Test der responsive Bild-Generierung
 $srcset = generateSrcset('test.jpg', 'hero_16x9');
 assertNotEmpty($srcset);
 assertStringContains('hero_16x9_768', $srcset);
 ```
 
-## Optional Dependencies
-- **FOR Html** - Extended HTML generation (automatically detected)
-- **Media Manager** - For responsive image functionality
+## Optionale Abhängigkeiten
+- **FOR Html** - Erweiterte HTML-Generierung (automatisch erkannt)
+- **Media Manager** - Für responsive Bildfunktionalität
 
-## License
+## Lizenz
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Dieses Projekt ist unter der MIT-Lizenz lizenziert - siehe die [LICENSE](LICENSE)-Datei für Details.
 
 ## Support
 
-- **Documentation**: [https://github.com/FriendsOfREDAXO/mfragment/wiki](https://github.com/FriendsOfREDAXO/mfragment/wiki)
+- **Dokumentation**: [https://github.com/FriendsOfREDAXO/mfragment/wiki](https://github.com/FriendsOfREDAXO/mfragment/wiki)
 - **Issues**: [https://github.com/FriendsOfREDAXO/mfragment/issues](https://github.com/FriendsOfREDAXO/mfragment/issues)  
 - **Community**: [REDAXO Slack](https://redaxo.org/slack/)
 
 ## Credits
 
-**MFragment** is developed and maintained by [Friends Of REDAXO](https://github.com/FriendsOfREDAXO).
+**MFragment** wird entwickelt und gepflegt von [Friends Of REDAXO](https://github.com/FriendsOfREDAXO).

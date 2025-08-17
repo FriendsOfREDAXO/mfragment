@@ -1,8 +1,10 @@
 package: mfragment
 version: '2.1.0'
-name: MFragment
-author: Friends Of REDAXO
-supportpage: https://github.com/FriendsOfREDAXO/mfragment
+name: 'MFragment - Modern Component System'
+description: 'Professional component-based architecture with responsive media system for modern REDAXO websites'
+author: 'Friends Of REDAXO'
+supportpage: 'https://github.com/FriendsOfREDAXO/mfragment'
+
 requires:
     php: '>=7.4'
     redaxo: '^5.10.0'

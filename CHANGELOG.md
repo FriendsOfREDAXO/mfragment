@@ -1,4 +1,77 @@
-# MFragment Addon - Changelog
+# MFragment - Changelog
+
+## [2.1.0] - 2025-08-13
+
+### Major Release: Professional Responsive Media System
+
+#### Added
+- **Complete Responsive Media System** - 360 Media Manager Types with 4 series architecture
+- **Hero Series** - New fullscreen image series (768px-1920px) for modern website headers
+- **Automatic WebP Conversion** - 25-35% smaller file sizes for all media types
+- **Advanced Responsive Helpers** - Complete PHP helper functions for responsive images
+- **Bootstrap 5 Breakpoint System** - Perfect integration with modern responsive design
+- **Intelligent Fallback System** - Automatic type detection and fallback handling
+- **Performance Monitoring** - Built-in performance tracking for media operations
+
+#### Enhanced
+- **Media Manager Integration** - Complete integration with REDAXO Media Manager
+- **Component System** - Enhanced component architecture with media support  
+- **Developer Experience** - Comprehensive documentation and code examples
+- **Production Ready** - Optimized for high-traffic professional websites
+
+#### Media System Details
+```
+Image Series Overview:
+├── small (320-768px)    - Thumbnails, icons, avatars
+├── half (320-1400px)    - Content images, galleries  
+├── full (320-1400px)    - Large content, hero sections
+└── hero (768-1920px)    - Fullscreen areas, headers
+
+Total: 360 Media Manager Types
+- Standard Types: 180 (minimum mode)
+- Maximum Types: 180 (maximum mode) 
+- Effects: 1040 (including WebP conversion)
+- Aspect Ratios: 1:1, 4:3, 16:9, 21:9, 3:2, 5:2, 4:1, 2:1
+```
+
+#### Installation
+- **One-Click Install** - Complete media system via single SQL import
+- **Generic Configuration** - Ready for any REDAXO FOR addon
+- **Update-Safe** - Uses temporary tables for safe installation
+- **Backward Compatible** - Maintains existing functionality
+
+---
+
+## [2.0.0] - 2025-01-18
+
+### Major Rewrite: Component-First Architecture
+
+#### Added
+- **Modern Component System** - Complete rewrite with component-first approach
+- **Direct HTML Rendering** - Zero template overhead for maximum performance
+- **Bootstrap 5 Integration** - Complete component library with modern styling
+- **Method Chaining API** - Fluent interface design for better developer experience
+- **Performance Engine** - Built-in performance monitoring and optimization
+- **Debug System** - Comprehensive debugging tools for development
+
+#### Components Added
+- **Card Component** - Complete Bootstrap card implementation
+- **Carousel Component** - Advanced image and content sliders
+- **Modal Component** - Overlay dialogs and lightboxes
+- **Accordion Component** - Collapsible content sections
+- **Tabs Component** - Tabbed content navigation
+- **Alert Component** - Notification messages
+- **Badge Component** - Status indicators and labels
+- **Progress Component** - Progress bars and loading indicators
+- **Collapse Component** - Expandable content sections
+
+#### Removed (Breaking Changes)
+- **Fragment System** - Removed template-based fragment system
+- **UIKit Support** - Focused on Bootstrap 5 only
+- **Legacy APIs** - Removed deprecated methods and interfaces
+- **Template Dependencies** - Eliminated template overhead
+
+---
 
 ## [1.2.0-beta] - 2025-01-18
 
@@ -25,7 +98,7 @@
 - **Memory optimization** - Improved memory usage in RenderEngine
 - **HTML generation** - Fixed fallback system for HTML element creation
 
-###  Removed
+### Removed
 - **parseUiKit()** method - Deprecated and removed for API consistency
 - **Hard FORHtml dependency** - Now works independently with optional enhancement
 
@@ -38,7 +111,7 @@
 - Bootstrap/UIKit fragment templates
 - Helper classes for form inputs
 
-## 📋 Development Status Summary
+## Development Status Summary
 
 ### Production Ready (85% Complete)
 - Core system stable and tested
