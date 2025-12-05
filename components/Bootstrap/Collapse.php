@@ -409,20 +409,19 @@ class Collapse extends AbstractComponent
 
             // Aufklappbares Accordion Item
             $collapseId = 'collapse-' . $accordionId . '_' . $index;
-            $isFirst = ($index === 0);
-            
+
             $html .= '<div class="' . $itemClass . '" data-accordion-item="' . $itemId . '">';
             
             // Button Header - KORRIGIERT: accordion-header accordion-button (wie im Fragment)
             $buttonClass = 'accordion-header accordion-button';
-            if (!$item['show'] && !$isFirst) {
+            if (!$item['show']) {
                 $buttonClass .= ' collapsed';
             }
             
             $html .= '<button class="' . $buttonClass . '" type="button" ';
             $html .= 'data-bs-toggle="collapse" data-bs-target="#' . $collapseId . '" ';
-            $html .= 'aria-expanded="' . ($item['show'] || $isFirst ? 'true' : 'false') . '">';
-            
+            $html .= 'aria-expanded="' . ($item['show'] ? 'true' : 'false') . '">';
+
             // Header Text INNERHALB des Buttons - exakt wie Original
             $headerTextClass = 'accordion-header-text lh-140';
             $html .= '<h4 class="' . $headerTextClass . '">' . $item['header'] . '</h4>';
@@ -434,7 +433,7 @@ class Collapse extends AbstractComponent
             
             // Collapse Content - KORRIGIERT: accordion-collapse (ohne doppelt)
             $collapseClass = 'accordion-collapse collapse';
-            if ($item['show'] || $isFirst) {
+            if ($item['show']) {
                 $collapseClass .= ' show';
             }
             
