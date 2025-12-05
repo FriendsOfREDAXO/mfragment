@@ -1,0 +1,104 @@
+# MFragment - Deutsche Sprachdatei
+
+# Addon-Informationen
+mfragment = MFragment
+mfragment_title = MFragment - Strukturierte HTML-Generierung
+mfragment_description = Komponentenorientierte HTML-Architektur mit responsivem Media System
+
+# Navigation und Menüs
+mfragment_components = Komponenten
+mfragment_media = Responsive Media
+mfragment_debug = Debug-Werkzeuge
+mfragment_docs = Dokumentation
+
+# Komponenten
+mfragment_component_bootstrap = Bootstrap-Komponenten
+mfragment_component_default = Standard-Komponenten
+mfragment_component_card = Karte
+mfragment_component_alert = Hinweis
+mfragment_component_badge = Abzeichen
+mfragment_component_button = Button
+mfragment_component_carousel = Karussell
+mfragment_component_collapse = Aufklappen
+mfragment_component_modal = Modal
+mfragment_component_tabs = Registerkarten
+mfragment_component_accordion = Akkordeon
+mfragment_component_menu = Menü
+mfragment_component_progress = Fortschrittsbalken
+mfragment_component_figure = Abbildung
+mfragment_component_table = Tabelle
+mfragment_component_list = Liste
+mfragment_component_htmlelement = HTML-Element
+
+# Media Manager
+mfragment_media_types = Media Manager Typen
+mfragment_media_responsive = Responsive Bilder
+mfragment_media_series = Bildserien
+mfragment_media_series_small = Klein (Thumbnails)
+mfragment_media_series_half = Mittel (Halbe Breite)
+mfragment_media_series_full = Vollständig
+mfragment_media_series_hero = Hero (Vollbild)
+mfragment_media_webp = WebP-Konvertierung
+mfragment_media_install = Media Typen installieren
+mfragment_media_install_success = 360 responsive Media Manager Typen wurden erfolgreich installiert
+mfragment_media_install_error = Fehler beim Installieren der Media Manager Typen
+mfragment_media_test = Media Test
+mfragment_media_validate = Media Typen validieren
+
+# Debug und Entwicklung
+mfragment_debug_mode = Debug-Modus
+mfragment_debug_enabled = Debug-Modus aktiviert
+mfragment_debug_disabled = Debug-Modus deaktiviert
+mfragment_debug_performance = Performance-Monitoring
+mfragment_debug_render_time = Render-Zeit
+mfragment_debug_memory = Speicherverbrauch
+mfragment_debug_components = Komponenten-Debug
+
+# Konfiguration
+mfragment_config = Konfiguration
+mfragment_config_saved = Konfiguration gespeichert
+mfragment_config_error = Fehler beim Speichern der Konfiguration
+mfragment_config_forhtml = FOR Html Integration
+mfragment_config_media_manager = Media Manager Integration
+mfragment_config_components = Komponenten-Verzeichnisse
+
+# Fehlermeldungen
+mfragment_error_component_not_found = Komponente nicht gefunden
+mfragment_error_invalid_media_type = Ungültiger Media Manager Typ
+mfragment_error_media_not_found = Media-Datei nicht gefunden
+mfragment_error_template_not_found = Template nicht gefunden
+mfragment_error_permission_denied = Berechtigung verweigert
+
+# Erfolgs-Meldungen
+mfragment_success_component_created = Komponente erfolgreich erstellt
+mfragment_success_media_processed = Media erfolgreich verarbeitet
+mfragment_success_template_saved = Template erfolgreich gespeichert
+
+# Allgemeine Begriffe
+mfragment_save = Speichern
+mfragment_cancel = Abbrechen
+mfragment_delete = Löschen
+mfragment_edit = Bearbeiten
+mfragment_create = Erstellen
+mfragment_back = Zurück
+mfragment_next = Weiter
+mfragment_previous = Zurück
+mfragment_close = Schließen
+mfragment_open = Öffnen
+mfragment_show = Anzeigen
+mfragment_hide = Ausblenden
+
+# Hilfe und Support
+mfragment_help = Hilfe
+mfragment_documentation = Dokumentation
+mfragment_examples = Beispiele
+mfragment_support = Support
+mfragment_github = GitHub Repository
+mfragment_community = Community
+mfragment_version = Version
+
+# Permissions
+perm_options_mfragment[] = MFragment verwenden
+perm_options_mfragment[debug] = Debug-Modus verwenden
+perm_options_mfragment[config] = Konfiguration verwalten
+perm_options_mfragment[media] = Media Manager Typen verwalten
