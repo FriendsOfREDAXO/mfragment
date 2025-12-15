@@ -155,7 +155,9 @@ class Menu extends AbstractComponent
      */
     private function renderMenuItem(array $item, int $count, int $totalItems): string
     {
-        // URL und Name ermitteln
+        if (isset($item['href'])) {
+            $item['url'] = $item['href'];
+        }
         $url = $item['url'] ?? '#';
         $externalRedirectUrl = $this->getYrewriteRedirectUrl($item);
         $isYrewriteRedirect = false;
