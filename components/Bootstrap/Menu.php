@@ -71,6 +71,9 @@ class Menu extends AbstractComponent
     public function setConfig(array $config): self
     {
         $this->config = $config;
+        if ($config['type'] ?? null) {
+            $this->setType($config['type']);
+        }
         return $this;
     }
 
