@@ -151,14 +151,17 @@ class Collapse extends AbstractComponent
      * @param array $config Konfiguration für das Item
      * @return $this
      */
-    public function addAccordionItem(string $title, $content, bool $show = false, array $config = []): self
+    public function addAccordionItem(string $title, $content, bool $show = false, array $config = [], ?string $customId = null): self
     {
         // hasContent wird explizit basierend auf Content-Inhalt gesetzt
         // Leerer Content ('') führt zu statischem Header ohne Aufklapp-Funktionalität
         $hasContent = !empty($content);
         
+        // Verwende custom ID falls übergeben, sonst generiere eine neue
+        $itemId = $customId ?? ('accordion-' . uniqid());
+
         $this->items[] = [
-            'id' => 'accordion-' . uniqid(),
+            'id' => $itemId,
             'header' => $title,
             'content' => $content,
             'show' => $show,
@@ -187,7 +190,8 @@ class Collapse extends AbstractComponent
                     $item['header'],
                     $item['content'],
                     $item['show'] ?? false,
-                    $item['config'] ?? []
+                    $item['config'] ?? [],
+                    $item['id'] ?? null  // ID übergeben, falls vorhanden
                 );
             }
         }
@@ -397,9 +401,12 @@ class Collapse extends AbstractComponent
             // Prüfen ob Content vorhanden ist
             $hasContent = $item['hasContent'] && !empty($item['content']);
 
+            // data-accordion-item aus trigger config verwenden, falls vorhanden, sonst itemId
+            $dataAccordionItem = $item['config']['button']['attributes']['data-accordion-item'] ?? $itemId;
+
             // Statisches Item ohne aufklappbaren Content (wie im Fragment)
             if (!$hasContent) {
-                $html .= '<div class="' . $itemClass . '" data-accordion-item="' . $itemId . '">';
+                $html .= '<div class="' . $itemClass . '" data-accordion-item="' . $dataAccordionItem . '">';
                 $html .= '<div class="static-accordion-header">';
                 $html .= '<h4 class="accordion-header-text lh-140">' . $item['header'] . '</h4>';
                 $html .= '</div>';
@@ -410,8 +417,8 @@ class Collapse extends AbstractComponent
             // Aufklappbares Accordion Item
             $collapseId = 'collapse-' . $accordionId . '_' . $index;
 
-            $html .= '<div class="' . $itemClass . '" data-accordion-item="' . $itemId . '">';
-            
+            $html .= '<div class="' . $itemClass . '" data-accordion-item="' . $dataAccordionItem . '">';
+
             // Button Header - KORRIGIERT: accordion-header accordion-button (wie im Fragment)
             $buttonClass = 'accordion-header accordion-button';
             if (!$item['show']) {
